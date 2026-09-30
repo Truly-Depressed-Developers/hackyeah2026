@@ -1,0 +1,8 @@
+packages:
+  - apps/*
+
+# Override any machine-wide registry from ~/.npmrc.
+registry: https://registry.npmjs.org/
+
+allowBuilds:
+  esbuild: true
