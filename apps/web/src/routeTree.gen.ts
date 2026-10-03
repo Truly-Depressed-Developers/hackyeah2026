@@ -10,33 +10,61 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PanelAuthedRouteImport } from './routes/panel/_authed'
+import { Route as PanelLoginRouteImport } from './routes/panel/login'
+import { Route as PanelAuthedIndexRouteImport } from './routes/panel/_authed/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PanelAuthedRoute = PanelAuthedRouteImport.update({
+  id: '/panel/_authed',
+  path: '/panel',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PanelLoginRoute = PanelLoginRouteImport.update({
+  id: '/panel/login',
+  path: '/panel/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PanelAuthedIndexRoute = PanelAuthedIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PanelAuthedRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/panel': typeof PanelAuthedRouteWithChildren
+  '/panel/login': typeof PanelLoginRoute
+  '/panel/': typeof PanelAuthedIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/panel/login': typeof PanelLoginRoute
+  '/panel': typeof PanelAuthedIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/panel/_authed': typeof PanelAuthedRouteWithChildren
+  '/panel/login': typeof PanelLoginRoute
+  '/panel/_authed/': typeof PanelAuthedIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/panel' | '/panel/login' | '/panel/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/panel/login' | '/panel'
+  id: '__root__' | '/' | '/panel/_authed' | '/panel/login' | '/panel/_authed/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  PanelAuthedRoute: typeof PanelAuthedRouteWithChildren
+  PanelLoginRoute: typeof PanelLoginRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +76,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/panel/_authed': {
+      id: '/panel/_authed'
+      path: '/panel'
+      fullPath: '/panel'
+      preLoaderRoute: typeof PanelAuthedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/panel/login': {
+      id: '/panel/login'
+      path: '/panel/login'
+      fullPath: '/panel/login'
+      preLoaderRoute: typeof PanelLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/panel/_authed/': {
+      id: '/panel/_authed/'
+      path: '/'
+      fullPath: '/panel/'
+      preLoaderRoute: typeof PanelAuthedIndexRouteImport
+      parentRoute: typeof PanelAuthedRoute
+    }
   }
 }
 
+interface PanelAuthedRouteChildren {
+  PanelAuthedIndexRoute: typeof PanelAuthedIndexRoute
+}
+
+const PanelAuthedRouteChildren: PanelAuthedRouteChildren = {
+  PanelAuthedIndexRoute: PanelAuthedIndexRoute,
+}
+
+const PanelAuthedRouteWithChildren = PanelAuthedRoute._addFileChildren(
+  PanelAuthedRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  PanelAuthedRoute: PanelAuthedRouteWithChildren,
+  PanelLoginRoute: PanelLoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

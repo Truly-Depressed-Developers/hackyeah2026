@@ -1,8 +1,8 @@
 import type { FormEvent } from 'react'
-import { createFileRoute } from '@tanstack/react-router'
+import { Link, createFileRoute } from '@tanstack/react-router'
 import { Search } from 'lucide-react'
 import { SearchResults, summarize } from '@/components/search/search-results'
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { $ai, SEARCH_COLLECTION } from '@/lib/ai/client'
@@ -42,6 +42,12 @@ function SearchPage() {
 
   return (
     <div className="flex flex-col gap-6">
+      <nav className="flex justify-end">
+        {/* Entry to the Panel administratora; logged-out users land on /panel/login. */}
+        <Link to="/panel" className={buttonVariants({ size: "sm" })}>
+          Zaloguj się
+        </Link>
+      </nav>
       <h1 className="text-2xl font-bold sm:text-3xl">Znajdź rozwiązanie swojego problemu</h1>
 
       <form role="search" onSubmit={onSubmit} className="flex flex-col gap-2">
