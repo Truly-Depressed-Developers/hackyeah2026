@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { Play } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
@@ -13,14 +14,19 @@ export function youtubeId(url: string) {
 }
 
 export function VideoDialog({ videoId, title, primary }: { videoId: string; title: string; primary: boolean }) {
+  const titleRef = useRef<HTMLHeadingElement>(null)
+
   return (
     <Dialog>
       <DialogTrigger render={<Button variant={primary ? 'default' : 'outline'} className="h-11 px-4 text-base" />}>
         <Play aria-hidden="true" />
         Obejrzyj film
       </DialogTrigger>
-      <DialogContent className="gap-3 pt-14 sm:max-w-3xl">
-        <DialogTitle className="text-lg">{title}</DialogTitle>
+      {/* Focus the title, not the iframe: keys inside a cross-origin iframe never reach us, so Esc would not close. */}
+      <DialogContent initialFocus={titleRef} className="gap-3 pt-14 sm:max-w-3xl">
+        <DialogTitle ref={titleRef} tabIndex={-1} className="text-lg outline-none">
+          {title}
+        </DialogTitle>
         <div className="aspect-video w-full overflow-hidden rounded-lg bg-black">
           <iframe
             className="size-full"
