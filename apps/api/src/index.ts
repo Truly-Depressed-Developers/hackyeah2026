@@ -5,7 +5,7 @@ import { serveStatic } from '@hono/node-server/serve-static'
 import { trpcServer } from '@hono/trpc-server'
 import { Hono } from 'hono'
 import { auth } from './auth.js'
-import { mockCatalog, realCatalog } from './ai/catalog.js'
+import { mockCatalog, mockInnovation, realCatalog, realInnovation } from './ai/catalog.js'
 import { mockSearch } from './ai/mock.js'
 import { realSearch } from './ai/search.js'
 import { env } from './env.js'
@@ -21,6 +21,7 @@ app.use('/trpc/*', trpcServer({ router: appRouter, createContext }))
 // Only search is exposed: the AI service also has admin endpoints (collections, documents) the browser must never reach.
 app.post('/ai/search', (c) => (env.AI_URL ? realSearch(c) : mockSearch(c)))
 app.get('/ai/catalog', (c) => (env.AI_URL ? realCatalog(c) : mockCatalog(c)))
+app.get('/ai/catalog/:id', (c) => (env.AI_URL ? realInnovation(c) : mockInnovation(c)))
 app.all('/ai/*', (c) => c.json({ error: 'Not found' }, 404))
 
 const webDist = fileURLToPath(new URL('../../web/dist/', import.meta.url))

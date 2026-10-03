@@ -1,5 +1,6 @@
 import { useId, useState, type ReactNode } from 'react'
-import { IconChevronDown, IconExternalLink, IconFileText, IconPhone, IconSparkles } from '@tabler/icons-react'
+import { IconArrowRight, IconChevronDown, IconExternalLink, IconFileText, IconPhone, IconSparkles } from '@tabler/icons-react'
+import { Link } from '@tanstack/react-router'
 import { cn } from 'cn'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { CategoryBadge } from '@/components/category-badge'
@@ -30,7 +31,8 @@ export function ResultCard({ result }: { result: Result }) {
   })
   const phone = result.links?.phone
   const videoId = result.links?.video ? youtubeId(result.links.video) : null
-  const primary = phone ? 'phone' : videoId ? 'video' : details.length > 0 ? 'details' : null
+  const opensPage = result.kind === 'innovation'
+  const primary = phone ? 'phone' : opensPage ? 'page' : videoId ? 'video' : details.length > 0 ? 'details' : null
 
   return (
     <li className="flex flex-col gap-3 rounded-xl border bg-card p-4 text-card-foreground">
@@ -50,7 +52,7 @@ export function ResultCard({ result }: { result: Result }) {
         </p>
       </div>
 
-      {details.length > 0 && (
+      {!opensPage && details.length > 0 && (
         <dl id={detailsId} hidden={!expanded} className="flex flex-col gap-3">
           {details.map(({ label, text }) => (
             <div key={label}>
@@ -68,8 +70,14 @@ export function ResultCard({ result }: { result: Result }) {
             Zadzwoń: {phone}
           </a>
         )}
+        {opensPage && (
+          <Link to="/innowacja/$id" params={{ id: result.id }} className={cn(buttonVariants(), 'h-11 px-4 text-base')}>
+            Zobacz innowację
+            <IconArrowRight aria-hidden="true" />
+          </Link>
+        )}
         {videoId && <VideoDialog videoId={videoId} title={result.title} primary={primary === 'video'} />}
-        {details.length > 0 && (
+        {!opensPage && details.length > 0 && (
           <Button
             variant={primary === 'details' ? 'default' : 'outline'}
             className="h-11 px-4 text-base"
@@ -81,8 +89,8 @@ export function ResultCard({ result }: { result: Result }) {
             {expanded ? 'Zwiń szczegóły' : 'Szczegóły'}
           </Button>
         )}
-        {result.source.url && <ExternalLinkButton href={result.source.url}>Zobacz w: {result.source.label}</ExternalLinkButton>}
-        {result.links?.pdf && (
+        {!opensPage && result.source.url && <ExternalLinkButton href={result.source.url}>Zobacz w: {result.source.label}</ExternalLinkButton>}
+        {!opensPage && result.links?.pdf && (
           <ExternalLinkButton href={result.links.pdf} icon={<IconFileText aria-hidden="true" />}>
             Opis (PDF)
           </ExternalLinkButton>

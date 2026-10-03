@@ -43,7 +43,7 @@ function StartPage() {
       <main className="flex flex-1 flex-col">
         <section
           aria-labelledby="hero-title"
-          className="flex flex-col items-center border-b bg-hero px-4 pt-14 pb-16 text-center sm:px-6 sm:pt-[4.5rem] sm:pb-[4.75rem]"
+          className="flex flex-col items-center overflow-hidden border-b bg-hero-gradient px-4 pt-14 pb-16 text-center sm:px-6 sm:pt-[4.5rem] sm:pb-[4.75rem]"
         >
           <div className="flex w-full max-w-[53.75rem] flex-col items-center">
             <h1 id="hero-title" className="text-4xl leading-[1.1] font-[650] tracking-[-0.04em] sm:text-[3.25rem]">

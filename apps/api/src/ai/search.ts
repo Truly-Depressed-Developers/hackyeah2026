@@ -107,7 +107,7 @@ export function parseSections(document: string) {
 }
 
 // details_pdf arrives as a JSON-encoded array string, e.g. '["https://…pdf"]'.
-function firstPdf(value: unknown) {
+export function firstPdf(value: unknown) {
   if (Array.isArray(value)) return clean(value[0])
   if (typeof value !== 'string') return undefined
   try {
