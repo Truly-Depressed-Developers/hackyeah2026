@@ -126,7 +126,9 @@ at `/ai/*`, which Hono forwards to `AI_URL`. Why: `docs/adr/0001-ai-calls-via-op
 
 To switch to the real service:
 
-1. Start it and set `AI_URL` in `.env` (e.g. `http://localhost:8000`), or on Render.
+1. Set `AI_URL`, `AI_API_KEY` and `AI_COLLECTION` in `.env` (or on Render). The key stays in Hono, which
+   calls the AI service's `POST /api/query` and maps matches to our contract (`apps/api/src/ai/search.ts`).
+   Only `POST /ai/search` is exposed to the browser; the AI service's admin endpoints are not.
 2. Run `pnpm gen:ai -- --remote`. This fetches `${AI_URL}/openapi.json` and overwrites `schema.d.ts`.
 3. Run `pnpm typecheck` and fix whatever the real contract changed.
 4. Restart `pnpm dev`. Clearing `AI_URL` switches back to the mock.

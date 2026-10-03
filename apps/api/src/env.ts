@@ -10,10 +10,14 @@ function required(name: string): string {
   return value
 }
 
+const aiUrl = (process.env.AI_URL ?? '').replace(/\/+$/, '')
+
 export const env = {
   DATABASE_URL: required('DATABASE_URL'),
   PORT: Number(process.env.PORT ?? process.env.API_PORT ?? 3000),
-  AI_URL: (process.env.AI_URL ?? '').replace(/\/+$/, ''),
+  AI_URL: aiUrl,
+  AI_API_KEY: aiUrl ? required('AI_API_KEY') : '',
+  AI_COLLECTION: process.env.AI_COLLECTION ?? '',
   BETTER_AUTH_SECRET: required('BETTER_AUTH_SECRET'),
   // Public URL the browser uses (Vite in dev, the Render URL in production).
   BETTER_AUTH_URL: process.env.BETTER_AUTH_URL ?? 'http://localhost:5173',
