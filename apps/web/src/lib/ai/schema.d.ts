@@ -56,7 +56,17 @@ export interface components {
             /** @description AI-generated match rationale (Uzasadnienie dopasowania), grounded in this result only. */
             why: string;
             source: components["schemas"]["Source"];
+            details?: components["schemas"]["Details"];
             links?: components["schemas"]["Links"];
+        };
+        /** @description Longer content shown when the resident expands a result. */
+        Details: {
+            /** @description From record.problem. */
+            problem?: string;
+            /** @description From record.target_group. */
+            targetGroup?: string;
+            /** @description From record.effectiveness. */
+            effectiveness?: string;
         };
         /** @description Media for result actions (S-02). Never include record.authors (real personal data). */
         Links: {
@@ -72,9 +82,11 @@ export interface components {
             pdf?: string;
             /**
              * Format: uri
-             * @description From record.file_zip.
+             * @description From record.file_zip. Implementation materials, not shown to residents.
              */
             download?: string;
+            /** @description Contact phone for helpers, e.g. "+48 12 345 67 89". */
+            phone?: string;
         };
         /** @enum {string} */
         ResultKind: "innovation" | "helper" | "fact";

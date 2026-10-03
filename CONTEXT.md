@@ -53,6 +53,10 @@ The outcome when no Wynik passes the lower threshold.
 **Uzasadnienie dopasowania** (Match rationale):
 A short AI-written sentence on why a Wynik fits the Zapytanie. It is labeled as AI-generated, and it is based only on the Wynik's own content, with that Wynik as its source.
 
+**Akcja** (Action):
+Something the resident can do with a Wynik: read more, watch a video, open a document or page, call. Which Akcje a Wynik offers depends on what it contains, not on its Rodzaj. Every Wynik offers at least one.
+_Avoid_: button, CTA
+
 ## Relationships
 
 - One **Zapytanie** produces zero or more **Rozwiązania** and zero or more **Rozwiązania pokrewne**, or **Brak odpowiedzi**.

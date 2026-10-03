@@ -77,8 +77,23 @@ components:
           description: AI-generated match rationale (Uzasadnienie dopasowania), grounded in this result only.
         source:
           $ref: '#/components/schemas/Source'
+        details:
+          $ref: '#/components/schemas/Details'
         links:
           $ref: '#/components/schemas/Links'
+    Details:
+      type: object
+      description: Longer content shown when the resident expands a result.
+      properties:
+        problem:
+          type: string
+          description: From record.problem.
+        targetGroup:
+          type: string
+          description: From record.target_group.
+        effectiveness:
+          type: string
+          description: From record.effectiveness.
     Links:
       type: object
       description: Media for result actions (S-02). Never include record.authors (real personal data).
@@ -94,7 +109,10 @@ components:
         download:
           type: string
           format: uri
-          description: From record.file_zip.
+          description: From record.file_zip. Implementation materials, not shown to residents.
+        phone:
+          type: string
+          description: Contact phone for helpers, e.g. "+48 12 345 67 89".
     ResultKind:
       type: string
       enum: [innovation, helper, fact]
