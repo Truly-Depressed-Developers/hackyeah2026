@@ -6,6 +6,7 @@ export type SearchResponse = components['schemas']['SearchResponse']
 export type Result = components['schemas']['Result']
 export type ResultKind = components['schemas']['ResultKind']
 export type CatalogItem = components['schemas']['CatalogItem']
+export type Innovation = components['schemas']['Innovation']
 
 export const SEARCH_COLLECTION = 'knowledge'
 

@@ -2,20 +2,42 @@ import type { Context } from 'hono'
 import { env } from '../env.js'
 import { related, solutions } from './fixtures.js'
 import type { components } from './schema.js'
-import { clean, parseSections, truncate } from './search.js'
+import { clean, firstPdf, parseSections, truncate } from './search.js'
 import type { components as vector } from './vector-api.js'
 
 type CatalogItem = components['schemas']['CatalogItem']
+type Innovation = components['schemas']['Innovation']
 type GetDocumentsResponse = vector['schemas']['GetDocumentsResponse']
 
 const CACHE_MS = 10 * 60_000
 const TIMEOUT_MS = 10_000
+const SOURCE_LABEL = 'Biblioteka Innowacji Społecznych'
 
-let cache: { at: number; items: CatalogItem[] } | null = null
+let cache: { at: number; items: Innovation[] } | null = null
 
 export async function realCatalog(c: Context): Promise<Response> {
-  if (cache && Date.now() - cache.at < CACHE_MS) return c.json({ items: cache.items })
+  const items = await loadInnovations()
+  return items ? c.json({ items: items.map(toCatalogItem) }) : c.json({ error: 'AI service unavailable' }, 502)
+}
 
+export async function realInnovation(c: Context): Promise<Response> {
+  const items = await loadInnovations()
+  if (!items) return c.json({ error: 'AI service unavailable' }, 502)
+  const item = items.find((innovation) => innovation.id === c.req.param('id'))
+  return item ? c.json(item) : c.json({ error: 'Not found' }, 404)
+}
+
+export function mockCatalog(c: Context): Response {
+  return c.json({ items: mockInnovations().map(toCatalogItem) })
+}
+
+export function mockInnovation(c: Context): Response {
+  const item = mockInnovations().find((innovation) => innovation.id === c.req.param('id'))
+  return item ? c.json(item) : c.json({ error: 'Not found' }, 404)
+}
+
+async function loadInnovations() {
+  if (cache && Date.now() - cache.at < CACHE_MS) return cache.items
   try {
     const url = new URL(`${env.AI_URL}/api/documents`)
     url.searchParams.set('limit', '1000')
@@ -24,40 +46,97 @@ export async function realCatalog(c: Context): Promise<Response> {
     if (!response.ok) throw new Error(`AI service responded ${response.status}`)
 
     const { data } = (await response.json()) as GetDocumentsResponse
-    const items = data.ids.flatMap((id, i) => toCatalogItem(id, data.metadatas?.[i], data.documents?.[i]) ?? [])
+    const items = data.ids.flatMap((id, i) => toInnovation(id, data.metadatas?.[i], data.documents?.[i]) ?? [])
     cache = { at: Date.now(), items }
-    return c.json({ items })
+    return items
   } catch (err) {
     console.error('Catalog fetch failed:', err)
-    if (cache) return c.json({ items: cache.items })
-    return c.json({ error: 'AI service unavailable' }, 502)
+    return cache?.items ?? null
   }
 }
 
-export function mockCatalog(c: Context): Response {
-  const items: CatalogItem[] = [...solutions, ...related].map(({ id, title, summary, category, categorySlug, source }) => ({
-    id,
-    title,
-    summary,
-    category,
-    categorySlug,
-    source,
-  }))
-  return c.json({ items })
-}
-
-function toCatalogItem(id: string, metadata: unknown, document: unknown): CatalogItem | null {
+function toInnovation(id: string, metadata: unknown, document: unknown): Innovation | null {
   const meta = (metadata ?? {}) as Record<string, unknown>
   const sections = parseSections(typeof document === 'string' ? document : '')
   const title = clean(meta.title) ?? sections['Tytuł innowacji']
-  const summary = sections['Rozwiązanie'] ?? sections['Problem']
-  if (!title || !summary) return null
+  if (!title) return null
+  const description = sections['Opis'] ?? ''
+
   return {
     id,
     title,
-    summary: truncate(summary, 160),
+    subtitle: subtitleFrom(description, title),
+    featured: /wybrana do upowszechniania/i.test(description),
     category: clean(meta.category_name) ?? sections['Kategoria'],
     categorySlug: clean(meta.category_slug),
-    source: { label: 'Biblioteka Innowacji Społecznych', url: clean(meta.source_url) },
+    solution: sections['Rozwiązanie'],
+    problem: sections['Problem'],
+    targetGroup: sections['Grupa docelowa'],
+    beneficiaries: splitList(sections['Odbiorcy i instytucje']),
+    effectiveness: sections['Skuteczność'],
+    authors: env.AI_SHOW_AUTHORS ? splitAuthors(sections['Autorzy'] ?? clean(meta.authors)) : undefined,
+    source: { label: SOURCE_LABEL, url: clean(meta.source_url) },
+    links: { video: clean(meta.youtube_video), pdf: firstPdf(meta.details_pdf), download: clean(meta.file_zip) },
   }
+}
+
+function toCatalogItem(item: Innovation): CatalogItem {
+  return {
+    id: item.id,
+    title: item.title,
+    summary: truncate(item.solution ?? item.problem ?? item.subtitle ?? '', 160),
+    subtitle: item.subtitle,
+    featured: item.featured,
+    hasVideo: Boolean(item.links?.video),
+    category: item.category,
+    categorySlug: item.categorySlug,
+    source: item.source,
+  }
+}
+
+// "Opis" is scraped page text: "<Title> - <one-liner> INNOWACJA WYBRANA… dowiedz się więcej pobierz materiały…".
+function subtitleFrom(description: string, title: string) {
+  const withoutTitle = description.replace(new RegExp(`^${escapeRegExp(title)}\\s*[-–—]\\s*`, 'i'), '')
+  const text = withoutTitle.split(/\s*(?:innowacja wybrana|dowiedz się więcej|zobacz film|pobierz materiały|sprawdź zasady|otwórz w telefonie)/i)[0]?.trim()
+  return text ? upperFirst(text) : undefined
+}
+
+function splitList(value: string | undefined) {
+  return (value ?? '')
+    .replace(/\.$/, '')
+    .split(/[,;]\s+(?![^()]*\))/)
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .map(upperFirst)
+}
+
+function splitAuthors(value: string | undefined) {
+  if (!value) return []
+  return /^\s*-\s/.test(value) ? value.split(/\s*-\s+/).map((name) => name.trim()).filter(Boolean) : [value.trim()]
+}
+
+function mockInnovations(): Innovation[] {
+  return [...solutions, ...related].map((result) => ({
+    id: result.id,
+    title: result.title,
+    subtitle: result.summary,
+    featured: result.id === 'dla-seniorow__bawita',
+    category: result.category,
+    categorySlug: result.categorySlug,
+    solution: result.summary,
+    problem: result.details?.problem,
+    targetGroup: result.details?.targetGroup,
+    beneficiaries: [],
+    effectiveness: result.details?.effectiveness,
+    source: result.source,
+    links: result.links,
+  }))
+}
+
+function upperFirst(value: string) {
+  return value.charAt(0).toUpperCase() + value.slice(1)
+}
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }

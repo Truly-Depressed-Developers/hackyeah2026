@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
-import { IconExternalLink } from '@tabler/icons-react'
+import { Link } from '@tanstack/react-router'
+import { IconChevronDown, IconMovie, IconRosetteDiscountCheck } from '@tabler/icons-react'
 import { cn } from 'cn'
 import { CategoryBadge, CategoryIcon } from '@/components/category-badge'
 import { Button } from '@/components/ui/button'
@@ -8,12 +9,13 @@ import { Spinner } from '@/components/ui/spinner'
 import { $ai, type CatalogItem } from '@/lib/ai/client'
 import { ALL_CATEGORIES, CATEGORIES, categoryFor } from '@/lib/categories'
 
-const PAGE_SIZE = 12
+const FIRST_PAGE = 12
+const NEXT_PAGE = 9
 
 export function KnowledgeBase() {
   const catalog = $ai.useQuery('get', '/catalog', {}, { staleTime: 10 * 60_000, retry: false })
   const [filter, setFilter] = useState(ALL_CATEGORIES.slug)
-  const [visible, setVisible] = useState(PAGE_SIZE)
+  const [visible, setVisible] = useState(FIRST_PAGE)
   const listRef = useRef<HTMLUListElement>(null)
 
   const all = catalog.data?.items ?? []
@@ -22,13 +24,13 @@ export function KnowledgeBase() {
 
   function pick(slug: string) {
     setFilter(slug)
-    setVisible(PAGE_SIZE)
+    setVisible(FIRST_PAGE)
   }
 
   function showMore() {
     const firstNew = visible
-    flushSync(() => setVisible((count) => count + PAGE_SIZE))
-    listRef.current?.querySelectorAll<HTMLElement>(':scope > li > *')[firstNew]?.focus()
+    flushSync(() => setVisible((count) => count + NEXT_PAGE))
+    listRef.current?.querySelectorAll<HTMLElement>(':scope > li > a')[firstNew]?.focus()
   }
 
   return (
@@ -77,20 +79,26 @@ export function KnowledgeBase() {
       )}
 
       <div className="flex flex-col items-center gap-3 pt-4">
-        <p role="status" className="flex items-center gap-2 text-sm text-muted-foreground">
-          {catalog.isPending ? (
-            <>
-              <Spinner />
-              Wczytujemy materiały…
-            </>
-          ) : catalog.isSuccess ? (
-            `Pokazujemy ${shown.length} z ${items.length} materiałów.`
-          ) : null}
-        </p>
-        {shown.length < items.length && (
-          <Button variant="outline" className="h-11 px-5 text-base" onClick={showMore}>
-            Pokaż więcej
-          </Button>
+        {catalog.isPending && (
+          <p role="status" className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Spinner />
+            Wczytujemy innowacje…
+          </p>
+        )}
+        {catalog.isSuccess && shown.length < items.length && (
+          <button
+            type="button"
+            onClick={showMore}
+            className="inline-flex min-h-11 items-center gap-2 rounded-full px-4 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          >
+            <IconChevronDown aria-hidden="true" className="size-4" />
+            Pokaż kolejne innowacje ({shown.length} z {items.length})
+          </button>
+        )}
+        {catalog.isSuccess && shown.length >= items.length && (
+          <p role="status" className="text-center text-sm text-muted-foreground">
+            To wszystkie innowacje w tej kategorii ({items.length}).
+          </p>
         )}
       </div>
     </section>
@@ -99,34 +107,32 @@ export function KnowledgeBase() {
 
 function CatalogTile({ item }: { item: CatalogItem }) {
   const category = categoryFor(item.categorySlug)
-  const content = (
-    <>
-      {category && <CategoryBadge category={category} />}
-      <span className="mt-1 text-[1.0625rem] leading-[1.4375rem] font-semibold tracking-[-0.01em]">{item.title}</span>
-      <span className="line-clamp-3 text-[0.9375rem] leading-[1.3125rem] text-muted-foreground">{item.summary}</span>
-      <span className="mt-auto flex items-center gap-1 pt-1 text-xs text-muted-foreground">
-        Źródło: {item.source.label}
-        {item.source.url && (
-          <>
-            <IconExternalLink aria-hidden="true" className="size-3.5" />
-            <span className="sr-only">(otwiera się w nowej karcie)</span>
-          </>
-        )}
-      </span>
-    </>
-  )
-  const className =
-    'flex h-full min-h-[10.75rem] flex-col gap-2 rounded-[1.125rem] border border-tile-border bg-tile px-5 py-[1.125rem] text-card-foreground shadow-[0_1px_2px_0_rgb(15_27_45/0.05),0_4px_12px_-6px_rgb(15_27_45/0.08)] transition-[box-shadow,border-color] hover:border-[#C9D3DF] hover:shadow-[0_10px_24px_-12px_rgb(15_27_45/0.18)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring'
-
   return (
     <li>
-      {item.source.url ? (
-        <a href={item.source.url} target="_blank" rel="noopener noreferrer" className={className}>
-          {content}
-        </a>
-      ) : (
-        <div className={className}>{content}</div>
-      )}
+      <Link
+        to="/innowacja/$id"
+        params={{ id: item.id }}
+        className="flex h-full min-h-[12.25rem] flex-col gap-2 rounded-[1.125rem] border border-tile-border bg-tile px-5 py-[1.125rem] text-card-foreground shadow-[0_1px_2px_0_rgb(15_27_45/0.05),0_4px_12px_-6px_rgb(15_27_45/0.08)] transition-[box-shadow,border-color] hover:border-[#C9D3DF] hover:shadow-[0_10px_24px_-12px_rgb(15_27_45/0.18)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      >
+        {category && <CategoryBadge category={category} />}
+        <span className="mt-1 text-[1.0625rem] leading-[1.4375rem] font-semibold tracking-[-0.01em]">{item.title}</span>
+        <span className="line-clamp-3 text-[0.9375rem] leading-[1.3125rem] text-muted-foreground">{item.subtitle ?? item.summary}</span>
+        <span className="mt-auto flex flex-wrap items-center gap-x-3.5 gap-y-1.5 pt-1.5 text-[0.8125rem] leading-[1.125rem] text-muted-foreground">
+          {item.hasVideo && (
+            <span className="inline-flex items-center gap-1.5">
+              <IconMovie aria-hidden="true" className="size-4" />
+              Film
+            </span>
+          )}
+          {item.featured && (
+            <span className="inline-flex items-center gap-1.5 text-[#7A4300]">
+              <IconRosetteDiscountCheck aria-hidden="true" className="size-4" />
+              Polecana
+            </span>
+          )}
+          <span>Biblioteka Innowacji ROPS</span>
+        </span>
+      </Link>
     </li>
   )
 }
