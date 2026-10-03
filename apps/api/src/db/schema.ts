@@ -1,4 +1,18 @@
-import { boolean, index, jsonb, pgEnum, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import {
+  bigint,
+  boolean,
+  date,
+  index,
+  integer,
+  jsonb,
+  numeric,
+  pgEnum,
+  pgTable,
+  primaryKey,
+  text,
+  timestamp,
+  uuid,
+} from 'drizzle-orm/pg-core'
 
 // better-auth core tables. Every user is a Pracownik ROPS with access to the Panel administratora.
 const timestamps = {
@@ -97,9 +111,15 @@ export const need = pgTable(
     // Prośba o kontakt only.
     contact: text(),
     consentAt: timestamp('consent_at', { withTimezone: true }),
+    // The Wyszukiwanie it ended. No foreign key: the Potrzeba can reach the API before the beacon that creates the search row.
+    searchId: uuid('search_id'),
     ...timestamps,
   },
-  (t) => [index('need_status_created_idx').on(t.status, t.createdAt), index('need_kind_idx').on(t.kind)],
+  (t) => [
+    index('need_status_created_idx').on(t.status, t.createdAt),
+    index('need_kind_idx').on(t.kind),
+    index('need_search_id_idx').on(t.searchId),
+  ],
 )
 
 export const idea = pgTable(
@@ -118,6 +138,98 @@ export const idea = pgTable(
     ...timestamps,
   },
   (t) => [index('idea_status_created_idx').on(t.status, t.createdAt)],
+)
+
+// Analytics (HAC-18, ADR-0002). Anonymous: a Wizyta is a random id from the browser, nothing identifies a person.
+export const visitMode = pgEnum('visit_mode', ['web', 'kiosk'])
+export const searchInputMode = pgEnum('search_input_mode', ['text', 'voice'])
+
+/** A Wynik as shown for a Wyszukiwanie, with its place on the screen. */
+export interface SearchShownResult extends ShownResult {
+  position: number
+  category?: string
+}
+
+// One Wizyta. Created on its first event batch; the id comes from the browser.
+export const visit = pgTable(
+  'visit',
+  {
+    id: uuid().primaryKey(),
+    startedAt: timestamp('started_at', { withTimezone: true }).notNull(),
+    lastSeenAt: timestamp('last_seen_at', { withTimezone: true }).notNull(),
+    endedAt: timestamp('ended_at', { withTimezone: true }),
+    durationMs: integer('duration_ms'),
+    mode: visitMode().notNull().default('web'),
+    // 'mobile' | 'tablet' | 'desktop'
+    screen: text(),
+    // 'search' | 'catalog' | 'innovation' | 'idea' | 'other'
+    entry: text(),
+  },
+  (t) => [index('visit_started_idx').on(t.startedAt)],
+)
+
+// One Wyszukiwanie. The id comes from the browser at submit time, so later events link without a round trip.
+export const search = pgTable(
+  'search',
+  {
+    id: uuid().primaryKey(),
+    visitId: uuid('visit_id')
+      .notNull()
+      .references(() => visit.id, { onDelete: 'cascade' }),
+    occurredAt: timestamp('occurred_at', { withTimezone: true }).notNull(),
+    // Masked before storage (maskPii).
+    query: text().notNull(),
+    queryNormalized: text('query_normalized').notNull(),
+    inputMode: searchInputMode('input_mode').notNull().default('text'),
+    // Filled by results_shown; null while the Wyniki are still loading or if the Mieszkaniec left first.
+    resultCount: integer('result_count'),
+    solutionCount: integer('solution_count'),
+    relatedCount: integer('related_count'),
+    noMatch: boolean('no_match'),
+    latencyMs: integer('latency_ms'),
+    error: boolean().notNull().default(false),
+    shownResults: jsonb('shown_results').$type<SearchShownResult[]>().notNull().default([]),
+  },
+  (t) => [
+    index('search_occurred_idx').on(t.occurredAt),
+    index('search_visit_idx').on(t.visitId),
+    index('search_query_normalized_idx').on(t.queryNormalized),
+  ],
+)
+
+// Every other analytics event, append-only.
+export const analyticsEvent = pgTable(
+  'analytics_event',
+  {
+    id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+    visitId: uuid('visit_id').notNull(),
+    // No foreign key: beacons from one Wizyta may arrive out of order.
+    searchId: uuid('search_id'),
+    type: text().notNull(),
+    // Client time, clamped to server time ± 5 min.
+    occurredAt: timestamp('occurred_at', { withTimezone: true }).notNull(),
+    receivedAt: timestamp('received_at', { withTimezone: true }).notNull().defaultNow(),
+    innovationId: text('innovation_id'),
+    payload: jsonb().$type<Record<string, unknown>>().notNull().default({}),
+  },
+  (t) => [
+    index('analytics_event_type_occurred_idx').on(t.type, t.occurredAt),
+    index('analytics_event_search_idx').on(t.searchId),
+    index('analytics_event_visit_idx').on(t.visitId),
+    index('analytics_event_occurred_brin').using('brin', t.occurredAt),
+  ],
+)
+
+// Daily aggregates the Statystyki page reads for long ranges. key is '' for totals.
+export const analyticsDaily = pgTable(
+  'analytics_daily',
+  {
+    day: date({ mode: 'string' }).notNull(),
+    metric: text().notNull(),
+    key: text().notNull().default(''),
+    value: numeric({ mode: 'number' }).notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.day, t.metric, t.key] })],
 )
 
 export type Need = typeof need.$inferSelect
