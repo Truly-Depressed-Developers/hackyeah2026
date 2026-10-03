@@ -25,7 +25,7 @@ export function DataTable<TData extends RowData>({ columns, data, caption, empty
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>{header.isPlaceholder ? null : <table.FlexRender header={header} />}</TableHead>
+                <TableHead key={header.id} className="h-11">{header.isPlaceholder ? null : <table.FlexRender header={header} />}</TableHead>
               ))}
             </TableRow>
           ))}
@@ -35,7 +35,7 @@ export function DataTable<TData extends RowData>({ columns, data, caption, empty
             table.getRowModel().rows.map((row) => (
               <TableRow key={row.id}>
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell key={cell.id} className="py-3.5 text-[0.9375rem] leading-6">
                     <table.FlexRender cell={cell} />
                   </TableCell>
                 ))}

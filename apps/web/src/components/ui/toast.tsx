@@ -138,7 +138,7 @@ function ToastIcon({ type }: { type: string | undefined }) {
 
   if (type === "success") {
     icon = (
-      <IconCircleCheck aria-hidden="true" />
+      <IconCircleCheck className="text-success" aria-hidden="true" />
     )
   }
 
@@ -194,7 +194,7 @@ function ToastTimer({ type, timeout }: { type: string | undefined; timeout: numb
       style={{ animationDuration: `${timeout}ms` }}
       className={cn(
         "absolute inset-x-0 bottom-0 h-1 origin-left animate-[toast-timer_linear_forwards] group-data-expanded/toast:[animation-play-state:paused]",
-        type === "error" ? "bg-destructive" : type === "success" ? "bg-primary" : "bg-muted-foreground"
+        type === "error" ? "bg-destructive" : type === "success" ? "bg-success" : "bg-muted-foreground"
       )}
     />
   )

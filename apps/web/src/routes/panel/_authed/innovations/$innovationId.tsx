@@ -24,9 +24,10 @@ function EditInnovationPage() {
   const categories = useQuery(trpc.panel.innovations.categories.queryOptions())
   const update = useMutation(
     trpc.panel.innovations.update.mutationOptions({
-      onSuccess: (_, { data }) => {
+      onSuccess: async (_, { data }) => {
         notifySuccess('Zapisano zmiany', data.title)
-        return queryClient.invalidateQueries({ queryKey: trpc.panel.innovations.pathKey() })
+        await queryClient.invalidateQueries({ queryKey: trpc.panel.innovations.list.queryKey() })
+        await navigate({ to: '/panel/innovations' })
       },
       onError: (error) => notifyError('Nie udało się zapisać zmian', error),
     }),
@@ -63,8 +64,6 @@ function EditInnovationPage() {
           </div>
 
           <InnovationForm
-            // Remount after a save so the form shows exactly what was stored.
-            key={innovation.dataUpdatedAt}
             initial={toInput(innovation.data)}
             categories={categories.data}
             submitLabel="Zapisz zmiany"

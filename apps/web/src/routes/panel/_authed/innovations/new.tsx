@@ -17,10 +17,10 @@ function NewInnovationPage() {
   const categories = useQuery(trpc.panel.innovations.categories.queryOptions())
   const create = useMutation(
     trpc.panel.innovations.create.mutationOptions({
-      onSuccess: async ({ id }, input) => {
+      onSuccess: async (_, input) => {
         notifySuccess('Dodano innowację', input.title)
         await queryClient.invalidateQueries({ queryKey: trpc.panel.innovations.pathKey() })
-        await navigate({ to: '/panel/innovations/$innovationId', params: { innovationId: id } })
+        await navigate({ to: '/panel/innovations' })
       },
       onError: (error) => notifyError('Nie udało się dodać innowacji', error),
     }),
