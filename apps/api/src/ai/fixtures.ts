@@ -1,4 +1,6 @@
-import type { Result } from '@/lib/ai/client'
+import type { components } from './schema.js'
+
+type Result = components['schemas']['Result']
 
 const BIBLIOTEKA = 'Biblioteka Innowacji Społecznych'
 

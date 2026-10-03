@@ -17,6 +17,7 @@
     "**/dev-dist/**",
     "**/routeTree.gen.ts",
     "apps/web/src/lib/ai/schema.d.ts",
+    "apps/api/src/ai/schema.d.ts",
     "apps/api/drizzle/**"
   ]
 }
