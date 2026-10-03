@@ -13,11 +13,12 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { usePanelLogout } from './use-panel-auth'
 
-// Few sections, so a top bar rather than a sidebar. S-08 (materiały) adds its link here.
+// Few sections, so a top bar rather than a sidebar.
 const sections = [
   { to: '/panel', label: 'Start', exact: true },
   { to: '/panel/needs', label: 'Potrzeby', exact: false },
   { to: '/panel/ideas', label: 'Pomysły', exact: false },
+  { to: '/panel/innovations', label: 'Innowacje', exact: false },
 ] as const
 
 const navLink = buttonVariants({

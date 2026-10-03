@@ -42,6 +42,10 @@ _Avoid_: proposal, propozycja rozwiązania
 The resident's free-form description of a problem or need, in everyday language, typed or spoken.
 _Avoid_: search term, prompt
 
+**Innowacja** (Innovation):
+One item of the ROPS knowledge base (the Biblioteka Innowacji): a tested social solution with its problem, target group and effectiveness. Pracownicy ROPS add, edit and delete Innowacje in the Panel administratora; search finds Wyniki among them.
+_Avoid_: materiał, dokument, rekord
+
 **Wynik** (Result):
 One item from the ROPS knowledge base returned for a Zapytanie. It always has a **Rodzaj** and a **Poziom dopasowania**.
 _Avoid_: hit, answer, card (card is a UI element)

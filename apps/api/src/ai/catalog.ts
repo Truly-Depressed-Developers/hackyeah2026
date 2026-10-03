@@ -15,6 +15,11 @@ const SOURCE_LABEL = 'Biblioteka Innowacji Społecznych'
 
 let cache: { at: number; items: Innovation[] } | null = null
 
+/** Drop the cached catalog so the next read shows edits from the Panel administratora right away. */
+export function invalidateCatalog() {
+  cache = null
+}
+
 export async function realCatalog(c: Context): Promise<Response> {
   const items = await loadInnovations()
   return items ? c.json({ items: items.map(toCatalogItem) }) : c.json({ error: 'AI service unavailable' }, 502)
