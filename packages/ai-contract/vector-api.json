@@ -1,9 +1,12 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "HackYeah 2026 - Flask ChromaDB Vector API",
-    "description": "Production-ready REST API for Chroma DB vector database with custom Google Gemini embeddings (gemini-embedding-2).",
-    "version": "1.0.0"
+    "title": "HackYeah 2026 - ROPS Social Innovations Vector Search API",
+    "description": "Production-ready Chroma DB vector search REST API powered by Google Gemini Embeddings 2 (`gemini-embedding-2`).\n\n### Indexed Dataset: `rops_innovations`\nContains **115 indexed social innovations** from Regional Centre for Social Policy (ROPS Kraków). Use `POST /api/query` to execute semantic vector similarity searches over innovative products, therapies, and solutions for seniors, individuals with disabilities, and social care organizations.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "HackYeah 2026 Engineering Team"
+    }
   },
   "servers": [
     {
@@ -18,68 +21,155 @@
   ],
   "tags": [
     {
-      "name": "System",
-      "description": "Health and system diagnostics"
+      "name": "Query",
+      "description": "Semantic similarity search across ROPS social innovations"
     },
     {
       "name": "Collections",
-      "description": "Chroma DB collection management"
+      "description": "Chroma DB collection management (rops_innovations)"
     },
     {
       "name": "Documents",
-      "description": "Document ingestion, retrieval, update, and deletion"
+      "description": "Document retrieval, inspection, and upserting in rops_innovations"
     },
     {
-      "name": "Query",
-      "description": "Semantic similarity vector search"
+      "name": "System",
+      "description": "Health status and diagnostics"
     }
   ],
   "paths": {
-    "/": {
-      "get": {
+    "/api/query": {
+      "post": {
         "tags": [
-          "System"
+          "Query"
         ],
-        "summary": "API root info",
-        "description": "Returns basic API metadata, active embedding model, and endpoint map.",
-        "responses": {
-          "200": {
-            "description": "Service information",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RootInfoResponse"
+        "summary": "Semantic search across ROPS innovations",
+        "description": "Performs vector similarity search using `gemini-embedding-2` in 3072 dimensions.\n\n**Key Features:**\n- Target collection defaults to `rops_innovations`.\n- Supports natural Polish queries (e.g. *stymulacja pamięci seniora*, *inteligentne czujniki do leków*).\n- Supports Chroma metadata filtering via `where` (e.g. `{\"category_slug\": \"dla-seniorow\"}`).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QueryRequest"
+              },
+              "examples": {
+                "sensors_and_devices": {
+                  "summary": "Search smart devices & sensors for seniors",
+                  "value": {
+                    "api_key": "YOUR_API_KEY",
+                    "collection_name": "rops_innovations",
+                    "query": "inteligentne opaski i czujniki dla seniorów",
+                    "n_results": 3
+                  }
+                },
+                "sensory_boards": {
+                  "summary": "Search sensory boards & dementia therapies",
+                  "value": {
+                    "api_key": "YOUR_API_KEY",
+                    "collection_name": "rops_innovations",
+                    "query": "drewniana tablica manipulacyjna dla seniora z demencją",
+                    "n_results": 2
+                  }
+                },
+                "category_filtered": {
+                  "summary": "Search with category metadata filter",
+                  "value": {
+                    "api_key": "YOUR_API_KEY",
+                    "collection_name": "rops_innovations",
+                    "query": "pomoc w rehabilitacji ruchowej",
+                    "n_results": 2,
+                    "where": {
+                      "category_slug": "dla-osob-o-ograniczonej-mobilnosci"
+                    }
+                  }
+                },
+                "distance_filtered": {
+                  "summary": "Search with distance cutoff threshold",
+                  "value": {
+                    "api_key": "YOUR_API_KEY",
+                    "collection_name": "rops_innovations",
+                    "query": "inteligentne opaski i czujniki dla seniorów",
+                    "n_results": 5,
+                    "max_distance": 0.43
+                  }
                 }
               }
             }
           }
-        }
-      }
-    },
-    "/health": {
-      "get": {
-        "tags": [
-          "System"
-        ],
-        "summary": "Health check",
-        "description": "Checks Chroma DB connectivity, storage status, and Gemini API key readiness.",
+        },
         "responses": {
           "200": {
-            "description": "System is healthy",
+            "description": "Ranked semantic search results",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HealthResponse"
+                  "$ref": "#/components/schemas/QueryResponse"
+                },
+                "example": {
+                  "status": "success",
+                  "collection": "rops_innovations",
+                  "results": [
+                    {
+                      "query": "inteligentne opaski i czujniki dla seniorów",
+                      "matches": [
+                        {
+                          "id": "dla-seniorow__therapy-set",
+                          "distance": 0.4188,
+                          "document": "Tytuł innowacji: Therapy Set\n\nKategoria: Innowacje dla seniorów\n\nProblem: Ograniczona dostępność terapii zajęciowej dla seniorów...",
+                          "metadata": {
+                            "title": "Therapy Set",
+                            "category_id": 1,
+                            "category_name": "Innowacje dla seniorów",
+                            "category_slug": "dla-seniorow",
+                            "authors": "Joanna Krokosz",
+                            "source_url": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow,therapy-set",
+                            "file_zip": "https://rops.krakow.pl/pliki/IS/bibloteka/therapyset.zip",
+                            "youtube_video": "",
+                            "details_pdf": "[\"https://rops.krakow.pl/mpliki/IS/BIBLIOTEKA_INNOWACJI_SPOECZNYCH/Zasady_wykorzystania_innowacji_MIIS.pdf\"]",
+                            "data_source": "rops.krakow.pl",
+                            "scrape_timestamp": "2026-10-03",
+                            "index": 16
+                          }
+                        },
+                        {
+                          "id": "dla-zdrowia-i-medycyny__inteligentny-organizer-do-lekow",
+                          "distance": 0.4375,
+                          "document": "Tytuł innowacji: Inteligentny organizer do leków\n\nKategoria: Innowacje dla zdrowia i medycyny\n\nRozwiązanie: Narzędzie wyposażone w czujniki...",
+                          "metadata": {
+                            "title": "Inteligentny organizer do leków",
+                            "category_id": 9,
+                            "category_name": "Innowacje dla zdrowia i medycyny",
+                            "category_slug": "dla-zdrowia-i-medycyny",
+                            "authors": "Krzysztof Lingo Wojciech Sójka",
+                            "source_url": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-zdrowia-i-medycyny,inteligentny-organizer-do-lekow",
+                            "file_zip": "https://rops.krakow.pl/pliki/IS/bibloteka/inteligentnyorganizer.zip",
+                            "details_pdf": "[]",
+                            "index": 111
+                          }
+                        }
+                      ]
+                    }
+                  ]
                 }
               }
             }
           },
-          "500": {
-            "description": "Service unhealthy",
+          "401": {
+            "description": "Unauthorized (invalid or missing api_key)",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error in request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
                 }
               }
             }
@@ -92,8 +182,8 @@
         "tags": [
           "Collections"
         ],
-        "summary": "List all collections",
-        "description": "Returns a list of all collections with metadata and record counts.",
+        "summary": "List collections",
+        "description": "Lists all Chroma DB collections with record counts and indexing metrics.",
         "parameters": [
           {
             "name": "api_key",
@@ -112,6 +202,18 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CollectionsResponse"
+                },
+                "example": {
+                  "status": "success",
+                  "collections": [
+                    {
+                      "name": "rops_innovations",
+                      "count": 115,
+                      "metadata": {
+                        "hnsw:space": "cosine"
+                      }
+                    }
+                  ]
                 }
               }
             }
@@ -132,21 +234,29 @@
         "tags": [
           "Collections"
         ],
-        "summary": "Create a new collection",
-        "description": "Explicitly creates a collection with optional custom metadata.",
+        "summary": "Create collection",
+        "description": "Explicitly creates a collection. Requires administrative authorization (ADMIN_API_KEY).",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/CreateCollectionRequest"
+              },
+              "example": {
+                "admin_api_key": "YOUR_ADMIN_API_KEY",
+                "name": "rops_innovations",
+                "metadata": {
+                  "hnsw:space": "cosine",
+                  "topic": "rops_social_innovations"
+                }
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "Collection created successfully",
+            "description": "Collection created",
             "content": {
               "application/json": {
                 "schema": {
@@ -156,7 +266,7 @@
             }
           },
           "400": {
-            "description": "Invalid collection name or already exists",
+            "description": "Collection already exists",
             "content": {
               "application/json": {
                 "schema": {
@@ -175,17 +285,22 @@
               }
             }
           },
-          "422": {
-            "description": "Validation Error",
+          "403": {
+            "description": "Forbidden - Standard API key does not have permission to create collections",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ValidationError"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "AdminApiKeyAuth": []
+          }
+        ]
       }
     },
     "/api/collections/{collection_name}": {
@@ -193,14 +308,16 @@
         "tags": [
           "Collections"
         ],
-        "summary": "Get collection details",
+        "summary": "Get collection info",
+        "description": "Retrieves count and metadata for a specific collection.",
         "parameters": [
           {
             "name": "collection_name",
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": "rops_innovations"
             },
             "description": "Name of the collection"
           },
@@ -211,7 +328,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "API Authorization Key"
+            "description": "API Key"
           }
         ],
         "responses": {
@@ -221,6 +338,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SingleCollectionResponse"
+                },
+                "example": {
+                  "status": "success",
+                  "collection": {
+                    "name": "rops_innovations",
+                    "count": 115,
+                    "metadata": {
+                      "hnsw:space": "cosine"
+                    }
+                  }
                 }
               }
             }
@@ -251,7 +378,7 @@
         "tags": [
           "Collections"
         ],
-        "summary": "Delete a collection",
+        "summary": "Delete collection",
         "parameters": [
           {
             "name": "collection_name",
@@ -260,7 +387,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Name of the collection to delete"
+            "description": "Name of collection to delete"
           },
           {
             "name": "api_key",
@@ -269,7 +396,16 @@
             "schema": {
               "type": "string"
             },
-            "description": "API Authorization Key"
+            "description": "API Key"
+          },
+          {
+            "name": "admin_api_key",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Administrative API Key"
           }
         ],
         "responses": {
@@ -293,8 +429,8 @@
               }
             }
           },
-          "500": {
-            "description": "Error deleting collection",
+          "403": {
+            "description": "Forbidden - Standard API key cannot delete collections",
             "content": {
               "application/json": {
                 "schema": {
@@ -303,7 +439,13 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "AdminApiKeyAuth": []
+          }
+        ],
+        "description": "Deletes a collection and all of its records. Requires administrative authorization (ADMIN_API_KEY)."
       }
     },
     "/api/documents": {
@@ -311,15 +453,26 @@
         "tags": [
           "Documents"
         ],
-        "summary": "Retrieve documents",
-        "description": "Retrieve documents by comma-separated IDs or list with pagination.",
+        "summary": "Retrieve documents from collection",
+        "description": "Fetches documents from `rops_innovations` by ID or with pagination.",
         "parameters": [
+          {
+            "name": "collection_name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "rops_innovations"
+            },
+            "description": "Collection name (defaults to rops_innovations)"
+          },
           {
             "name": "ids",
             "in": "query",
             "required": false,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "example": "dla-seniorow__bawita,dla-seniorow__therapy-set"
             },
             "description": "Comma-separated IDs"
           },
@@ -331,7 +484,7 @@
               "type": "integer",
               "default": 10
             },
-            "description": "Max documents"
+            "description": "Max records to return"
           },
           {
             "name": "offset",
@@ -341,16 +494,7 @@
               "type": "integer",
               "default": 0
             },
-            "description": "Pagination offset"
-          },
-          {
-            "name": "collection_name",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Target collection"
+            "description": "Offset for pagination"
           },
           {
             "name": "api_key",
@@ -369,6 +513,33 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/GetDocumentsResponse"
+                },
+                "example": {
+                  "status": "success",
+                  "collection": "rops_innovations",
+                  "total": 115,
+                  "limit": 1,
+                  "offset": 0,
+                  "data": {
+                    "ids": [
+                      "dla-seniorow__bawita"
+                    ],
+                    "documents": [
+                      "Tytuł innowacji: BaWita\n\nKategoria: Innowacje dla seniorów\n\nRozwiązanie: Narzędzie rehabilitacyjne w postaci drewnianej tablicy..."
+                    ],
+                    "metadatas": [
+                      {
+                        "title": "BaWita",
+                        "category_id": 1,
+                        "category_name": "Innowacje dla seniorów",
+                        "category_slug": "dla-seniorow",
+                        "authors": "- Maria Lorenc - Maciej Parol",
+                        "source_url": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow,bawita",
+                        "file_zip": "https://rops.krakow.pl/pliki/IS/bibloteka/bawita.zip",
+                        "youtube_video": "https://www.youtube.com/watch?v=o7UhDlebLJo"
+                      }
+                    ]
+                  }
                 }
               }
             }
@@ -389,35 +560,41 @@
         "tags": [
           "Documents"
         ],
-        "summary": "Ingest new documents",
-        "description": "Embeds and stores documents in the vector database.",
+        "summary": "Add documents to collection",
+        "description": "Generates embeddings and adds new documents into `rops_innovations`.",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/AddDocumentsRequest"
+              },
+              "example": {
+                "api_key": "YOUR_API_KEY",
+                "collection_name": "rops_innovations",
+                "ids": [
+                  "nowa_innowacja_1"
+                ],
+                "documents": [
+                  "Tytuł innowacji: Nowa Innowacja Senioralna\n\nKategoria: Innowacje dla seniorów..."
+                ],
+                "metadatas": [
+                  {
+                    "title": "Nowa Innowacja Senioralna",
+                    "category_slug": "dla-seniorow"
+                  }
+                ]
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "Documents added successfully",
+            "description": "Documents added",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/DocumentActionResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -433,7 +610,7 @@
             }
           },
           "422": {
-            "description": "Schema validation error",
+            "description": "Validation error",
             "content": {
               "application/json": {
                 "schema": {
@@ -448,8 +625,7 @@
         "tags": [
           "Documents"
         ],
-        "summary": "Edit / update existing records",
-        "description": "Updates text content, metadata, or both for existing document IDs.",
+        "summary": "Update existing documents",
         "requestBody": {
           "required": true,
           "content": {
@@ -462,7 +638,7 @@
         },
         "responses": {
           "200": {
-            "description": "Records updated successfully",
+            "description": "Documents updated",
             "content": {
               "application/json": {
                 "schema": {
@@ -497,14 +673,20 @@
         "tags": [
           "Documents"
         ],
-        "summary": "Delete documents",
-        "description": "Deletes documents from the collection by ID.",
+        "summary": "Delete documents by ID",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/DeleteDocumentsRequest"
+              },
+              "example": {
+                "api_key": "YOUR_API_KEY",
+                "collection_name": "rops_innovations",
+                "ids": [
+                  "dla-seniorow__bawita"
+                ]
               }
             }
           }
@@ -529,16 +711,6 @@
                 }
               }
             }
-          },
-          "422": {
-            "description": "Validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationError"
-                }
-              }
-            }
           }
         }
       }
@@ -548,14 +720,31 @@
         "tags": [
           "Documents"
         ],
-        "summary": "Upsert documents",
-        "description": "Inserts records if missing, or updates them if they already exist.",
+        "summary": "Upsert documents (insert or update)",
+        "description": "Upserts documents into `rops_innovations`. Automatically generates 3072-dim embeddings using `gemini-embedding-2`.",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/UpsertDocumentsRequest"
+              },
+              "example": {
+                "api_key": "YOUR_API_KEY",
+                "collection_name": "rops_innovations",
+                "ids": [
+                  "dla-seniorow__bawita"
+                ],
+                "documents": [
+                  "Tytuł innowacji: BaWita\n\nKategoria: Innowacje dla seniorów\n\nProblem: Zespoły otępienne..."
+                ],
+                "metadatas": [
+                  {
+                    "title": "BaWita",
+                    "category_slug": "dla-seniorow",
+                    "authors": "Maria Lorenc"
+                  }
+                ]
               }
             }
           }
@@ -594,50 +783,61 @@
         }
       }
     },
-    "/api/query": {
-      "post": {
+    "/health": {
+      "get": {
         "tags": [
-          "Query"
+          "System"
         ],
-        "summary": "Semantic vector search",
-        "description": "Executes semantic similarity search against the vector database using Gemini embeddings.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/QueryRequest"
+        "summary": "Health check & readiness",
+        "responses": {
+          "200": {
+            "description": "Service is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                },
+                "example": {
+                  "status": "healthy",
+                  "chroma_storage": "/app/chroma_data",
+                  "embedding_model": "gemini-embedding-2",
+                  "gemini_api_key_configured": true,
+                  "auth_enabled": true,
+                  "mock_embeddings_enabled": false,
+                  "collections_count": 1
+                }
               }
             }
           }
-        },
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "tags": [
+          "System"
+        ],
+        "summary": "Root service metadata",
         "responses": {
           "200": {
-            "description": "Semantic query results",
+            "description": "Service root info",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/QueryResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationError"
+                  "$ref": "#/components/schemas/RootInfoResponse"
+                },
+                "example": {
+                  "name": "HackYeah 2026 - Flask ChromaDB API",
+                  "status": "online",
+                  "embedding_model": "gemini-embedding-2",
+                  "mock_mode": false,
+                  "docs": {
+                    "health": "GET /health",
+                    "swagger_ui": "GET /docs",
+                    "openapi_spec": "GET /openapi.json",
+                    "list_collections": "GET /api/collections",
+                    "query": "POST /api/query"
+                  }
                 }
               }
             }
@@ -652,76 +852,202 @@
         "type": "apiKey",
         "in": "header",
         "name": "X-API-Key",
-        "description": "API key in header (X-API-Key or Authorization: Bearer <key>), or in JSON payload as api_key"
+        "description": "Authorization key. Can be supplied in header `X-API-Key`, `Authorization: Bearer <key>`, or inside JSON body as `\"api_key\": \"...\"`"
+      },
+      "AdminApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Admin-API-Key",
+        "description": "Administrative key required for creating and deleting collections. Can also be supplied in JSON body as admin_api_key or query param ?admin_api_key="
       }
     },
     "schemas": {
-      "RootInfoResponse": {
+      "ROPSMetadata": {
+        "type": "object",
+        "description": "Metadata attributes for a ROPS Social Innovation",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "BaWita",
+            "description": "Innovation title"
+          },
+          "category_id": {
+            "type": "integer",
+            "example": 1,
+            "description": "Category numeric ID (1-9)"
+          },
+          "category_name": {
+            "type": "string",
+            "example": "Innowacje dla seniorów",
+            "description": "Human-readable category name"
+          },
+          "category_slug": {
+            "type": "string",
+            "example": "dla-seniorow",
+            "description": "URL slug for category"
+          },
+          "authors": {
+            "type": "string",
+            "example": "- Maria Lorenc - Maciej Parol",
+            "description": "Authors / innovators"
+          },
+          "source_url": {
+            "type": "string",
+            "example": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow,bawita",
+            "description": "Official portal source URL"
+          },
+          "file_zip": {
+            "type": "string",
+            "example": "https://rops.krakow.pl/pliki/IS/bibloteka/bawita.zip",
+            "description": "Downloadable ZIP package with blueprints/manuals"
+          },
+          "youtube_video": {
+            "type": "string",
+            "example": "https://www.youtube.com/watch?v=o7UhDlebLJo",
+            "description": "YouTube demonstration video URL"
+          },
+          "details_pdf": {
+            "type": "string",
+            "example": "[\"https://rops.krakow.pl/mpliki/IS/...pdf\"]",
+            "description": "JSON array of attached PDF document URLs"
+          },
+          "data_source": {
+            "type": "string",
+            "example": "rops.krakow.pl"
+          },
+          "scrape_timestamp": {
+            "type": "string",
+            "example": "2026-10-03"
+          },
+          "index": {
+            "type": "integer",
+            "example": 1,
+            "description": "Catalog index 1..115"
+          }
+        }
+      },
+      "QueryMatch": {
         "type": "object",
         "properties": {
-          "name": {
-            "type": "string"
+          "id": {
+            "type": "string",
+            "example": "dla-seniorow__bawita",
+            "description": "Unique document ID"
           },
-          "status": {
-            "type": "string"
+          "document": {
+            "type": "string",
+            "nullable": true,
+            "description": "Clean document text"
           },
-          "embedding_model": {
-            "type": "string"
+          "metadata": {
+            "$ref": "#/components/schemas/ROPSMetadata"
           },
-          "mock_mode": {
-            "type": "boolean"
+          "distance": {
+            "type": "number",
+            "format": "float",
+            "example": 0.3875,
+            "nullable": true,
+            "description": "Cosine distance (lower = higher similarity)"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "QueryResultItem": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "example": "inteligentne opaski i czujniki dla seniorów"
           },
-          "docs": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
+          "matches": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QueryMatch"
             }
           }
         },
         "required": [
-          "name",
-          "status",
-          "embedding_model"
+          "query",
+          "matches"
         ]
       },
-      "HealthResponse": {
+      "QueryResponse": {
         "type": "object",
         "properties": {
           "status": {
             "type": "string",
-            "example": "healthy"
+            "example": "success"
           },
-          "chroma_storage": {
+          "collection": {
             "type": "string",
-            "example": "/app/chroma_data"
+            "example": "rops_innovations"
           },
-          "embedding_model": {
-            "type": "string",
-            "example": "gemini-embedding-2"
-          },
-          "gemini_api_key_configured": {
-            "type": "boolean",
-            "example": true
-          },
-          "auth_enabled": {
-            "type": "boolean",
-            "example": true
-          },
-          "mock_embeddings_enabled": {
-            "type": "boolean",
-            "example": false
-          },
-          "collections_count": {
-            "type": "integer",
-            "example": 1
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QueryResultItem"
+            }
           }
         },
         "required": [
           "status",
-          "chroma_storage",
-          "embedding_model",
-          "auth_enabled"
+          "collection",
+          "results"
         ]
+      },
+      "QueryRequest": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "example": "inteligentne opaski i czujniki dla seniorów",
+            "description": "Search query text in natural language"
+          },
+          "query_texts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Optional batch of search queries"
+          },
+          "collection_name": {
+            "type": "string",
+            "default": "rops_innovations",
+            "example": "rops_innovations",
+            "description": "Target collection (defaults to rops_innovations)"
+          },
+          "n_results": {
+            "type": "integer",
+            "default": 5,
+            "example": 3,
+            "description": "Number of top matching documents to return"
+          },
+          "where": {
+            "type": "object",
+            "example": {
+              "category_slug": "dla-seniorow"
+            },
+            "description": "Chroma DB metadata filtering expression"
+          },
+          "api_key": {
+            "type": "string",
+            "example": "YOUR_API_KEY",
+            "description": "API Authorization Key"
+          },
+          "max_distance": {
+            "type": "number",
+            "format": "float",
+            "example": 0.45,
+            "description": "Maximum cosine distance threshold. Excludes matches with distance > max_distance (lower distance = closer match)."
+          },
+          "distance_threshold": {
+            "type": "number",
+            "format": "float",
+            "description": "Alias for max_distance."
+          }
+        }
       },
       "CollectionItem": {
         "type": "object",
@@ -736,7 +1062,10 @@
           },
           "metadata": {
             "type": "object",
-            "additionalProperties": true
+            "additionalProperties": true,
+            "example": {
+              "hnsw:space": "cosine"
+            }
           }
         },
         "required": [
@@ -782,52 +1111,7 @@
           "collection"
         ]
       },
-      "QueryMatch": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "example": "dla-seniorow__bawita"
-          },
-          "document": {
-            "type": "string",
-            "nullable": true
-          },
-          "metadata": {
-            "type": "object",
-            "additionalProperties": true,
-            "nullable": true
-          },
-          "distance": {
-            "type": "number",
-            "format": "float",
-            "example": 0.3875,
-            "nullable": true
-          }
-        },
-        "required": [
-          "id"
-        ]
-      },
-      "QueryResultItem": {
-        "type": "object",
-        "properties": {
-          "query": {
-            "type": "string"
-          },
-          "matches": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/QueryMatch"
-            }
-          }
-        },
-        "required": [
-          "query",
-          "matches"
-        ]
-      },
-      "QueryResponse": {
+      "GetDocumentsResponse": {
         "type": "object",
         "properties": {
           "status": {
@@ -838,68 +1122,44 @@
             "type": "string",
             "example": "rops_innovations"
           },
-          "results": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/QueryResultItem"
-            }
-          }
-        },
-        "required": [
-          "status",
-          "collection",
-          "results"
-        ]
-      },
-      "DocumentsData": {
-        "type": "object",
-        "properties": {
-          "ids": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "documents": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "nullable": true
-            }
-          },
-          "metadatas": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "nullable": true
-            }
-          }
-        },
-        "required": [
-          "ids"
-        ]
-      },
-      "GetDocumentsResponse": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "string",
-            "example": "success"
-          },
-          "collection": {
-            "type": "string"
-          },
           "total": {
-            "type": "integer"
+            "type": "integer",
+            "example": 115
           },
           "limit": {
-            "type": "integer"
+            "type": "integer",
+            "example": 10
           },
           "offset": {
-            "type": "integer"
+            "type": "integer",
+            "example": 0
           },
           "data": {
-            "$ref": "#/components/schemas/DocumentsData"
+            "type": "object",
+            "properties": {
+              "ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "documents": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "nullable": true
+                }
+              },
+              "metadatas": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ROPSMetadata"
+                }
+              }
+            },
+            "required": [
+              "ids"
+            ]
           }
         },
         "required": [
@@ -944,7 +1204,8 @@
             "example": "success"
           },
           "collection": {
-            "type": "string"
+            "type": "string",
+            "example": "rops_innovations"
           },
           "deleted_ids": {
             "type": "array",
@@ -957,6 +1218,78 @@
           "status",
           "collection",
           "deleted_ids"
+        ]
+      },
+      "HealthResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "healthy"
+          },
+          "chroma_storage": {
+            "type": "string",
+            "example": "/app/chroma_data"
+          },
+          "embedding_model": {
+            "type": "string",
+            "example": "gemini-embedding-2"
+          },
+          "gemini_api_key_configured": {
+            "type": "boolean",
+            "example": true
+          },
+          "auth_enabled": {
+            "type": "boolean",
+            "example": true
+          },
+          "mock_embeddings_enabled": {
+            "type": "boolean",
+            "example": false
+          },
+          "collections_count": {
+            "type": "integer",
+            "example": 1
+          },
+          "admin_auth_enabled": {
+            "type": "boolean",
+            "example": true,
+            "description": "Whether administrative key authentication is configured"
+          }
+        },
+        "required": [
+          "status",
+          "chroma_storage",
+          "embedding_model",
+          "auth_enabled"
+        ]
+      },
+      "RootInfoResponse": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "embedding_model": {
+            "type": "string"
+          },
+          "mock_mode": {
+            "type": "boolean"
+          },
+          "docs": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "status",
+          "embedding_model"
         ]
       },
       "SuccessMessageResponse": {
@@ -984,7 +1317,7 @@
           },
           "message": {
             "type": "string",
-            "example": "Operation failed"
+            "example": "Unauthorized or resource not found"
           }
         },
         "required": [
@@ -1038,15 +1371,20 @@
         "properties": {
           "name": {
             "type": "string",
-            "description": "Unique collection name (3-63 chars)"
+            "example": "rops_innovations"
           },
           "metadata": {
             "type": "object",
-            "description": "Optional custom metadata dict"
+            "example": {
+              "topic": "rops_social_innovations"
+            }
           },
           "api_key": {
+            "type": "string"
+          },
+          "admin_api_key": {
             "type": "string",
-            "description": "API key if not using header auth"
+            "description": "Admin authorization key required to create collections"
           }
         }
       },
@@ -1060,30 +1398,26 @@
             "type": "array",
             "items": {
               "type": "string"
-            },
-            "description": "Document texts"
+            }
           },
           "ids": {
             "type": "array",
             "items": {
               "type": "string"
-            },
-            "description": "Optional IDs (auto-generated if omitted)"
+            }
           },
           "metadatas": {
             "type": "array",
             "items": {
               "type": "object"
-            },
-            "description": "Optional metadata objects"
+            }
           },
           "collection_name": {
             "type": "string",
-            "description": "Target collection name"
+            "default": "rops_innovations"
           },
           "api_key": {
-            "type": "string",
-            "description": "API key if not using header auth"
+            "type": "string"
           }
         }
       },
@@ -1097,34 +1431,30 @@
             "type": "array",
             "items": {
               "type": "string"
-            },
-            "description": "Document IDs to update"
+            }
           },
           "documents": {
             "type": "array",
             "items": {
               "type": "string"
-            },
-            "description": "Updated document texts"
+            }
           },
           "metadatas": {
             "type": "array",
             "items": {
               "type": "object"
-            },
-            "description": "Updated metadata dicts"
+            }
           },
           "collection_name": {
             "type": "string",
-            "description": "Target collection name"
+            "default": "rops_innovations"
           },
           "upsert": {
             "type": "boolean",
             "default": false
           },
           "api_key": {
-            "type": "string",
-            "description": "API key if not using header auth"
+            "type": "string"
           }
         }
       },
@@ -1139,30 +1469,26 @@
             "type": "array",
             "items": {
               "type": "string"
-            },
-            "description": "Document IDs"
+            }
           },
           "documents": {
             "type": "array",
             "items": {
               "type": "string"
-            },
-            "description": "Document texts"
+            }
           },
           "metadatas": {
             "type": "array",
             "items": {
               "type": "object"
-            },
-            "description": "Metadata dicts"
+            }
           },
           "collection_name": {
             "type": "string",
-            "description": "Target collection name"
+            "default": "rops_innovations"
           },
           "api_key": {
-            "type": "string",
-            "description": "API key if not using header auth"
+            "type": "string"
           }
         }
       },
@@ -1176,49 +1502,14 @@
             "type": "array",
             "items": {
               "type": "string"
-            },
-            "description": "Document IDs to delete"
+            }
           },
           "collection_name": {
             "type": "string",
-            "description": "Target collection name"
+            "default": "rops_innovations"
           },
           "api_key": {
-            "type": "string",
-            "description": "API key if not using header auth"
-          }
-        }
-      },
-      "QueryRequest": {
-        "type": "object",
-        "properties": {
-          "query": {
-            "type": "string",
-            "description": "Search query string"
-          },
-          "query_texts": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Batch queries"
-          },
-          "n_results": {
-            "type": "integer",
-            "default": 5,
-            "description": "Number of matches"
-          },
-          "where": {
-            "type": "object",
-            "description": "Chroma metadata filter"
-          },
-          "collection_name": {
-            "type": "string",
-            "description": "Target collection name"
-          },
-          "api_key": {
-            "type": "string",
-            "description": "API key if not using header auth"
+            "type": "string"
           }
         }
       }
