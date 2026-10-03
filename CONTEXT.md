@@ -36,6 +36,10 @@ _Avoid_: callback, lead
 A solution a Mieszkaniec proposes, filled in step by step, together with their contact. It usually comes from a Potrzeba, but can also be proposed without a search. Pracownicy ROPS manage Pomysły separately from Potrzeby.
 _Avoid_: proposal, propozycja rozwiązania
 
+**Etap pomysłu** (Idea stage):
+How far the Mieszkaniec has taken their Pomysł, chosen from four: *To dopiero pomysł* (nothing done yet), *Mam plan* (knows how and with whom), *Pierwsze próby* (tested at small scale), *To już działa* (running and helping people). Every stage is a valid Pomysł.
+_Avoid_: status (that's how ROPS handles it), maturity
+
 ### Search
 
 **Zapytanie** (Query):

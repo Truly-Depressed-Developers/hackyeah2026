@@ -8,7 +8,7 @@ import { contains, handlingStatusSchema, iso, pageInput, pageResult } from '../p
 import { panelProcedure, publicProcedure, router } from '../trpc.js'
 
 const ideaContent = {
-  title: z.string().trim().min(1).max(200),
+  title: z.string().trim().min(1).max(300),
   answers: z
     .array(z.object({ question: z.string().trim().min(1).max(500), answer: z.string().trim().min(1).max(5000) }))
     .max(50),
