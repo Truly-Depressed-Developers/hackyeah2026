@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { clean, firstPdf, parseSections } from '../ai/search.js'
+import { clean, parseSections } from '../ai/search.js'
 import type { RopsMetadata, StoredDocument } from './vector-store.js'
 
 // An Innowacja is stored in the AI service as text sections ("Nazwa: treść", blank-line separated) plus metadata.
@@ -31,7 +31,8 @@ export const innovationInput = z.object({
   authors: text,
   sourceUrl: link,
   youtubeVideo: link,
-  detailsPdf: link,
+  // Some Innowacje have several PDFs; all of them round-trip.
+  detailsPdfs: z.array(z.url().max(1000)).max(10),
   fileZip: link,
 })
 export type InnovationInput = z.infer<typeof innovationInput>
@@ -77,7 +78,7 @@ export function toStored(input: InnovationInput, category: Category, previous?: 
     source_url: input.sourceUrl,
     youtube_video: input.youtubeVideo,
     // The scraper stores PDFs as a JSON-encoded array; keep that shape for the readers.
-    details_pdf: input.detailsPdf ? JSON.stringify([input.detailsPdf]) : '',
+    details_pdf: input.detailsPdfs.length ? JSON.stringify(input.detailsPdfs) : '',
     file_zip: input.fileZip,
     data_source: previous?.data_source ?? 'panel',
   }
@@ -102,9 +103,21 @@ export function fromStored({ id, document, metadata: m }: StoredDocument) {
     authors: section(SECTIONS.authors) || (clean(m.authors) ?? ''),
     sourceUrl: clean(m.source_url) ?? '',
     youtubeVideo: clean(m.youtube_video) ?? '',
-    detailsPdf: firstPdf(m.details_pdf) ?? '',
+    detailsPdfs: pdfsOf(m.details_pdf),
     fileZip: clean(m.file_zip) ?? '',
     featured: /wybrana do upowszechniania/i.test(section(SECTIONS.description)),
     addedInPanel: m.data_source === 'panel',
+  }
+}
+
+/** details_pdf arrives as a JSON-encoded array string, a bare URL, or nothing. */
+function pdfsOf(value: unknown): string[] {
+  if (Array.isArray(value)) return value.flatMap((v) => clean(v) ?? [])
+  if (typeof value !== 'string' || !value.trim()) return []
+  try {
+    const parsed: unknown = JSON.parse(value)
+    return Array.isArray(parsed) ? parsed.flatMap((v) => clean(v) ?? []) : []
+  } catch {
+    return [value.trim()]
   }
 }

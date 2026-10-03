@@ -21,11 +21,11 @@ export const emptyInnovation: InnovationInput = {
   authors: '',
   sourceUrl: '',
   youtubeVideo: '',
-  detailsPdf: '',
+  detailsPdfs: [],
   fileZip: '',
 }
 
-type TextField = Exclude<keyof InnovationInput, 'categoryId'>
+type TextField = Exclude<keyof InnovationInput, 'categoryId' | 'detailsPdfs'>
 
 // The sections residents see on the Innowacja page, in the same order.
 const sections: { field: TextField; label: string; hint: string }[] = [
@@ -41,7 +41,6 @@ const sections: { field: TextField; label: string; hint: string }[] = [
 const links: { field: TextField; label: string }[] = [
   { field: 'sourceUrl', label: 'Strona źródłowa' },
   { field: 'youtubeVideo', label: 'Film na YouTube' },
-  { field: 'detailsPdf', label: 'Dokument PDF' },
   { field: 'fileZip', label: 'Paczka ZIP do pobrania' },
 ]
 
@@ -58,10 +57,23 @@ interface InnovationFormProps {
 export function InnovationForm({ initial, categories, submitLabel, isPending, error, onSubmit }: InnovationFormProps) {
   const [data, setData] = useState(initial)
   const set = (field: TextField) => (value: string) => setData((prev) => ({ ...prev, [field]: value }))
+  // Several PDFs, one link per line: the textarea keeps the raw text, the submit splits it.
+  const [pdfText, setPdfText] = useState(initial.detailsPdfs.join('\n'))
+  const pdfs = pdfText
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+  const badPdf = pdfs.find((url) => !/^https?:\/\/\S+$/.test(url))
+  const [showPdfError, setShowPdfError] = useState(false)
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault()
-    onSubmit(data)
+    if (badPdf) {
+      setShowPdfError(true)
+      document.getElementById('detailsPdfs')?.focus()
+      return
+    }
+    onSubmit({ ...data, detailsPdfs: pdfs })
   }
 
   return (
@@ -143,6 +155,22 @@ export function InnovationForm({ initial, categories, submitLabel, isPending, er
                 <Input id={field} type="url" inputMode="url" placeholder="https://" value={data[field]} onChange={(e) => set(field)(e.target.value)} />
               </Field>
             ))}
+            <Field data-invalid={showPdfError && badPdf ? true : undefined}>
+              <FieldLabel htmlFor="detailsPdfs">Dokumenty PDF</FieldLabel>
+              <Textarea
+                id="detailsPdfs"
+                rows={3}
+                inputMode="url"
+                aria-describedby="detailsPdfs-hint"
+                aria-invalid={showPdfError && badPdf ? true : undefined}
+                placeholder="https://"
+                value={pdfText}
+                onChange={(e) => setPdfText(e.target.value)}
+              />
+              <FieldDescription id="detailsPdfs-hint">
+                {showPdfError && badPdf ? `To nie jest poprawny link: ${badPdf}` : 'Jeden link na linię. Mieszkaniec zobaczy pierwszy jako „Dokument”.'}
+              </FieldDescription>
+            </Field>
           </FieldGroup>
         </CardContent>
       </Card>

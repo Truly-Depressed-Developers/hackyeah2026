@@ -33,13 +33,13 @@ export const panelInnovationsRouter = router({
         .filter((item) => (q ? normalize(item.title).includes(q) : true))
         .toSorted((a, b) => a.title.localeCompare(b.title, 'pl'))
       const start = (input.page - 1) * input.pageSize
-      const page = items.slice(start, start + input.pageSize).map(({ id, title, categoryName, featured, addedInPanel, youtubeVideo, detailsPdf, fileZip }) => ({
+      const page = items.slice(start, start + input.pageSize).map(({ id, title, categoryName, featured, addedInPanel, youtubeVideo, detailsPdfs, fileZip }) => ({
         id,
         title,
         categoryName,
         featured,
         addedInPanel,
-        links: { video: Boolean(youtubeVideo), pdf: Boolean(detailsPdf), zip: Boolean(fileZip) },
+        links: { video: Boolean(youtubeVideo), pdf: detailsPdfs.length > 0, zip: Boolean(fileZip) },
       }))
       return pageResult(page, items.length, input.page, input.pageSize)
     }),
