@@ -1,23 +1,22 @@
-import { useEffect, useRef, type FormEvent } from 'react'
-import { useMutation } from '@tanstack/react-query'
+import type { FormEvent } from 'react'
 import { Link, createFileRoute } from '@tanstack/react-router'
-import { Search } from 'lucide-react'
+import { IconArrowLeft, IconSearch } from '@tabler/icons-react'
+import { KnowledgeBase } from '@/components/catalog/knowledge-base'
+import { SiteFooter } from '@/components/layout/site-footer'
+import { SiteHeader } from '@/components/layout/site-header'
 import { SearchResults, summarize } from '@/components/search/search-results'
-import { Button, buttonVariants } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
 import { $ai, SEARCH_COLLECTION } from '@/lib/ai/client'
-import { trpc } from '@/lib/trpc'
 
 export const Route = createFileRoute('/')({
   validateSearch: (search: Record<string, unknown>): { q?: string } => {
     const q = typeof search.q === 'string' ? search.q.trim() : ''
     return q ? { q } : {}
   },
-  component: SearchPage,
+  component: StartPage,
 })
 
-function SearchPage() {
+function StartPage() {
   const { q } = Route.useSearch()
   const navigate = Route.useNavigate()
 
@@ -28,79 +27,82 @@ function SearchPage() {
     { enabled: Boolean(q), staleTime: Infinity, retry: false },
   )
 
-  // Brak odpowiedzi is saved as a Luka for the Panel administratora, once per Zapytanie.
-  // gap?.id is the gapId the S-03 forms pass to submissions.submit to upgrade this Luka.
-  const { mutate: recordGap } = useMutation(trpc.submissions.recordGap.mutationOptions())
-  const recordedQuery = useRef<string | null>(null)
-  useEffect(() => {
-    if (!q || !search.data?.noMatch || recordedQuery.current === q) return
-    recordedQuery.current = q
-    recordGap({ query: q })
-  }, [q, search.data, recordGap])
-
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const query = String(new FormData(event.currentTarget).get('q') ?? '').trim()
-    if (!query) return
     // replace: no history entry, so a shared kiosk doesn't keep the previous resident's query.
-    navigate({ search: { q: query }, replace: true })
+    navigate({ search: query ? { q: query } : {}, replace: true })
   }
 
-  const status = search.isFetching
-    ? 'Szukam rozwiązań…'
-    : search.isSuccess
-      ? summarize(search.data)
-      : ''
+  const status = search.isFetching ? 'Szukam rozwiązań…' : search.isSuccess ? summarize(search.data) : ''
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
-      <nav className="flex justify-end">
-        {/* Entry to the Panel administratora; logged-out users land on /panel/login. */}
-        <Link to="/panel" className={buttonVariants({ size: "sm" })}>
-          Zaloguj się
-        </Link>
-      </nav>
-      <h1 className="text-2xl font-bold sm:text-3xl">Znajdź rozwiązanie swojego problemu</h1>
+    <div className="flex min-h-svh flex-col">
+      <SiteHeader />
+      <main className="flex flex-1 flex-col">
+        <section
+          aria-labelledby="hero-title"
+          className="flex flex-col items-center border-b bg-muted/60 px-4 pt-14 pb-16 text-center sm:px-6 sm:pt-[4.5rem] sm:pb-[4.75rem]"
+        >
+          <div className="flex w-full max-w-[53.75rem] flex-col items-center">
+            <h1 id="hero-title" className="text-4xl leading-[1.1] font-[650] tracking-[-0.04em] sm:text-[3.25rem]">
+              W czym możemy Ci pomóc?
+            </h1>
+            <p id="hero-hint" className="mt-4 max-w-[35rem] text-lg leading-7 text-muted-foreground sm:text-[1.1875rem]">
+              Napisz lub powiedz, z czym masz kłopot. Podpowiemy, gdzie szukać pomocy w Małopolsce.
+            </p>
 
-      <form role="search" onSubmit={onSubmit} className="flex flex-col gap-2">
-        <Label htmlFor="q" className="text-base">
-          Opisz problem lub potrzebę własnymi słowami
-        </Label>
-        <p id="q-hint" className="text-sm text-muted-foreground">
-          Np. „mama sama nie daje rady z opieką nad tatą po udarze”
-        </p>
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <Input
-            id="q"
-            name="q"
-            type="search"
-            required
-            defaultValue={q}
-            enterKeyHint="search"
-            aria-describedby="q-hint"
-            className="h-12 text-base md:text-base"
-          />
-          <Button type="submit" className="h-12 px-5 text-base">
-            <Search aria-hidden="true" />
-            Szukaj
-          </Button>
-        </div>
-      </form>
+            <form role="search" aria-label="Wyszukaj rozwiązanie" onSubmit={onSubmit} className="mt-11 w-full">
+              <div className="flex h-16 items-center gap-2.5 rounded-full border bg-card py-0 pr-2 pl-5 text-left shadow-[0_12px_32px_-12px_rgb(15_27_45/0.12)] focus-within:border-ring focus-within:ring-4 focus-within:ring-ring/20 sm:h-[4.75rem] sm:pr-2.5 sm:pl-7">
+                <label htmlFor="q" className="sr-only">
+                  Opisz swój problem lub potrzebę
+                </label>
+                <input
+                  id="q"
+                  name="q"
+                  type="search"
+                  defaultValue={q}
+                  enterKeyHint="search"
+                  aria-describedby="hero-hint"
+                  placeholder="Np. mama po udarze potrzebuje opieki w domu"
+                  className="h-full min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-muted-foreground sm:text-[1.1875rem]"
+                />
+                <Button type="submit" className="h-12 shrink-0 rounded-full px-5 text-base sm:h-14 sm:px-7">
+                  <IconSearch aria-hidden="true" className="sm:hidden" />
+                  <span className="max-sm:sr-only">Szukaj</span>
+                </Button>
+              </div>
+            </form>
+          </div>
+        </section>
 
-      <p role="status" className="min-h-6 text-muted-foreground">
-        {status}
-      </p>
+        {q ? (
+          <section aria-label="Wyniki wyszukiwania" className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 pt-8 pb-16 sm:px-6">
+            <Link to="/" search={{}} replace className="inline-flex min-h-11 w-fit items-center gap-1.5 text-sm underline-offset-2 hover:underline">
+              <IconArrowLeft aria-hidden="true" className="size-4" />
+              Wróć do bazy wiedzy
+            </Link>
 
-      {search.isError && !search.isFetching && (
-        <div role="alert" className="flex flex-col items-start gap-3 rounded-xl border border-destructive p-4">
-          <p className="font-semibold text-destructive">Coś poszło nie tak i nie udało się wyszukać.</p>
-          <Button variant="outline" className="h-11 px-4" onClick={() => search.refetch()}>
-            Spróbuj ponownie
-          </Button>
-        </div>
-      )}
+            <p role="status" className="min-h-6 text-muted-foreground">
+              {status}
+            </p>
 
-      {search.isSuccess && !search.isFetching && <SearchResults data={search.data} />}
+            {search.isError && !search.isFetching && (
+              <div role="alert" className="flex flex-col items-start gap-3 rounded-xl border border-destructive p-4">
+                <p className="font-semibold text-destructive">Coś poszło nie tak i nie udało się wyszukać.</p>
+                <Button variant="outline" className="h-11 px-4" onClick={() => search.refetch()}>
+                  Spróbuj ponownie
+                </Button>
+              </div>
+            )}
+
+            {search.isSuccess && !search.isFetching && <SearchResults data={search.data} />}
+          </section>
+        ) : (
+          <KnowledgeBase />
+        )}
+      </main>
+      <SiteFooter />
     </div>
   )
 }

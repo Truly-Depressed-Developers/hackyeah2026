@@ -1,8 +1,10 @@
 import { useId, useState, type ReactNode } from 'react'
-import { ChevronDown, ExternalLink, FileText, Phone, Sparkles } from 'lucide-react'
+import { IconChevronDown, IconExternalLink, IconFileText, IconPhone, IconSparkles } from '@tabler/icons-react'
 import { cn } from 'cn'
 import { Button, buttonVariants } from '@/components/ui/button'
+import { CategoryBadge } from '@/components/category-badge'
 import type { Result, ResultKind } from '@/lib/ai/client'
+import { categoryFor } from '@/lib/categories'
 import { VideoDialog, youtubeId } from './video-dialog'
 
 const KIND_LABEL: Record<ResultKind, string> = {
@@ -19,6 +21,7 @@ const DETAIL_LABELS = [
 
 export function ResultCard({ result }: { result: Result }) {
   const [expanded, setExpanded] = useState(false)
+  const category = categoryFor(result.categorySlug)
   const detailsId = useId()
 
   const details = DETAIL_LABELS.flatMap(([key, label]) => {
@@ -33,7 +36,7 @@ export function ResultCard({ result }: { result: Result }) {
     <li className="flex flex-col gap-3 rounded-xl border bg-card p-4 text-card-foreground">
       <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
         <span className="rounded-md bg-muted px-2 py-1 font-medium">{KIND_LABEL[result.kind]}</span>
-        {result.category && <span className="text-muted-foreground">{result.category}</span>}
+        {category ? <CategoryBadge category={category} /> : result.category && <span className="text-muted-foreground">{result.category}</span>}
       </p>
       <h3 className="text-lg font-semibold leading-snug">{result.title}</h3>
       <p>{result.summary}</p>
@@ -42,8 +45,8 @@ export function ResultCard({ result }: { result: Result }) {
         <p className="text-sm font-semibold">Dlaczego to pasuje</p>
         <p>{result.why}</p>
         <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
-          <Sparkles aria-hidden="true" className="size-4" />
-          Wygenerowane przez AI na podstawie: {result.source.label}
+          {result.whyGenerated && <IconSparkles aria-hidden="true" className="size-4" />}
+          {result.whyGenerated ? 'Wygenerowane przez AI na podstawie' : 'Na podstawie'}: {result.source.label}
         </p>
       </div>
 
@@ -61,7 +64,7 @@ export function ResultCard({ result }: { result: Result }) {
       <div className="flex flex-wrap items-center gap-2">
         {phone && (
           <a href={`tel:${phone.replace(/\s/g, '')}`} className={cn(buttonVariants(), 'h-11 px-4 text-base')}>
-            <Phone aria-hidden="true" />
+            <IconPhone aria-hidden="true" />
             Zadzwoń: {phone}
           </a>
         )}
@@ -74,13 +77,13 @@ export function ResultCard({ result }: { result: Result }) {
             aria-controls={detailsId}
             onClick={() => setExpanded((open) => !open)}
           >
-            <ChevronDown aria-hidden="true" className={cn('transition-transform', expanded && 'rotate-180')} />
+            <IconChevronDown aria-hidden="true" className={cn('transition-transform', expanded && 'rotate-180')} />
             {expanded ? 'Zwiń szczegóły' : 'Szczegóły'}
           </Button>
         )}
         {result.source.url && <ExternalLinkButton href={result.source.url}>Zobacz w: {result.source.label}</ExternalLinkButton>}
         {result.links?.pdf && (
-          <ExternalLinkButton href={result.links.pdf} icon={<FileText aria-hidden="true" />}>
+          <ExternalLinkButton href={result.links.pdf} icon={<IconFileText aria-hidden="true" />}>
             Opis (PDF)
           </ExternalLinkButton>
         )}
@@ -99,7 +102,7 @@ function ExternalLinkButton({ href, icon, children }: { href: string; icon?: Rea
     >
       {icon}
       {children}
-      <ExternalLink aria-hidden="true" />
+      <IconExternalLink aria-hidden="true" />
       <span className="sr-only">(otwiera się w nowej karcie)</span>
     </a>
   )

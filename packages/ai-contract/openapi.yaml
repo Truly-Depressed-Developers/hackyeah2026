@@ -23,8 +23,46 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SearchResponse'
+  /catalog:
+    get:
+      operationId: catalog
+      summary: The whole knowledge base as tiles for browsing (Baza wiedzy). Small enough to filter and page on the client.
+      responses:
+        '200':
+          description: All knowledge-base items.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogResponse'
 components:
   schemas:
+    CatalogResponse:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CatalogItem'
+    CatalogItem:
+      type: object
+      required: [id, title, summary, source]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        summary:
+          type: string
+        category:
+          type: string
+          example: Innowacje dla seniorów
+        categorySlug:
+          type: string
+          description: Stable category key for icons and filters. From record.category_slug.
+          example: dla-seniorow
+        source:
+          $ref: '#/components/schemas/Source'
     SearchRequest:
       type: object
       required: [collection, query]
@@ -57,7 +95,7 @@ components:
           description: True when nothing passed the lower threshold (Brak odpowiedzi).
     Result:
       type: object
-      required: [id, kind, title, summary, why, source]
+      required: [id, kind, title, summary, why, whyGenerated, source]
       properties:
         id:
           type: string
@@ -72,9 +110,16 @@ components:
           type: string
           description: Who the result is for (Kategoria), e.g. "Innowacje dla seniorów". From record.category_name.
           example: Innowacje dla seniorów
+        categorySlug:
+          type: string
+          description: Stable category key for icons and filters. From record.category_slug.
+          example: dla-seniorow
         why:
           type: string
-          description: AI-generated match rationale (Uzasadnienie dopasowania), grounded in this result only.
+          description: Match rationale (Uzasadnienie dopasowania), grounded in this result only.
+        whyGenerated:
+          type: boolean
+          description: True when `why` was written by an LLM, so the UI labels it as AI content. False for template text.
         source:
           $ref: '#/components/schemas/Source'
         details:
