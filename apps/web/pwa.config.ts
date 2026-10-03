@@ -15,6 +15,6 @@ export const pwa = () =>
       ],
     },
     workbox: {
-      navigateFallbackDenylist: [/^\/trpc/],
+      navigateFallbackDenylist: [/^\/trpc/, /^\/ai/],
     },
   })

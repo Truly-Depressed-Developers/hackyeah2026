@@ -1,0 +1,111 @@
+# DRAFT contract for the Python AI service, written by the frontend (HAC-7 / S-01).
+# The AI dev replaces this with the real spec; then run `pnpm gen:ai` (or `pnpm gen:ai --remote`).
+# Vocabulary: see CONTEXT.md (Wynik, Rodzaj wyniku, Poziom dopasowania, Uzasadnienie dopasowania).
+openapi: 3.1.0
+info:
+  title: HubMI AI service
+  version: 0.1.0-draft
+paths:
+  /search:
+    post:
+      operationId: search
+      summary: Match a resident's query against the knowledge base, split by match tier.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchRequest'
+      responses:
+        '200':
+          description: Results already split by match tier (thresholds are applied by the AI service).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+components:
+  schemas:
+    SearchRequest:
+      type: object
+      required: [collection, query]
+      properties:
+        collection:
+          type: string
+          description: Chroma collection name to search. Exact name TBD with the AI dev.
+          example: knowledge
+        query:
+          type: string
+          minLength: 1
+          description: The resident's free-form problem description (Zapytanie).
+          example: mama sama nie daje rady z opieką nad tatą po udarze
+    SearchResponse:
+      type: object
+      required: [solutions, related, noMatch]
+      properties:
+        solutions:
+          type: array
+          description: High-match results (Rozwiązania).
+          items:
+            $ref: '#/components/schemas/Result'
+        related:
+          type: array
+          description: Medium-match results for the same query (Rozwiązania pokrewne).
+          items:
+            $ref: '#/components/schemas/Result'
+        noMatch:
+          type: boolean
+          description: True when nothing passed the lower threshold (Brak odpowiedzi).
+    Result:
+      type: object
+      required: [id, kind, title, summary, why, source]
+      properties:
+        id:
+          type: string
+        kind:
+          $ref: '#/components/schemas/ResultKind'
+        title:
+          type: string
+        summary:
+          type: string
+          description: Short plain-language description. For innovations = record.solution (fallback record.problem); not the scraped description.
+        category:
+          type: string
+          description: Who the result is for (Kategoria), e.g. "Innowacje dla seniorów". From record.category_name.
+          example: Innowacje dla seniorów
+        why:
+          type: string
+          description: AI-generated match rationale (Uzasadnienie dopasowania), grounded in this result only.
+        source:
+          $ref: '#/components/schemas/Source'
+        links:
+          $ref: '#/components/schemas/Links'
+    Links:
+      type: object
+      description: Media for result actions (S-02). Never include record.authors (real personal data).
+      properties:
+        video:
+          type: string
+          format: uri
+          description: From record.youtube_video.
+        pdf:
+          type: string
+          format: uri
+          description: First of record.details_pdf.
+        download:
+          type: string
+          format: uri
+          description: From record.file_zip.
+    ResultKind:
+      type: string
+      enum: [innovation, helper, fact]
+    Source:
+      type: object
+      required: [label]
+      properties:
+        label:
+          type: string
+          example: Biblioteka Innowacji Społecznych
+        url:
+          description: For innovations = record.source_url.
+          type: string
+          format: uri
