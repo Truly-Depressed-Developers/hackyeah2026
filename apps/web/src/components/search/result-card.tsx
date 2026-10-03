@@ -42,8 +42,8 @@ export function ResultCard({ result }: { result: Result }) {
         <p className="text-sm font-semibold">Dlaczego to pasuje</p>
         <p>{result.why}</p>
         <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
-          <Sparkles aria-hidden="true" className="size-4" />
-          Wygenerowane przez AI na podstawie: {result.source.label}
+          {result.whyGenerated && <Sparkles aria-hidden="true" className="size-4" />}
+          {result.whyGenerated ? 'Wygenerowane przez AI na podstawie' : 'Na podstawie'}: {result.source.label}
         </p>
       </div>
 

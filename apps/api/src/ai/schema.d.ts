@@ -53,8 +53,10 @@ export interface components {
              * @example Innowacje dla seniorów
              */
             category?: string;
-            /** @description AI-generated match rationale (Uzasadnienie dopasowania), grounded in this result only. */
+            /** @description Match rationale (Uzasadnienie dopasowania), grounded in this result only. */
             why: string;
+            /** @description True when `why` was written by an LLM, so the UI labels it as AI content. False for template text. */
+            whyGenerated: boolean;
             source: components["schemas"]["Source"];
             details?: components["schemas"]["Details"];
             links?: components["schemas"]["Links"];
