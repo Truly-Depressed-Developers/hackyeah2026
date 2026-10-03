@@ -1,4 +1,5 @@
 import { auth } from '../auth.js'
+import { seedAnalytics } from './seed-analytics.js'
 import { seedNeeds } from './seed-needs.js'
 
 // Creates the predefined Pracownik ROPS account (ADMIN_EMAIL / ADMIN_PASSWORD) and fictional Potrzeby and Pomysły. Safe to re-run.
@@ -27,5 +28,6 @@ if (existing) {
 }
 
 await seedNeeds()
+await seedAnalytics()
 
 process.exit(0)
