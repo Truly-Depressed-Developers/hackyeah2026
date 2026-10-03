@@ -4,13 +4,16 @@ import { serve } from '@hono/node-server'
 import { serveStatic } from '@hono/node-server/serve-static'
 import { trpcServer } from '@hono/trpc-server'
 import { Hono } from 'hono'
+import { auth } from './auth.js'
 import { env } from './env.js'
 import { appRouter } from './router.js'
+import { createContext } from './trpc.js'
 
 const app = new Hono()
 
 app.get('/health', (c) => c.json({ ok: true, decideMode: env.DECIDE_MODE }))
-app.use('/trpc/*', trpcServer({ router: appRouter }))
+app.on(['GET', 'POST'], '/api/auth/*', (c) => auth.handler(c.req.raw))
+app.use('/trpc/*', trpcServer({ router: appRouter, createContext }))
 
 const webDist = fileURLToPath(new URL('../../web/dist/', import.meta.url))
 if (existsSync(webDist)) {

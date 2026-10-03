@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { createFileRoute } from '@tanstack/react-router'
-import { Button } from '@/components/ui/button'
+import { Link, createFileRoute } from '@tanstack/react-router'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -40,6 +40,12 @@ function DecidePage() {
 
   return (
     <>
+      <nav className="flex justify-end">
+        {/* Entry to the Panel administratora; logged-out users land on /panel/login. */}
+        <Link to="/panel" className={buttonVariants({ size: "sm" })}>
+          Zaloguj się
+        </Link>
+      </nav>
       <Card>
         <CardHeader>
           <CardTitle>Decide</CardTitle>

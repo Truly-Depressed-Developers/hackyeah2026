@@ -3,12 +3,20 @@ import { z } from 'zod'
 import { db } from './db/index.js'
 import { decisions, type Decision } from './db/schema.js'
 import { decideClient } from './decide/index.js'
-import { publicProcedure, router } from './trpc.js'
+import { panelProcedure, publicProcedure, router } from './trpc.js'
 
 // No tRPC transformer: send Dates as ISO strings so client types match the wire.
 const toDto = (row: Decision) => ({ ...row, createdAt: row.createdAt.toISOString() })
 
 export const appRouter = router({
+  // Panel administratora. S-07/S-08 add their procedures here, all on panelProcedure.
+  panel: router({
+    me: panelProcedure.query(({ ctx }) => ({
+      name: ctx.session.user.name,
+      email: ctx.session.user.email,
+    })),
+  }),
+
   decisions: router({
     list: publicProcedure.query(async () => {
       const rows = await db.select().from(decisions).orderBy(desc(decisions.createdAt)).limit(50)

@@ -13,3 +13,7 @@ services:
         value: mock
       - key: DECIDE_URL
         sync: false
+      - key: BETTER_AUTH_SECRET
+        generateValue: true
+      - key: BETTER_AUTH_URL
+        sync: false
