@@ -6,12 +6,18 @@ import { Navigate, useNavigate, useRouter } from '@tanstack/react-router'
 import { IconAlertCircle, IconArrowLeft, IconArrowRight, IconCheck, IconDots } from '@tabler/icons-react'
 import { cn } from 'cn'
 import { CategoryIcon } from '@/components/category-badge'
+import { VoiceButton } from '@/components/search/voice-button'
+import { VoiceDialog } from '@/components/search/voice-dialog'
+import { unavailableHint } from '@/components/search/voice-search'
 import { storedGapId } from '@/features/no-result/use-gap'
 import { CATEGORIES, type Category } from '@/lib/categories'
+import { probeVoiceSupport } from '@/lib/speech-recognition'
 import { trpc } from '@/lib/trpc'
 import { ideaSchema, OTHER_GROUP, QUESTIONS, STAGES, STEP_FIELDS, TOTAL_STEPS, stageTitle, toAnswers, type IdeaValues } from './idea-form'
 
 const OTHER_CATEGORY: Category = { slug: 'other', label: OTHER_GROUP, icon: IconDots, gradient: ['#E2E8F0', '#A8B5C7'], onGradient: '#0F1B2D', tint: '' }
+
+const voiceSupport = probeVoiceSupport()
 
 // Consent is given at the moment the resident sends the form.
 const consentGivenNow = () => new Date()
@@ -147,6 +153,8 @@ export function IdeaWizard({ step, query }: Props) {
                   placeholder="Np. Sąsiedzka grupa, która po wichurze pomaga seniorom zabezpieczyć dach i zgłosić szkodę."
                   error={errors.title}
                   field={form.register('title')}
+                  voiceLabel="Powiedz krótki opis pomysłu zamiast pisać"
+                  onDictated={(text) => form.setValue('title', text.slice(0, 300), { shouldValidate: true, shouldDirty: true })}
                 />
               )}
               {step === 2 && (
@@ -159,6 +167,8 @@ export function IdeaWizard({ step, query }: Props) {
                   placeholder="Np. Wolontariusze z osiedla mają listę sąsiadów 70+. Po burzy obdzwaniają ich, sprawdzają szkody i pomagają wypełnić wniosek o zasiłek celowy."
                   error={errors.essence}
                   field={form.register('essence')}
+                  voiceLabel="Powiedz, na czym polega pomysł, zamiast pisać"
+                  onDictated={(text) => form.setValue('essence', text.slice(0, 1500), { shouldValidate: true, shouldDirty: true })}
                 />
               )}
               {step === 3 && (
@@ -349,10 +359,13 @@ type TextStepProps = {
   placeholder: string
   error: FieldError
   field: ReturnType<ReturnType<typeof useForm<IdeaValues>>['register']>
+  voiceLabel: string
+  onDictated: (text: string) => void
 }
 
-function TextStep({ question, help, label, max, length, placeholder, error, field }: TextStepProps) {
+function TextStep({ question, help, label, max, length, placeholder, error, field, voiceLabel, onDictated }: TextStepProps) {
   const errorId = `${field.name}-error`
+  const [listening, setListening] = useState(false)
   return (
     <>
       <Question help={help}>
@@ -361,14 +374,33 @@ function TextStep({ question, help, label, max, length, placeholder, error, fiel
       <label htmlFor={`idea-${field.name}`} className={labelClass}>
         {label}
       </label>
-      <textarea
-        id={`idea-${field.name}`}
-        maxLength={max}
-        placeholder={placeholder}
-        aria-invalid={error ? true : undefined}
-        aria-describedby={error ? errorId : undefined}
-        {...field}
-        className="min-h-[9.375rem] w-full resize-none rounded-[1.25rem] border border-input bg-white px-5 py-[1.125rem] text-lg leading-7 outline-none placeholder:text-muted-foreground focus:border-primary focus:shadow-[0_0_0_4px_rgb(34_99_173/0.18)] aria-invalid:border-[#D92D20] aria-invalid:bg-[#FFFBFA] aria-invalid:shadow-[0_0_0_4px_rgb(217_45_32/0.14)]"
+      <div className="relative">
+        <textarea
+          id={`idea-${field.name}`}
+          maxLength={max}
+          placeholder={placeholder}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? errorId : undefined}
+          {...field}
+          className="min-h-[9.375rem] w-full resize-none rounded-[1.25rem] border border-input bg-white py-[1.125rem] pr-[5.5rem] pl-5 text-lg leading-7 outline-none placeholder:text-muted-foreground focus:border-primary focus:shadow-[0_0_0_4px_rgb(34_99_173/0.18)] aria-invalid:border-[#D92D20] aria-invalid:bg-[#FFFBFA] aria-invalid:shadow-[0_0_0_4px_rgb(217_45_32/0.14)]"
+        />
+        <div className="absolute right-3.5 bottom-3.5">
+          <VoiceButton
+            label={voiceLabel}
+            onClick={() => setListening(true)}
+            unavailable={!voiceSupport.usable}
+            unavailableHint={unavailableHint(voiceSupport.secureContext)}
+          />
+        </div>
+      </div>
+      <VoiceDialog
+        open={listening}
+        onOpenChange={setListening}
+        title={question}
+        confirmLabel="Gotowe"
+        idleHint="Naciśnij mikrofon i opowiedz o swoim pomyśle."
+        readyHint="Sprawdź, czy dobrze zrozumieliśmy, i naciśnij „Gotowe”."
+        onConfirm={onDictated}
       />
       <span className="-mt-3 self-end text-[0.8125rem] text-muted-foreground">
         {length} / {max}

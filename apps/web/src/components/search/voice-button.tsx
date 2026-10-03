@@ -6,9 +6,11 @@ interface VoiceButtonProps {
   unavailable?: boolean
   /** Why it is inert, as a tooltip. */
   unavailableHint?: string
+  /** Accessible name; defaults to the search wording. */
+  label?: string
 }
 
-export function VoiceButton({ onClick, unavailable = false, unavailableHint }: VoiceButtonProps) {
+export function VoiceButton({ onClick, unavailable = false, unavailableHint, label = 'Powiedz, zamiast pisać' }: VoiceButtonProps) {
   return (
     <div className="relative size-14 shrink-0">
       {[0, 0.93, 1.86].map((delay) => (
@@ -21,7 +23,7 @@ export function VoiceButton({ onClick, unavailable = false, unavailableHint }: V
       ))}
       <button
         type="button"
-        aria-label="Powiedz, zamiast pisać"
+        aria-label={label}
         aria-disabled={unavailable || undefined}
         title={unavailable ? unavailableHint : undefined}
         onClick={unavailable ? undefined : onClick}
