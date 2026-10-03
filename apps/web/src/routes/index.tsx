@@ -5,6 +5,7 @@ import { KnowledgeBase } from '@/components/catalog/knowledge-base'
 import { SiteFooter } from '@/components/layout/site-footer'
 import { SiteHeader } from '@/components/layout/site-header'
 import { SearchResults, summarize } from '@/components/search/search-results'
+import { VoiceButton } from '@/components/search/voice-button'
 import { Button } from '@/components/ui/button'
 import { $ai, SEARCH_COLLECTION } from '@/lib/ai/client'
 
@@ -52,8 +53,8 @@ function StartPage() {
               Napisz lub powiedz, z czym masz kłopot. Podpowiemy, gdzie szukać pomocy w Małopolsce.
             </p>
 
-            <form role="search" aria-label="Wyszukaj rozwiązanie" onSubmit={onSubmit} className="mt-11 w-full">
-              <div className="flex h-16 items-center gap-2.5 rounded-full border bg-card py-0 pr-2 pl-5 text-left shadow-[0_12px_32px_-12px_rgb(15_27_45/0.12)] focus-within:border-primary focus-within:shadow-[0_0_0_4px_rgb(34_99_173/0.18),0_12px_32px_-12px_rgb(15_27_45/0.14)] sm:h-[4.75rem] sm:pr-2.5 sm:pl-7">
+            <form role="search" aria-label="Wyszukaj rozwiązanie" onSubmit={onSubmit} className="mt-11 flex w-full items-center gap-3 sm:gap-4">
+              <div className="flex h-16 min-w-0 flex-1 items-center gap-2.5 rounded-full border bg-card py-0 pr-2 pl-5 text-left shadow-[0_12px_32px_-12px_rgb(15_27_45/0.12)] focus-within:border-primary focus-within:shadow-[0_0_0_4px_rgb(34_99_173/0.18),0_12px_32px_-12px_rgb(15_27_45/0.14)] sm:h-[4.75rem] sm:pr-2.5 sm:pl-7">
                 <label htmlFor="q" className="sr-only">
                   Opisz swój problem lub potrzebę
                 </label>
@@ -72,6 +73,7 @@ function StartPage() {
                   <span className="max-sm:sr-only">Szukaj</span>
                 </Button>
               </div>
+              <VoiceButton />
             </form>
           </div>
         </section>

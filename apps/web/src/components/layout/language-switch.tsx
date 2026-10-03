@@ -33,7 +33,7 @@ export function LanguageSwitch() {
         aria-pressed="false"
         aria-disabled="true"
         title="Wersja angielska — wkrótce"
-        className={cn(segmentButton, 'cursor-not-allowed')}
+        className={segmentButton}
       >
         <Flag>
           <svg viewBox="0 0 60 30" preserveAspectRatio="xMidYMid slice">

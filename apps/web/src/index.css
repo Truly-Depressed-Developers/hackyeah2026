@@ -139,4 +139,22 @@
   html {
     @apply font-sans;
     }
+  /* Tailwind 4 resets buttons to the default cursor. */
+  button:not(:disabled, [aria-disabled="true"]),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+}
+
+@keyframes mic-wave {
+  0% { transform: scale(1); opacity: 0.9; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+@keyframes mic-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
 }
