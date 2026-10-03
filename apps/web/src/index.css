@@ -181,3 +181,29 @@
     transform: scaleX(0);
   }
 }
+
+/* Listening overlay (S-04). */
+@keyframes voice-ring {
+  0% { transform: scale(1); opacity: 0.9; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+
+@keyframes voice-glow {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
+
+@keyframes voice-orb {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+
+@keyframes voice-bar {
+  0%, 100% { transform: scaleY(0.18); }
+  50% { transform: scaleY(1); }
+}
+
+@keyframes voice-caret {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
