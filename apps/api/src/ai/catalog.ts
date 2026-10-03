@@ -2,7 +2,7 @@ import type { Context } from 'hono'
 import { env } from '../env.js'
 import { related, solutions } from './fixtures.js'
 import type { components } from './schema.js'
-import { clean, firstPdf, parseSections, truncate } from './search.js'
+import { clean, firstPdf, isFeatured, parseSections, subtitleFrom, truncate, upperFirst } from './search.js'
 import type { components as vector } from './vector-api.js'
 
 type CatalogItem = components['schemas']['CatalogItem']
@@ -71,7 +71,7 @@ function toInnovation(id: string, metadata: unknown, document: unknown): Innovat
     id,
     title,
     subtitle: subtitleFrom(description, title),
-    featured: /wybrana do upowszechniania/i.test(description),
+    featured: isFeatured(description),
     category: clean(meta.category_name) ?? sections['Kategoria'],
     categorySlug: clean(meta.category_slug),
     solution: sections['Rozwiązanie'],
@@ -97,13 +97,6 @@ function toCatalogItem(item: Innovation): CatalogItem {
     categorySlug: item.categorySlug,
     source: item.source,
   }
-}
-
-// "Opis" is scraped page text: "<Title> - <one-liner> INNOWACJA WYBRANA… dowiedz się więcej pobierz materiały…".
-function subtitleFrom(description: string, title: string) {
-  const withoutTitle = description.replace(new RegExp(`^${escapeRegExp(title)}\\s*[-–—]\\s*`, 'i'), '')
-  const text = withoutTitle.split(/\s*(?:innowacja wybrana|dowiedz się więcej|zobacz film|pobierz materiały|sprawdź zasady|otwórz w telefonie)/i)[0]?.trim()
-  return text ? upperFirst(text) : undefined
 }
 
 function splitList(value: string | undefined) {
@@ -136,12 +129,4 @@ function mockInnovations(): Innovation[] {
     source: result.source,
     links: result.links,
   }))
-}
-
-function upperFirst(value: string) {
-  return value.charAt(0).toUpperCase() + value.slice(1)
-}
-
-function escapeRegExp(value: string) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }

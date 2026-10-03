@@ -125,6 +125,10 @@ export interface components {
             title: string;
             /** @description Short plain-language description. For innovations = record.solution (fallback record.problem); not the scraped description. */
             summary: string;
+            /** @description One-line description, cleaned from record "Opis" (same as CatalogItem.subtitle). */
+            subtitle?: string;
+            /** @description Selected by ROPS for wider rollout. */
+            featured?: boolean;
             /**
              * @description Who the result is for (Kategoria), e.g. "Innowacje dla seniorów". From record.category_name.
              * @example Innowacje dla seniorów

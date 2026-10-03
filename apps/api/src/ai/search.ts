@@ -13,9 +13,8 @@ type QueryMatch = vector['schemas']['QueryMatch']
 // Chroma distance (lower = closer), calibrated 2026-10-03 on gemini-embedding-2: good matches 0.41–0.47, off-topic ≥ 0.54.
 const SOLUTION_MAX_DISTANCE = 0.47
 const RELATED_MAX_DISTANCE = 0.53
-const MAX_SOLUTIONS = 3
-const MAX_RELATED = 4
-const N_RESULTS = 10
+// ~120 records in total: the distance threshold, not a count cap, limits the list.
+const N_RESULTS = 30
 const TIMEOUT_MS = 8_000
 
 export const searchRequest = z.object({
@@ -63,8 +62,8 @@ export function toSearchResponse(matches: QueryMatch[]): SearchResponse {
     const distance = match.distance ?? Infinity
     const result = toResult(match)
     if (!result) continue
-    if (distance <= SOLUTION_MAX_DISTANCE && solutions.length < MAX_SOLUTIONS) solutions.push(result)
-    else if (distance <= RELATED_MAX_DISTANCE && related.length < MAX_RELATED) related.push(result)
+    if (distance <= SOLUTION_MAX_DISTANCE) solutions.push(result)
+    else if (distance <= RELATED_MAX_DISTANCE) related.push(result)
   }
   return { solutions, related, noMatch: solutions.length === 0 && related.length === 0 }
 }
@@ -85,6 +84,8 @@ function toResult(match: QueryMatch): Result | null {
     kind: 'innovation',
     title,
     summary: truncate(summary, 300),
+    subtitle: subtitleFrom(sections['Opis'] ?? '', title),
+    featured: isFeatured(sections['Opis'] ?? ''),
     category: text('category_name') ?? sections['Kategoria'],
     categorySlug: text('category_slug'),
     why: problem ? firstSentence(problem) : `Przeznaczone dla: ${lowerFirst(truncate(targetGroup ?? title, 200))}`,
@@ -133,4 +134,23 @@ export function truncate(value: string, max: number) {
 
 function lowerFirst(value: string) {
   return value.charAt(0).toLowerCase() + value.slice(1)
+}
+
+// "Opis" is scraped page text: "<Title> - <one-liner> INNOWACJA WYBRANA… dowiedz się więcej pobierz materiały…".
+export function subtitleFrom(description: string, title: string) {
+  const withoutTitle = description.replace(new RegExp(`^${escapeRegExp(title)}\\s*[-–—]\\s*`, 'i'), '')
+  const text = withoutTitle.split(/\s*(?:innowacja wybrana|dowiedz się więcej|zobacz film|pobierz materiały|sprawdź zasady|otwórz w telefonie)/i)[0]?.trim()
+  return text ? upperFirst(text) : undefined
+}
+
+export function isFeatured(description: string) {
+  return /wybrana do upowszechniania/i.test(description)
+}
+
+export function upperFirst(value: string) {
+  return value.charAt(0).toUpperCase() + value.slice(1)
+}
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
