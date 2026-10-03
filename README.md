@@ -61,6 +61,32 @@ apps/web/src
 End-to-end types: the web app imports `AppRouter` as a type from `api/router`. Change a procedure's
 return type in `apps/api` and `pnpm typecheck` fails in `apps/web`.
 
+## Deploy (Render + Neon, free)
+
+Production is a single service: the API also serves the built web app, so there is one URL and no CORS.
+`Dockerfile` builds both apps; `render.yaml` describes the Render service.
+
+1. **Database (Neon)**: create a free project at https://neon.com and copy its connection string.
+   Create the tables from your machine:
+   ```sh
+   DATABASE_URL='postgres://...neon.tech/neondb?sslmode=require' pnpm db:push
+   ```
+   Re-run this after every schema change (env vars take precedence over `.env`).
+2. **App (Render)**: in the Render dashboard choose **New → Blueprint**, connect GitHub and pick this repo.
+   An org owner has to approve the Render GitHub app for the organization.
+   When asked, set `DATABASE_URL` to the Neon string (and `DECIDE_URL` once the AI service is deployed).
+3. Every push to `main` redeploys. Health check: `/health`.
+
+Free-tier caveats: the service sleeps after 15 min without traffic and takes about a minute to wake up,
+so open the URL a few minutes before a demo. Neon's free plan is 0.5 GB and never expires.
+
+To test the production image locally:
+```sh
+docker build -t hackyeah2026 .
+docker run --rm -p 10000:10000 -e PORT=10000 \
+  -e DATABASE_URL=postgres://app:app@host.docker.internal:5432/app hackyeah2026
+```
+
 ## Notes
 
 - **npm registry**: `pnpm-workspace.yaml` pins the public npm registry, so a machine-wide custom

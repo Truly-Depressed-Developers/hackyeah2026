@@ -17,7 +17,7 @@ if (decideMode !== 'mock' && decideMode !== 'http') {
 
 export const env = {
   DATABASE_URL: required('DATABASE_URL'),
-  API_PORT: Number(process.env.API_PORT ?? 3000),
+  PORT: Number(process.env.PORT ?? process.env.API_PORT ?? 3000),
   DECIDE_MODE: decideMode,
   DECIDE_URL: process.env.DECIDE_URL ?? 'http://localhost:8000',
 }

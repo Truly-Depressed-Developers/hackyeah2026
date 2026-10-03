@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: hackyeah2026
+    runtime: docker
+    plan: free
+    branch: main
+    autoDeployTrigger: commit
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: DECIDE_MODE
+        value: mock
+      - key: DECIDE_URL
+        sync: false

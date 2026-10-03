@@ -11,7 +11,7 @@ export const mockDecideClient: DecideClient = {
     const h = hash(`${state}\n${question}\n${options.join('\n')}`)
     return {
       answer: options[h % options.length] ?? 'no options given',
-      confidence: 0.5 + (h % 50) / 100,
+      confidence: (50 + (h % 50)) / 100,
     }
   },
 }
