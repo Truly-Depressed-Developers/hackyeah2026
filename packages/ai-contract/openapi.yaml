@@ -176,6 +176,12 @@ components:
         summary:
           type: string
           description: Short plain-language description. For innovations = record.solution (fallback record.problem); not the scraped description.
+        subtitle:
+          type: string
+          description: One-line description, cleaned from record "Opis" (same as CatalogItem.subtitle).
+        featured:
+          type: boolean
+          description: Selected by ROPS for wider rollout.
         category:
           type: string
           description: Who the result is for (Kategoria), e.g. "Innowacje dla seniorów". From record.category_name.

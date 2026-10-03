@@ -1,10 +1,10 @@
 import { useState, type FormEvent } from 'react'
-import { Link, createFileRoute } from '@tanstack/react-router'
-import { IconArrowLeft, IconSearch } from '@tabler/icons-react'
+import { createFileRoute } from '@tanstack/react-router'
+import { IconSearch } from '@tabler/icons-react'
 import { KnowledgeBase } from '@/components/catalog/knowledge-base'
 import { SiteFooter } from '@/components/layout/site-footer'
 import { SiteHeader } from '@/components/layout/site-header'
-import { SearchResults, summarize } from '@/components/search/search-results'
+import { FoundInnovations } from '@/components/search/found-innovations'
 import { VoiceSearch } from '@/components/search/voice-search'
 import { Button } from '@/components/ui/button'
 import { NoResult } from '@/features/no-result/no-result'
@@ -48,7 +48,6 @@ function StartPage() {
   }
 
   const noMatch = search.isSuccess && !search.isFetching && search.data.noMatch
-  const status = search.isFetching ? 'Szukam rozwiązań…' : search.isSuccess ? summarize(search.data) : ''
 
   return (
     <div className="flex min-h-svh flex-col">
@@ -95,27 +94,13 @@ function StartPage() {
         {q && noMatch ? (
           <NoResult query={q} onBrowse={() => navigate({ search: {}, replace: true })} />
         ) : q ? (
-          <section aria-label="Wyniki wyszukiwania" className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 pt-8 pb-16 sm:px-6">
-            <Link to="/" search={{}} replace className="inline-flex min-h-11 w-fit items-center gap-1.5 text-sm text-primary underline-offset-2 hover:text-primary-strong hover:underline">
-              <IconArrowLeft aria-hidden="true" className="size-4" />
-              Wróć do bazy wiedzy
-            </Link>
-
-            <p role="status" className="min-h-6 text-muted-foreground">
-              {status}
-            </p>
-
-            {search.isError && !search.isFetching && (
-              <div role="alert" className="flex flex-col items-start gap-3 rounded-xl border border-destructive p-4">
-                <p className="font-semibold text-destructive">Coś poszło nie tak i nie udało się wyszukać.</p>
-                <Button variant="outline" className="h-11 px-4" onClick={() => search.refetch()}>
-                  Spróbuj ponownie
-                </Button>
-              </div>
-            )}
-
-            {search.isSuccess && !search.isFetching && <SearchResults data={search.data} />}
-          </section>
+          <FoundInnovations
+            key={q}
+            data={search.data}
+            state={search.isFetching ? 'pending' : search.isError ? 'error' : 'success'}
+            onRetry={() => search.refetch()}
+            onClear={() => navigate({ search: {}, replace: true })}
+          />
         ) : (
           <KnowledgeBase />
         )}
