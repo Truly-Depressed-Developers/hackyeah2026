@@ -5,6 +5,7 @@ import type { components, paths } from './schema'
 export type SearchResponse = components['schemas']['SearchResponse']
 export type Result = components['schemas']['Result']
 export type ResultKind = components['schemas']['ResultKind']
+export type CatalogItem = components['schemas']['CatalogItem']
 
 export const SEARCH_COLLECTION = 'knowledge'
 

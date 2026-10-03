@@ -18,10 +18,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/catalog": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The whole knowledge base as tiles for browsing (Baza wiedzy). Small enough to filter and page on the client. */
+        get: operations["catalog"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        CatalogResponse: {
+            items: components["schemas"]["CatalogItem"][];
+        };
+        CatalogItem: {
+            id: string;
+            title: string;
+            summary: string;
+            /** @example Innowacje dla seniorów */
+            category?: string;
+            /**
+             * @description Stable category key for icons and filters. From record.category_slug.
+             * @example dla-seniorow
+             */
+            categorySlug?: string;
+            source: components["schemas"]["Source"];
+        };
         SearchRequest: {
             /**
              * @description Chroma collection name to search. Exact name TBD with the AI dev.
@@ -53,6 +86,11 @@ export interface components {
              * @example Innowacje dla seniorów
              */
             category?: string;
+            /**
+             * @description Stable category key for icons and filters. From record.category_slug.
+             * @example dla-seniorow
+             */
+            categorySlug?: string;
             /** @description Match rationale (Uzasadnienie dopasowania), grounded in this result only. */
             why: string;
             /** @description True when `why` was written by an LLM, so the UI labels it as AI content. False for template text. */
@@ -130,6 +168,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SearchResponse"];
+                };
+            };
+        };
+    };
+    catalog: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description All knowledge-base items. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CatalogResponse"];
                 };
             };
         };
