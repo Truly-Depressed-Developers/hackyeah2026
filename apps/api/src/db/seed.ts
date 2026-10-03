@@ -1,6 +1,7 @@
 import { auth } from '../auth.js'
+import { seedSubmissions } from './seed-submissions.js'
 
-// Creates the predefined Pracownik ROPS account (ADMIN_EMAIL / ADMIN_PASSWORD). Safe to re-run.
+// Creates the predefined Pracownik ROPS account (ADMIN_EMAIL / ADMIN_PASSWORD) and fictional Zgłoszenia. Safe to re-run.
 const email = process.env.ADMIN_EMAIL?.trim().toLowerCase()
 const password = process.env.ADMIN_PASSWORD
 if (!email || !password) throw new Error('Set ADMIN_EMAIL and ADMIN_PASSWORD in .env before seeding.')
@@ -24,5 +25,7 @@ if (existing) {
   })
   console.log(`Created account ${email}.`)
 }
+
+await seedSubmissions()
 
 process.exit(0)

@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as PanelAuthedRouteImport } from './routes/panel/_authed'
 import { Route as PanelLoginRouteImport } from './routes/panel/login'
 import { Route as PanelAuthedIndexRouteImport } from './routes/panel/_authed/index'
+import { Route as PanelAuthedZgloszeniaRouteImport } from './routes/panel/_authed/zgloszenia'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,16 +35,23 @@ const PanelAuthedIndexRoute = PanelAuthedIndexRouteImport.update({
   path: '/',
   getParentRoute: () => PanelAuthedRoute,
 } as any)
+const PanelAuthedZgloszeniaRoute = PanelAuthedZgloszeniaRouteImport.update({
+  id: '/zgloszenia',
+  path: '/zgloszenia',
+  getParentRoute: () => PanelAuthedRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/panel': typeof PanelAuthedRouteWithChildren
   '/panel/login': typeof PanelLoginRoute
+  '/panel/zgloszenia': typeof PanelAuthedZgloszeniaRoute
   '/panel/': typeof PanelAuthedIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/panel/login': typeof PanelLoginRoute
+  '/panel/zgloszenia': typeof PanelAuthedZgloszeniaRoute
   '/panel': typeof PanelAuthedIndexRoute
 }
 export interface FileRoutesById {
@@ -51,14 +59,21 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/panel/_authed': typeof PanelAuthedRouteWithChildren
   '/panel/login': typeof PanelLoginRoute
+  '/panel/_authed/zgloszenia': typeof PanelAuthedZgloszeniaRoute
   '/panel/_authed/': typeof PanelAuthedIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/panel' | '/panel/login' | '/panel/'
+  fullPaths: '/' | '/panel' | '/panel/login' | '/panel/zgloszenia' | '/panel/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/panel/login' | '/panel'
-  id: '__root__' | '/' | '/panel/_authed' | '/panel/login' | '/panel/_authed/'
+  to: '/' | '/panel/login' | '/panel/zgloszenia' | '/panel'
+  id:
+    | '__root__'
+    | '/'
+    | '/panel/_authed'
+    | '/panel/login'
+    | '/panel/_authed/zgloszenia'
+    | '/panel/_authed/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -97,14 +112,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PanelAuthedIndexRouteImport
       parentRoute: typeof PanelAuthedRoute
     }
+    '/panel/_authed/zgloszenia': {
+      id: '/panel/_authed/zgloszenia'
+      path: '/zgloszenia'
+      fullPath: '/panel/zgloszenia'
+      preLoaderRoute: typeof PanelAuthedZgloszeniaRouteImport
+      parentRoute: typeof PanelAuthedRoute
+    }
   }
 }
 
 interface PanelAuthedRouteChildren {
+  PanelAuthedZgloszeniaRoute: typeof PanelAuthedZgloszeniaRoute
   PanelAuthedIndexRoute: typeof PanelAuthedIndexRoute
 }
 
 const PanelAuthedRouteChildren: PanelAuthedRouteChildren = {
+  PanelAuthedZgloszeniaRoute: PanelAuthedZgloszeniaRoute,
   PanelAuthedIndexRoute: PanelAuthedIndexRoute,
 }
 

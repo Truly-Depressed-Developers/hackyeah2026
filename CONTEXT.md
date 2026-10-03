@@ -17,8 +17,24 @@ _Avoid_: operator, admin, administrator, CRM user
 ### Panel
 
 **Panel administratora** (Admin panel):
-The closed part of the app where Pracownicy ROPS manage resident submissions and the knowledge base.
+The closed part of the app where Pracownicy ROPS manage Zgłoszenia and the knowledge base.
 _Avoid_: CRM, panel operatora
+
+**Zgłoszenie** (Submission):
+A record for the Panel administratora that a Mieszkaniec found no help for their Zapytanie: a **Luka**, a **Pomysł** or a **Prośba o kontakt**. Each one keeps the Zapytanie it came from and the Wyniki the Mieszkaniec saw.
+_Avoid_: ticket, case, lead
+
+**Luka** (Gap):
+A Zgłoszenie saved automatically when a Zapytanie ends in Brak odpowiedzi and the Mieszkaniec leaves nothing else. It has no contact.
+_Avoid_: gap, missing result
+
+**Pomysł** (Idea):
+A Zgłoszenie in which the Mieszkaniec proposes their own solution, filled in step by step, together with their contact.
+_Avoid_: proposal, propozycja rozwiązania
+
+**Prośba o kontakt** (Contact request):
+A Zgłoszenie in which the Mieszkaniec has no idea of their own and leaves their contact, so ROPS can reach them once a solution exists.
+_Avoid_: callback, lead
 
 ### Search
 

@@ -1,4 +1,5 @@
-import type { FormEvent } from 'react'
+import { useEffect, useRef, type FormEvent } from 'react'
+import { useMutation } from '@tanstack/react-query'
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { Search } from 'lucide-react'
 import { SearchResults, summarize } from '@/components/search/search-results'
@@ -6,6 +7,7 @@ import { Button, buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { $ai, SEARCH_COLLECTION } from '@/lib/ai/client'
+import { trpc } from '@/lib/trpc'
 
 export const Route = createFileRoute('/')({
   validateSearch: (search: Record<string, unknown>): { q?: string } => {
@@ -26,6 +28,16 @@ function SearchPage() {
     { enabled: Boolean(q), staleTime: Infinity, retry: false },
   )
 
+  // Brak odpowiedzi is saved as a Luka for the Panel administratora, once per Zapytanie.
+  // gap?.id is the gapId the S-03 forms pass to submissions.submit to upgrade this Luka.
+  const { mutate: recordGap } = useMutation(trpc.submissions.recordGap.mutationOptions())
+  const recordedQuery = useRef<string | null>(null)
+  useEffect(() => {
+    if (!q || !search.data?.noMatch || recordedQuery.current === q) return
+    recordedQuery.current = q
+    recordGap({ query: q })
+  }, [q, search.data, recordGap])
+
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const query = String(new FormData(event.currentTarget).get('q') ?? '').trim()
@@ -41,7 +53,7 @@ function SearchPage() {
       : ''
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
       <nav className="flex justify-end">
         {/* Entry to the Panel administratora; logged-out users land on /panel/login. */}
         <Link to="/panel" className={buttonVariants({ size: "sm" })}>

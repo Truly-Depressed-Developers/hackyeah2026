@@ -1,4 +1,4 @@
-import { Outlet, createFileRoute, redirect } from '@tanstack/react-router'
+import { Link, Outlet, createFileRoute, redirect } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import { usePanelLogout } from '@/features/panel/use-panel-auth'
 import { sessionQueryOptions } from '@/lib/auth'
@@ -20,7 +20,17 @@ function PanelLayout() {
   return (
     <>
       <header className="flex flex-wrap items-center justify-between gap-4">
-        <span className="font-medium">Panel administratora</span>
+        <nav aria-label="Panel administratora" className="flex flex-wrap items-center gap-4">
+          <Link to="/panel" activeOptions={{ exact: true }} className="font-medium underline-offset-4 hover:underline rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground">
+            Panel administratora
+          </Link>
+          <Link
+            to="/panel/zgloszenia"
+            className="underline-offset-4 hover:underline aria-[current=page]:font-semibold aria-[current=page]:underline rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+          >
+            Zgłoszenia
+          </Link>
+        </nav>
         <div className="flex items-center gap-4">
           <span className="text-sm text-muted-foreground">{session.user.email}</span>
           <Button variant="outline" size="sm" onClick={() => logout.mutate()} disabled={logout.isPending}>
