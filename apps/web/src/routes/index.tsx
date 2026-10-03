@@ -1,4 +1,4 @@
-import type { FormEvent } from 'react'
+import { useState, type FormEvent } from 'react'
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { IconArrowLeft, IconSearch } from '@tabler/icons-react'
 import { KnowledgeBase } from '@/components/catalog/knowledge-base'
@@ -7,6 +7,7 @@ import { SiteHeader } from '@/components/layout/site-header'
 import { SearchResults, summarize } from '@/components/search/search-results'
 import { VoiceButton } from '@/components/search/voice-button'
 import { Button } from '@/components/ui/button'
+import { NoResult } from '@/features/no-result/no-result'
 import { $ai, SEARCH_COLLECTION } from '@/lib/ai/client'
 
 export const Route = createFileRoute('/')({
@@ -20,6 +21,14 @@ export const Route = createFileRoute('/')({
 function StartPage() {
   const { q } = Route.useSearch()
   const navigate = Route.useNavigate()
+  const [draft, setDraft] = useState(q ?? '')
+  const [syncedQ, setSyncedQ] = useState(q)
+
+  // Reset the field when the URL changes from outside the form (logo, "Wróć…" links).
+  if (syncedQ !== q) {
+    setSyncedQ(q)
+    setDraft(q ?? '')
+  }
 
   const search = $ai.useQuery(
     'post',
@@ -30,11 +39,12 @@ function StartPage() {
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    const query = String(new FormData(event.currentTarget).get('q') ?? '').trim()
+    const query = draft.trim()
     // replace: no history entry, so a shared kiosk doesn't keep the previous resident's query.
     navigate({ search: query ? { q: query } : {}, replace: true })
   }
 
+  const noMatch = search.isSuccess && !search.isFetching && search.data.noMatch
   const status = search.isFetching ? 'Szukam rozwiązań…' : search.isSuccess ? summarize(search.data) : ''
 
   return (
@@ -62,7 +72,8 @@ function StartPage() {
                   id="q"
                   name="q"
                   type="search"
-                  defaultValue={q}
+                  value={draft}
+                  onChange={(event) => setDraft(event.target.value)}
                   enterKeyHint="search"
                   aria-describedby="hero-hint"
                   placeholder="Np. mama po udarze potrzebuje opieki w domu"
@@ -78,7 +89,9 @@ function StartPage() {
           </div>
         </section>
 
-        {q ? (
+        {q && noMatch ? (
+          <NoResult query={q} onBrowse={() => navigate({ search: {}, replace: true })} />
+        ) : q ? (
           <section aria-label="Wyniki wyszukiwania" className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 pt-8 pb-16 sm:px-6">
             <Link to="/" search={{}} replace className="inline-flex min-h-11 w-fit items-center gap-1.5 text-sm text-primary underline-offset-2 hover:text-primary-strong hover:underline">
               <IconArrowLeft aria-hidden="true" className="size-4" />
