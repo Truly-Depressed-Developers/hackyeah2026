@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { buttonVariants } from '@/components/ui/button'
+import { LanguageSwitch } from './language-switch'
 import { TextSizeSwitch } from './text-size'
 
 export function SiteHeader() {
@@ -11,6 +12,7 @@ export function SiteHeader() {
       </Link>
       <div className="flex flex-wrap items-center gap-2">
         <TextSizeSwitch />
+        <LanguageSwitch />
         <Link to="/panel" className={buttonVariants({ variant: 'ghost', className: 'h-11 px-4' })}>
           Zaloguj się
         </Link>
