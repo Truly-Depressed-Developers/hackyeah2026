@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { Play } from 'lucide-react'
+import { IconPlayerPlay } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 
@@ -19,7 +19,7 @@ export function VideoDialog({ videoId, title, primary }: { videoId: string; titl
   return (
     <Dialog>
       <DialogTrigger render={<Button variant={primary ? 'default' : 'outline'} className="h-11 px-4 text-base" />}>
-        <Play aria-hidden="true" />
+        <IconPlayerPlay aria-hidden="true" />
         Obejrzyj film
       </DialogTrigger>
       {/* Focus the title, not the iframe: keys inside a cross-origin iframe never reach us, so Esc would not close. */}

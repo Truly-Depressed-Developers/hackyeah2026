@@ -85,6 +85,7 @@ function toResult(match: QueryMatch): Result | null {
     title,
     summary: truncate(summary, 300),
     category: text('category_name') ?? sections['Kategoria'],
+    categorySlug: text('category_slug'),
     why: problem ? firstSentence(problem) : `Przeznaczone dla: ${lowerFirst(truncate(targetGroup ?? title, 200))}`,
     whyGenerated: false,
     source: { label: 'Biblioteka Innowacji Społecznych', url: text('source_url') },
@@ -94,7 +95,7 @@ function toResult(match: QueryMatch): Result | null {
 }
 
 // The AI service stores record fields as "Label: value" paragraphs in `document`.
-function parseSections(document: string) {
+export function parseSections(document: string) {
   const sections: Record<string, string> = {}
   for (const block of document.split(/\n\s*\n/)) {
     const match = block.match(/^([^:\n]{2,40}):\s*([\s\S]+)$/)
@@ -116,7 +117,7 @@ function firstPdf(value: unknown) {
   }
 }
 
-function clean(value: unknown) {
+export function clean(value: unknown) {
   return typeof value === 'string' && value.trim() ? value.replace(/\s+/g, ' ').trim() : undefined
 }
 
@@ -125,7 +126,7 @@ function firstSentence(value: string) {
   return end === -1 ? truncate(value, 200) : truncate(value.slice(0, end + 1), 200)
 }
 
-function truncate(value: string, max: number) {
+export function truncate(value: string, max: number) {
   return value.length <= max ? value : `${value.slice(0, max).replace(/\s+\S*$/, '')}…`
 }
 
