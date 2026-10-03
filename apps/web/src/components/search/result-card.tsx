@@ -10,7 +10,10 @@ const KIND_LABEL: Record<ResultKind, string> = {
 export function ResultCard({ result }: { result: Result }) {
   return (
     <li className="flex flex-col gap-3 rounded-xl border bg-card p-4 text-card-foreground">
-      <p className="w-fit rounded-md bg-muted px-2 py-1 text-sm font-medium">{KIND_LABEL[result.kind]}</p>
+      <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+        <span className="rounded-md bg-muted px-2 py-1 font-medium">{KIND_LABEL[result.kind]}</span>
+        {result.category && <span className="text-muted-foreground">{result.category}</span>}
+      </p>
       <h3 className="text-lg font-semibold leading-snug">{result.title}</h3>
       <p>{result.summary}</p>
       <div className="flex flex-col gap-1 rounded-lg bg-muted/60 p-3">

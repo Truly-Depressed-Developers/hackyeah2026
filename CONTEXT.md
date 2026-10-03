@@ -27,6 +27,10 @@ _Avoid_: hit, answer, card (card is a UI element)
 **Rodzaj wyniku** (Result kind):
 What a Wynik is: an innovation / case study, a helper (person or organisation), or a fact (indicator or report excerpt). This is secondary to the tier, and shown as a label.
 
+**Kategoria** (Category):
+The resident group or area a Wynik is aimed at, e.g. "Innowacje dla seniorów". It corresponds to *obszar* in the taxonomy. It is shown as a label, not used to group results.
+_Avoid_: tag, section
+
 **Poziom dopasowania** (Match tier):
 How well a Wynik matches *this* Zapytanie. It comes from one match score cut by two thresholds: high → **Rozwiązanie**, medium → **Rozwiązanie pokrewne**, below → not returned.
 

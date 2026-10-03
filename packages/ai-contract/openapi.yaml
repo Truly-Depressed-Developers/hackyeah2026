@@ -67,11 +67,34 @@ components:
           type: string
         summary:
           type: string
+          description: Short plain-language description. For innovations = record.solution (fallback record.problem); not the scraped description.
+        category:
+          type: string
+          description: Who the result is for (Kategoria), e.g. "Innowacje dla seniorów". From record.category_name.
+          example: Innowacje dla seniorów
         why:
           type: string
           description: AI-generated match rationale (Uzasadnienie dopasowania), grounded in this result only.
         source:
           $ref: '#/components/schemas/Source'
+        links:
+          $ref: '#/components/schemas/Links'
+    Links:
+      type: object
+      description: Media for result actions (S-02). Never include record.authors (real personal data).
+      properties:
+        video:
+          type: string
+          format: uri
+          description: From record.youtube_video.
+        pdf:
+          type: string
+          format: uri
+          description: First of record.details_pdf.
+        download:
+          type: string
+          format: uri
+          description: From record.file_zip.
     ResultKind:
       type: string
       enum: [innovation, helper, fact]
@@ -83,5 +106,6 @@ components:
           type: string
           example: Biblioteka Innowacji Społecznych
         url:
+          description: For innovations = record.source_url.
           type: string
           format: uri

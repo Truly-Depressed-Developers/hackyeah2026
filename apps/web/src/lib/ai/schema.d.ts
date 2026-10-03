@@ -46,17 +46,45 @@ export interface components {
             id: string;
             kind: components["schemas"]["ResultKind"];
             title: string;
+            /** @description Short plain-language description. For innovations = record.solution (fallback record.problem); not the scraped description. */
             summary: string;
+            /**
+             * @description Who the result is for (Kategoria), e.g. "Innowacje dla seniorów". From record.category_name.
+             * @example Innowacje dla seniorów
+             */
+            category?: string;
             /** @description AI-generated match rationale (Uzasadnienie dopasowania), grounded in this result only. */
             why: string;
             source: components["schemas"]["Source"];
+            links?: components["schemas"]["Links"];
+        };
+        /** @description Media for result actions (S-02). Never include record.authors (real personal data). */
+        Links: {
+            /**
+             * Format: uri
+             * @description From record.youtube_video.
+             */
+            video?: string;
+            /**
+             * Format: uri
+             * @description First of record.details_pdf.
+             */
+            pdf?: string;
+            /**
+             * Format: uri
+             * @description From record.file_zip.
+             */
+            download?: string;
         };
         /** @enum {string} */
         ResultKind: "innovation" | "helper" | "fact";
         Source: {
             /** @example Biblioteka Innowacji Społecznych */
             label: string;
-            /** Format: uri */
+            /**
+             * Format: uri
+             * @description For innovations = record.source_url.
+             */
             url?: string;
         };
     };
