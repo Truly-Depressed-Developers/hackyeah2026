@@ -8,16 +8,15 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { DeleteInnovationDialog } from '@/features/innovations/delete-innovation-dialog'
 import { InnovationForm } from '@/features/innovations/innovation-form'
 import type { InnovationDetail } from '@/features/innovations/labels'
+import { notifyError, notifySuccess } from '@/features/panel/notify'
 import { trpc } from '@/lib/trpc'
 
 export const Route = createFileRoute('/panel/_authed/innovations/$innovationId')({
-  validateSearch: (search: Record<string, unknown>): { created?: boolean } => (search.created === true ? { created: true } : {}),
   component: EditInnovationPage,
 })
 
 function EditInnovationPage() {
   const { innovationId } = Route.useParams()
-  const { created } = Route.useSearch()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
 
@@ -25,7 +24,11 @@ function EditInnovationPage() {
   const categories = useQuery(trpc.panel.innovations.categories.queryOptions())
   const update = useMutation(
     trpc.panel.innovations.update.mutationOptions({
-      onSuccess: () => queryClient.invalidateQueries({ queryKey: trpc.panel.innovations.pathKey() }),
+      onSuccess: (_, { data }) => {
+        notifySuccess('Zapisano zmiany', data.title)
+        return queryClient.invalidateQueries({ queryKey: trpc.panel.innovations.pathKey() })
+      },
+      onError: (error) => notifyError('Nie udało się zapisać zmian', error),
     }),
   )
   const [deleting, setDeleting] = useState(false)
@@ -59,10 +62,6 @@ function EditInnovationPage() {
             </div>
           </div>
 
-          <p role="status" className="text-sm font-medium">
-            {update.isSuccess ? 'Zapisano zmiany.' : created ? 'Dodano innowację.' : ''}
-          </p>
-
           <InnovationForm
             // Remount after a save so the form shows exactly what was stored.
             key={innovation.dataUpdatedAt}
@@ -70,7 +69,6 @@ function EditInnovationPage() {
             categories={categories.data}
             submitLabel="Zapisz zmiany"
             isPending={update.isPending}
-            error={update.error?.message}
             onSubmit={(data) => update.mutate({ id: innovationId, data })}
           />
         </>

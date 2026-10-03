@@ -167,3 +167,13 @@
     radial-gradient(40% 60% at 50% 30%, rgb(255 255 255 / 0.85), transparent 75%),
     linear-gradient(180deg, #F2F5FC, #F6F7FD);
 }
+
+/* Toast countdown bar (components/ui/toast.tsx). */
+@keyframes toast-timer {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}

@@ -10,6 +10,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { Spinner } from '@/components/ui/spinner'
+import { notifyError, notifySuccess } from '@/features/panel/notify'
 import { trpc } from '@/lib/trpc'
 
 interface DeleteInnovationDialogProps {
@@ -27,9 +28,11 @@ export function DeleteInnovationDialog({ innovation, onClose, onDeleted }: Delet
         // Drop the deleted one's details rather than refetching them into a 404.
         queryClient.removeQueries({ queryKey: trpc.panel.innovations.get.queryKey({ id }) })
         void queryClient.invalidateQueries({ queryKey: trpc.panel.innovations.list.queryKey() })
+        notifySuccess('Usunięto innowację', innovation?.title)
         onClose()
         onDeleted?.()
       },
+      onError: (error) => notifyError('Nie udało się usunąć innowacji', error),
     }),
   )
 
@@ -42,11 +45,6 @@ export function DeleteInnovationDialog({ innovation, onClose, onDeleted }: Delet
             „{innovation?.title}” zniknie z bazy wiedzy, wyszukiwarki i katalogu. Tej operacji nie da się cofnąć.
           </AlertDialogDescription>
         </AlertDialogHeader>
-        {remove.isError && (
-          <p role="alert" className="text-sm text-destructive">
-            Nie udało się usunąć: {remove.error.message}
-          </p>
-        )}
         <AlertDialogFooter>
           <AlertDialogCancel disabled={remove.isPending}>Anuluj</AlertDialogCancel>
           <AlertDialogAction

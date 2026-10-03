@@ -6,10 +6,10 @@ interface StatusFieldProps {
   id: string
   value: HandlingStatus
   onChange: (status: HandlingStatus) => void
-  state: { isPending: boolean; isSuccess: boolean; isError: boolean }
+  state: { isPending: boolean }
 }
 
-/** Stan picker with announced save progress; used on Potrzeba details and the Pomysł page. */
+/** Stan picker for Potrzeba details and the Pomysł page; the save result shows as a toast. */
 export function StatusField({ id, value, onChange, state }: StatusFieldProps) {
   return (
     <Field>
@@ -26,14 +26,6 @@ export function StatusField({ id, value, onChange, state }: StatusFieldProps) {
           </NativeSelectOption>
         ))}
       </NativeSelect>
-      <p role="status" className="text-sm text-muted-foreground">
-        {state.isPending ? 'Zapisuję…' : state.isSuccess ? 'Zapisano stan.' : ''}
-      </p>
-      {state.isError && (
-        <p role="alert" className="text-sm text-destructive">
-          Nie udało się zmienić stanu.
-        </p>
-      )}
     </Field>
   )
 }

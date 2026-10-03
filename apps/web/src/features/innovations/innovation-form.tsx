@@ -1,5 +1,4 @@
 import { useState, type FormEvent } from 'react'
-import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/components/ui/field'
@@ -49,12 +48,11 @@ interface InnovationFormProps {
   categories: InnovationCategory[]
   submitLabel: string
   isPending: boolean
-  error?: string
   onSubmit: (data: InnovationInput) => void
 }
 
 // Base design only; the final look comes from the designer.
-export function InnovationForm({ initial, categories, submitLabel, isPending, error, onSubmit }: InnovationFormProps) {
+export function InnovationForm({ initial, categories, submitLabel, isPending, onSubmit }: InnovationFormProps) {
   const [data, setData] = useState(initial)
   const set = (field: TextField) => (value: string) => setData((prev) => ({ ...prev, [field]: value }))
   // Several PDFs, one link per line: the textarea keeps the raw text, the submit splits it.
@@ -175,11 +173,6 @@ export function InnovationForm({ initial, categories, submitLabel, isPending, er
         </CardContent>
       </Card>
 
-      {error && (
-        <Alert variant="destructive" role="alert">
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
       <Button type="submit" size="lg" disabled={isPending} className="self-start">
         {isPending && <Spinner data-icon="inline-start" />}
         {submitLabel}

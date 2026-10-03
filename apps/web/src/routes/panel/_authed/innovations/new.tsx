@@ -4,6 +4,7 @@ import { IconArrowLeft } from '@tabler/icons-react'
 import { buttonVariants } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { InnovationForm, emptyInnovation } from '@/features/innovations/innovation-form'
+import { notifyError, notifySuccess } from '@/features/panel/notify'
 import { trpc } from '@/lib/trpc'
 
 export const Route = createFileRoute('/panel/_authed/innovations/new')({
@@ -16,10 +17,12 @@ function NewInnovationPage() {
   const categories = useQuery(trpc.panel.innovations.categories.queryOptions())
   const create = useMutation(
     trpc.panel.innovations.create.mutationOptions({
-      onSuccess: async ({ id }) => {
+      onSuccess: async ({ id }, input) => {
+        notifySuccess('Dodano innowację', input.title)
         await queryClient.invalidateQueries({ queryKey: trpc.panel.innovations.pathKey() })
-        await navigate({ to: '/panel/innovations/$innovationId', params: { innovationId: id }, search: { created: true } })
+        await navigate({ to: '/panel/innovations/$innovationId', params: { innovationId: id } })
       },
+      onError: (error) => notifyError('Nie udało się dodać innowacji', error),
     }),
   )
 
@@ -36,7 +39,6 @@ function NewInnovationPage() {
           categories={categories.data}
           submitLabel="Dodaj innowację"
           isPending={create.isPending}
-          error={create.error?.message}
           onSubmit={(data) => create.mutate(data)}
         />
       ) : (
