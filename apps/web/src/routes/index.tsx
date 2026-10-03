@@ -1,117 +1,94 @@
-import { useState, type FormEvent } from 'react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import type { FormEvent } from 'react'
 import { Link, createFileRoute } from '@tanstack/react-router'
+import { Search } from 'lucide-react'
+import { SearchResults, summarize } from '@/components/search/search-results'
 import { Button, buttonVariants } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Textarea } from '@/components/ui/textarea'
-import { trpc } from '@/lib/trpc'
+import { $ai, SEARCH_COLLECTION } from '@/lib/ai/client'
 
 export const Route = createFileRoute('/')({
-  loader: ({ context }) => context.queryClient.ensureQueryData(trpc.decisions.list.queryOptions()),
-  component: DecidePage,
+  validateSearch: (search: Record<string, unknown>): { q?: string } => {
+    const q = typeof search.q === 'string' ? search.q.trim() : ''
+    return q ? { q } : {}
+  },
+  component: SearchPage,
 })
 
-const formatConfidence = (confidence: number) => `${Math.round(confidence * 100)}%`
+function SearchPage() {
+  const { q } = Route.useSearch()
+  const navigate = Route.useNavigate()
 
-function DecidePage() {
-  const [state, setState] = useState('')
-  const [question, setQuestion] = useState('')
-  const [options, setOptions] = useState('')
-
-  const queryClient = useQueryClient()
-  const history = useQuery(trpc.decisions.list.queryOptions())
-  const decide = useMutation(
-    trpc.decisions.create.mutationOptions({
-      onSuccess: () => queryClient.invalidateQueries({ queryKey: trpc.decisions.list.queryKey() }),
-    }),
+  const search = $ai.useQuery(
+    'post',
+    '/search',
+    { body: { collection: SEARCH_COLLECTION, query: q ?? '' } },
+    { enabled: Boolean(q), staleTime: Infinity, retry: false },
   )
 
-  function onSubmit(event: FormEvent) {
+  function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    decide.mutate({
-      state,
-      question,
-      options: options.split(',').map((o) => o.trim()).filter(Boolean),
-    })
+    const query = String(new FormData(event.currentTarget).get('q') ?? '').trim()
+    if (!query) return
+    // replace: no history entry, so a shared kiosk doesn't keep the previous resident's query.
+    navigate({ search: { q: query }, replace: true })
   }
 
+  const status = search.isFetching
+    ? 'Szukam rozwiązań…'
+    : search.isSuccess
+      ? summarize(search.data)
+      : ''
+
   return (
-    <>
+    <div className="flex flex-col gap-6">
       <nav className="flex justify-end">
         {/* Entry to the Panel administratora; logged-out users land on /panel/login. */}
         <Link to="/panel" className={buttonVariants({ size: "sm" })}>
           Zaloguj się
         </Link>
       </nav>
-      <Card>
-        <CardHeader>
-          <CardTitle>Decide</CardTitle>
-          <CardDescription>Describe the situation, ask a question, list the options.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={onSubmit} className="flex flex-col gap-4">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="state">Situation</Label>
-              <Textarea id="state" value={state} onChange={(e) => setState(e.target.value)} required />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="question">Question</Label>
-              <Input id="question" value={question} onChange={(e) => setQuestion(e.target.value)} required />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="options">Options (comma-separated)</Label>
-              <Input
-                id="options"
-                placeholder="pizza, sushi, tacos"
-                value={options}
-                onChange={(e) => setOptions(e.target.value)}
-                required
-              />
-            </div>
-            <Button type="submit" disabled={decide.isPending}>
-              {decide.isPending ? 'Deciding…' : 'Decide'}
-            </Button>
-          </form>
+      <h1 className="text-2xl font-bold sm:text-3xl">Znajdź rozwiązanie swojego problemu</h1>
 
-          {decide.error && <p className="mt-4 text-sm text-destructive">{decide.error.message}</p>}
-          {decide.data && (
-            <p className="mt-4 text-sm">
-              Answer: <strong>{decide.data.answer}</strong> ({formatConfidence(decide.data.confidence)} confident)
-            </p>
-          )}
-        </CardContent>
-      </Card>
+      <form role="search" onSubmit={onSubmit} className="flex flex-col gap-2">
+        <Label htmlFor="q" className="text-base">
+          Opisz problem lub potrzebę własnymi słowami
+        </Label>
+        <p id="q-hint" className="text-sm text-muted-foreground">
+          Np. „mama sama nie daje rady z opieką nad tatą po udarze”
+        </p>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <Input
+            id="q"
+            name="q"
+            type="search"
+            required
+            defaultValue={q}
+            enterKeyHint="search"
+            aria-describedby="q-hint"
+            className="h-12 text-base md:text-base"
+          />
+          <Button type="submit" className="h-12 px-5 text-base">
+            <Search aria-hidden="true" />
+            Szukaj
+          </Button>
+        </div>
+      </form>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>History</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Question</TableHead>
-                <TableHead>Answer</TableHead>
-                <TableHead className="text-right">Confidence</TableHead>
-                <TableHead className="text-right">When</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {history.data?.map((d) => (
-                <TableRow key={d.id}>
-                  <TableCell className="whitespace-normal">{d.question}</TableCell>
-                  <TableCell>{d.answer}</TableCell>
-                  <TableCell className="text-right">{formatConfidence(d.confidence)}</TableCell>
-                  <TableCell className="text-right">{new Date(d.createdAt).toLocaleTimeString()}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-    </>
+      <p role="status" className="min-h-6 text-muted-foreground">
+        {status}
+      </p>
+
+      {search.isError && !search.isFetching && (
+        <div role="alert" className="flex flex-col items-start gap-3 rounded-xl border border-destructive p-4">
+          <p className="font-semibold text-destructive">Coś poszło nie tak i nie udało się wyszukać.</p>
+          <Button variant="outline" className="h-11 px-4" onClick={() => search.refetch()}>
+            Spróbuj ponownie
+          </Button>
+        </div>
+      )}
+
+      {search.isSuccess && !search.isFetching && <SearchResults data={search.data} />}
+    </div>
   )
 }

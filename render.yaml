@@ -9,9 +9,7 @@ services:
     envVars:
       - key: DATABASE_URL
         sync: false
-      - key: DECIDE_MODE
-        value: mock
-      - key: DECIDE_URL
+      - key: AI_URL
         sync: false
       - key: BETTER_AUTH_SECRET
         generateValue: true

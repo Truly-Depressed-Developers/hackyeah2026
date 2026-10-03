@@ -1,7 +1,7 @@
 {
   "$schema": "https://turborepo.dev/schema.json",
   "globalDependencies": [".env"],
-  "globalEnv": ["DATABASE_URL", "API_PORT", "DECIDE_MODE", "DECIDE_URL"],
+  "globalEnv": ["DATABASE_URL", "API_PORT", "AI_URL", "VITE_MOCK_SEARCH"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],

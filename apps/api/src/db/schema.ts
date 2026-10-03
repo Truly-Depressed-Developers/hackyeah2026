@@ -1,15 +1,4 @@
-import { boolean, doublePrecision, index, integer, pgTable, text, timestamp } from 'drizzle-orm/pg-core'
-
-export const decisions = pgTable('decisions', {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  input: text().notNull(),
-  question: text().notNull(),
-  answer: text().notNull(),
-  confidence: doublePrecision().notNull(),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-})
-
-export type Decision = typeof decisions.$inferSelect
+import { boolean, index, pgTable, text, timestamp } from 'drizzle-orm/pg-core'
 
 // better-auth core tables. Every user is a Pracownik ROPS with access to the Panel administratora.
 const timestamps = {

@@ -25,12 +25,12 @@ pnpm db:seed
 pnpm dev
 ```
 
-Open http://localhost:5173, fill in the form and click **Decide**: the answer shows up and the
-History table updates. The API runs on http://localhost:3000; Vite proxies `/trpc` to it.
+Open http://localhost:5173, describe a problem and click **Szukaj**. With `VITE_MOCK_SEARCH=true` the
+results come from the in-browser mock. The API runs on http://localhost:3000; Vite proxies `/trpc` and `/ai` to it.
 Stop with `Ctrl+C`, then `docker compose down` (add `-v` to also wipe the database).
 
 > Port 5432 or 3000 already taken? Change `DB_PORT` (and the port in `DATABASE_URL`) or `API_PORT` in `.env`.
-> `.env` is read by both apps, drizzle-kit and docker compose. `DECIDE_MODE` is `mock` or `http`.
+> `.env` is read by both apps, drizzle-kit and docker compose. `VITE_MOCK_SEARCH=true` fakes the AI service.
 
 ## Scripts (repo root)
 
@@ -43,19 +43,20 @@ Stop with `Ctrl+C`, then `docker compose down` (add `-v` to also wipe the databa
 | `pnpm db:push`    | Push the Drizzle schema (`apps/api/src/db/schema.ts`) to the DB  |
 | `pnpm db:studio`  | Open Drizzle Studio                                             |
 | `pnpm db:seed`    | Create the predefined Panel administratora account (`ADMIN_EMAIL` / `ADMIN_PASSWORD`) |
-| `pnpm gen:decide` | Generate AI-service types from `${DECIDE_URL}/openapi.json`      |
+| `pnpm gen:ai`     | Generate AI-service types (`-- --remote` for `${AI_URL}/openapi.json`) |
 
 ## Layout
 
 ```
 apps/api/src
   env.ts            reads the root .env
-  db/schema.ts      Drizzle tables (decisions)
-  decide/           AI decision adapter (mock | http)
+  db/schema.ts      Drizzle tables
   router.ts         tRPC router; exports AppRouter
-  index.ts          Hono server, mounts tRPC at /trpc
+  index.ts          Hono server, mounts tRPC at /trpc and forwards /ai/* to AI_URL
 apps/web/src
   lib/trpc.ts       tRPC client + QueryClient
+  lib/ai/           AI-service client: generated schema.d.ts + TanStack Query hooks ($ai)
+  mocks/            MSW fake of the AI service (VITE_MOCK_SEARCH)
   routes/           file-based routes (routeTree.gen.ts is generated; commit it)
   components/ui/    shadcn components (add more: cd apps/web && pnpm dlx shadcn@latest add <name>)
 ```
@@ -78,7 +79,7 @@ Production is a single service: the API also serves the built web app, so there 
 2. **App (Render)**: in the Render dashboard choose **New → Blueprint**, connect GitHub and pick this repo.
    An org owner has to approve the Render GitHub app for the organization.
    When asked, set `DATABASE_URL` to the Neon string, `BETTER_AUTH_URL` to the service URL
-   (and `DECIDE_URL` once the AI service is deployed). Then create the panel account from your machine:
+   (and `AI_URL` once the AI service is deployed). Then create the panel account from your machine:
    `DATABASE_URL=... ADMIN_EMAIL=... ADMIN_PASSWORD=... pnpm db:seed`.
 3. Every push to `main` redeploys. Health check: `/health`.
 
@@ -97,7 +98,7 @@ docker run --rm -p 10000:10000 -e PORT=10000 \
 - **npm registry**: `pnpm-workspace.yaml` pins the public npm registry, so a machine-wide custom
   registry in `~/.npmrc` doesn't affect installs. pnpm's own version download still reads `~/.npmrc`;
   if that fails, run `npm_config_registry=https://registry.npmjs.org/ pnpm install` once.
-- **TypeScript 7** has no classic JS compiler API, which `openapi-typescript` (`pnpm gen:decide`)
+- **TypeScript 7** has no classic JS compiler API, which `openapi-typescript` (`pnpm gen:ai`)
   needs. `.pnpmfile.cjs` gives that one package a private TypeScript 6; everything else uses TS 7.
 - **Drizzle 1.0 is a release candidate** (what the Drizzle docs currently recommend). If it gives you
   trouble, `pnpm --filter api add drizzle-orm@latest && pnpm --filter api add -D drizzle-kit@latest` goes back to 0.x;
@@ -115,24 +116,20 @@ docker run --rm -p 10000:10000 -e PORT=10000 \
 
 ## Connecting the AI service
 
-The API calls the AI decision service through `apps/api/src/decide/`:
+HubMI has two backends: this Hono API (Postgres, tRPC) and a Python/FastAPI AI service. The web app
+calls the AI service through generated TanStack Query hooks (`$ai` in `apps/web/src/lib/ai/client.ts`)
+at `/ai/*`, which Hono forwards to `AI_URL`. Why: `docs/adr/0001-ai-calls-via-openapi-passthrough.md`.
 
-- `types.ts`: the `DecideClient` interface (`decide({ state, question, options }) → { answer, confidence }`)
-- `mock.ts`: deterministic fake answers, returned instantly (default)
-- `http.ts`: calls the real service with `openapi-fetch`, typed by `schema.d.ts`
-- `index.ts`: picks the implementation based on `DECIDE_MODE`
+- `packages/ai-contract/openapi.yaml` is the draft contract. `pnpm gen:ai` turns it into
+  `apps/web/src/lib/ai/schema.d.ts`.
+- With `VITE_MOCK_SEARCH=true`, MSW answers `/ai/*` in the browser (`apps/web/src/mocks/handlers.ts`).
 
-To switch to the real (Python/FastAPI) service:
+To switch to the real service:
 
-1. Start the service and set `DECIDE_URL` in `.env` to its base URL (default `http://localhost:8000`).
-2. Run `pnpm gen:decide`. This fetches `${DECIDE_URL}/openapi.json` and overwrites
-   `apps/api/src/decide/schema.d.ts` (currently a placeholder that guesses `POST /decide`).
-   If the service isn't reachable, it exits with a short error message.
-3. Run `pnpm typecheck`. If the real endpoint path or field names differ from the placeholder,
-   the errors point at `http.ts`; adjust the mapping there so it still returns `{ answer, confidence }`.
-4. Set `DECIDE_MODE=http` in `.env` and restart `pnpm dev`.
-
-Set `DECIDE_MODE=mock` any time to work without the service.
+1. Start it and set `AI_URL` in `.env` (default `http://localhost:8000`).
+2. Run `pnpm gen:ai -- --remote`. This fetches `${AI_URL}/openapi.json` and overwrites `schema.d.ts`.
+3. Run `pnpm typecheck` and fix whatever the real contract changed.
+4. Set `VITE_MOCK_SEARCH=false` and restart `pnpm dev`.
 
 ## PWA (optional)
 
