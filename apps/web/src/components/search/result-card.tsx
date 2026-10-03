@@ -78,33 +78,28 @@ export function ResultCard({ result }: { result: Result }) {
             {expanded ? 'Zwiń szczegóły' : 'Szczegóły'}
           </Button>
         )}
+        {result.source.url && <ExternalLinkButton href={result.source.url}>Zobacz w: {result.source.label}</ExternalLinkButton>}
+        {result.links?.pdf && (
+          <ExternalLinkButton href={result.links.pdf} icon={<FileText aria-hidden="true" />}>
+            Opis (PDF)
+          </ExternalLinkButton>
+        )}
       </div>
-
-      {(result.source.url || result.links?.pdf) && (
-        <div className="flex flex-wrap gap-x-4 gap-y-1">
-          {result.source.url && <ExternalLinkText href={result.source.url}>Zobacz w: {result.source.label}</ExternalLinkText>}
-          {result.links?.pdf && (
-            <ExternalLinkText href={result.links.pdf} icon={<FileText aria-hidden="true" className="size-4" />}>
-              Opis (PDF)
-            </ExternalLinkText>
-          )}
-        </div>
-      )}
     </li>
   )
 }
 
-function ExternalLinkText({ href, icon, children }: { href: string; icon?: ReactNode; children: ReactNode }) {
+function ExternalLinkButton({ href, icon, children }: { href: string; icon?: ReactNode; children: ReactNode }) {
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex min-h-11 items-center gap-1.5 underline underline-offset-2 hover:text-muted-foreground"
+      className={cn(buttonVariants({ variant: 'outline' }), 'h-auto min-h-11 max-w-full shrink px-4 py-2 text-base whitespace-normal')}
     >
       {icon}
       {children}
-      <ExternalLink aria-hidden="true" className="size-4" />
+      <ExternalLink aria-hidden="true" />
       <span className="sr-only">(otwiera się w nowej karcie)</span>
     </a>
   )
