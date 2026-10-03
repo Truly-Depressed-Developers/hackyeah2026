@@ -91,11 +91,6 @@ function NeedsPage() {
         <p role="status" className="sr-only">
           {list.isFetching ? 'Wczytywanie…' : data ? `Znaleziono potrzeb: ${data.total}` : ''}
         </p>
-        {setStatus.isError && (
-          <Alert variant="destructive" role="alert">
-            <AlertDescription>Nie udało się zmienić stanu potrzeby.</AlertDescription>
-          </Alert>
-        )}
         {list.isError && (
           <Alert variant="destructive" role="alert">
             <AlertDescription>Nie udało się wczytać potrzeb.</AlertDescription>

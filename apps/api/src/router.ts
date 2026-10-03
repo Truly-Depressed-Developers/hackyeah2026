@@ -1,4 +1,5 @@
 import { ideasRouter, panelIdeasRouter } from './ideas/router.js'
+import { panelInnovationsRouter } from './innovations/router.js'
 import { needsRouter, panelNeedsRouter } from './needs/router.js'
 import { panelProcedure, router } from './trpc.js'
 
@@ -15,6 +16,7 @@ export const appRouter = router({
     })),
     needs: panelNeedsRouter,
     ideas: panelIdeasRouter,
+    innovations: panelInnovationsRouter,
   }),
 })
 

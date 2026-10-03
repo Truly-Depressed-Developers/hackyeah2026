@@ -19,6 +19,9 @@ import { Route as PanelAuthedIndexRouteImport } from './routes/panel/_authed/ind
 import { Route as PanelAuthedNeedsRouteImport } from './routes/panel/_authed/needs'
 import { Route as PanelAuthedIdeasIndexRouteImport } from './routes/panel/_authed/ideas/index'
 import { Route as PanelAuthedIdeasIdeaIdRouteImport } from './routes/panel/_authed/ideas/$ideaId'
+import { Route as PanelAuthedInnovationsIndexRouteImport } from './routes/panel/_authed/innovations/index'
+import { Route as PanelAuthedInnovationsInnovationIdRouteImport } from './routes/panel/_authed/innovations/$innovationId'
+import { Route as PanelAuthedInnovationsNewRouteImport } from './routes/panel/_authed/innovations/new'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -69,6 +72,24 @@ const PanelAuthedIdeasIdeaIdRoute = PanelAuthedIdeasIdeaIdRouteImport.update({
   path: '/ideas/$ideaId',
   getParentRoute: () => PanelAuthedRoute,
 } as any)
+const PanelAuthedInnovationsIndexRoute =
+  PanelAuthedInnovationsIndexRouteImport.update({
+    id: '/innovations/',
+    path: '/innovations/',
+    getParentRoute: () => PanelAuthedRoute,
+  } as any)
+const PanelAuthedInnovationsInnovationIdRoute =
+  PanelAuthedInnovationsInnovationIdRouteImport.update({
+    id: '/innovations/$innovationId',
+    path: '/innovations/$innovationId',
+    getParentRoute: () => PanelAuthedRoute,
+  } as any)
+const PanelAuthedInnovationsNewRoute =
+  PanelAuthedInnovationsNewRouteImport.update({
+    id: '/innovations/new',
+    path: '/innovations/new',
+    getParentRoute: () => PanelAuthedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -79,7 +100,10 @@ export interface FileRoutesByFullPath {
   '/panel/needs': typeof PanelAuthedNeedsRoute
   '/panel/': typeof PanelAuthedIndexRoute
   '/panel/ideas/$ideaId': typeof PanelAuthedIdeasIdeaIdRoute
+  '/panel/innovations/$innovationId': typeof PanelAuthedInnovationsInnovationIdRoute
+  '/panel/innovations/new': typeof PanelAuthedInnovationsNewRoute
   '/panel/ideas/': typeof PanelAuthedIdeasIndexRoute
+  '/panel/innovations/': typeof PanelAuthedInnovationsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -89,7 +113,10 @@ export interface FileRoutesByTo {
   '/panel/login': typeof PanelLoginRoute
   '/panel/needs': typeof PanelAuthedNeedsRoute
   '/panel/ideas/$ideaId': typeof PanelAuthedIdeasIdeaIdRoute
+  '/panel/innovations/$innovationId': typeof PanelAuthedInnovationsInnovationIdRoute
+  '/panel/innovations/new': typeof PanelAuthedInnovationsNewRoute
   '/panel/ideas': typeof PanelAuthedIdeasIndexRoute
+  '/panel/innovations': typeof PanelAuthedInnovationsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -102,7 +129,10 @@ export interface FileRoutesById {
   '/panel/_authed/needs': typeof PanelAuthedNeedsRoute
   '/panel/_authed/': typeof PanelAuthedIndexRoute
   '/panel/_authed/ideas/$ideaId': typeof PanelAuthedIdeasIdeaIdRoute
+  '/panel/_authed/innovations/$innovationId': typeof PanelAuthedInnovationsInnovationIdRoute
+  '/panel/_authed/innovations/new': typeof PanelAuthedInnovationsNewRoute
   '/panel/_authed/ideas/': typeof PanelAuthedIdeasIndexRoute
+  '/panel/_authed/innovations/': typeof PanelAuthedInnovationsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -115,7 +145,10 @@ export interface FileRouteTypes {
     | '/panel/needs'
     | '/panel/'
     | '/panel/ideas/$ideaId'
+    | '/panel/innovations/$innovationId'
+    | '/panel/innovations/new'
     | '/panel/ideas/'
+    | '/panel/innovations/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -125,7 +158,10 @@ export interface FileRouteTypes {
     | '/panel/login'
     | '/panel/needs'
     | '/panel/ideas/$ideaId'
+    | '/panel/innovations/$innovationId'
+    | '/panel/innovations/new'
     | '/panel/ideas'
+    | '/panel/innovations'
   id:
     | '__root__'
     | '/'
@@ -137,7 +173,10 @@ export interface FileRouteTypes {
     | '/panel/_authed/needs'
     | '/panel/_authed/'
     | '/panel/_authed/ideas/$ideaId'
+    | '/panel/_authed/innovations/$innovationId'
+    | '/panel/_authed/innovations/new'
     | '/panel/_authed/ideas/'
+    | '/panel/_authed/innovations/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -219,6 +258,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PanelAuthedIdeasIdeaIdRouteImport
       parentRoute: typeof PanelAuthedRoute
     }
+    '/panel/_authed/innovations/': {
+      id: '/panel/_authed/innovations/'
+      path: '/innovations'
+      fullPath: '/panel/innovations/'
+      preLoaderRoute: typeof PanelAuthedInnovationsIndexRouteImport
+      parentRoute: typeof PanelAuthedRoute
+    }
+    '/panel/_authed/innovations/$innovationId': {
+      id: '/panel/_authed/innovations/$innovationId'
+      path: '/innovations/$innovationId'
+      fullPath: '/panel/innovations/$innovationId'
+      preLoaderRoute: typeof PanelAuthedInnovationsInnovationIdRouteImport
+      parentRoute: typeof PanelAuthedRoute
+    }
+    '/panel/_authed/innovations/new': {
+      id: '/panel/_authed/innovations/new'
+      path: '/innovations/new'
+      fullPath: '/panel/innovations/new'
+      preLoaderRoute: typeof PanelAuthedInnovationsNewRouteImport
+      parentRoute: typeof PanelAuthedRoute
+    }
   }
 }
 
@@ -226,14 +286,21 @@ interface PanelAuthedRouteChildren {
   PanelAuthedNeedsRoute: typeof PanelAuthedNeedsRoute
   PanelAuthedIndexRoute: typeof PanelAuthedIndexRoute
   PanelAuthedIdeasIdeaIdRoute: typeof PanelAuthedIdeasIdeaIdRoute
+  PanelAuthedInnovationsInnovationIdRoute: typeof PanelAuthedInnovationsInnovationIdRoute
+  PanelAuthedInnovationsNewRoute: typeof PanelAuthedInnovationsNewRoute
   PanelAuthedIdeasIndexRoute: typeof PanelAuthedIdeasIndexRoute
+  PanelAuthedInnovationsIndexRoute: typeof PanelAuthedInnovationsIndexRoute
 }
 
 const PanelAuthedRouteChildren: PanelAuthedRouteChildren = {
   PanelAuthedNeedsRoute: PanelAuthedNeedsRoute,
   PanelAuthedIndexRoute: PanelAuthedIndexRoute,
   PanelAuthedIdeasIdeaIdRoute: PanelAuthedIdeasIdeaIdRoute,
+  PanelAuthedInnovationsInnovationIdRoute:
+    PanelAuthedInnovationsInnovationIdRoute,
+  PanelAuthedInnovationsNewRoute: PanelAuthedInnovationsNewRoute,
   PanelAuthedIdeasIndexRoute: PanelAuthedIdeasIndexRoute,
+  PanelAuthedInnovationsIndexRoute: PanelAuthedInnovationsIndexRoute,
 }
 
 const PanelAuthedRouteWithChildren = PanelAuthedRoute._addFileChildren(

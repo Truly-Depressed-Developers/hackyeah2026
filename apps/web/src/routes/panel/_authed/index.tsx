@@ -4,7 +4,7 @@ import { buttonVariants } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { trpc } from '@/lib/trpc'
 
-// Start page of the Panel administratora; S-08 (materiały) adds its entry here.
+// Start page of the Panel administratora.
 export const Route = createFileRoute('/panel/_authed/')({
   component: PanelHome,
 })
@@ -18,7 +18,7 @@ function PanelHome() {
         <CardTitle>
           <h1>Witaj{me.data ? `, ${me.data.name}` : ''}</h1>
         </CardTitle>
-        <CardDescription>Potrzeby i pomysły mieszkańców czekają na przejrzenie. Zarządzanie materiałami pojawi się wkrótce.</CardDescription>
+        <CardDescription>Potrzeby i pomysły mieszkańców czekają na przejrzenie. W bazie wiedzy dodasz i poprawisz innowacje, które podpowiada wyszukiwarka.</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-wrap gap-2">
         <Link to="/panel/needs" className={buttonVariants()}>
@@ -26,6 +26,9 @@ function PanelHome() {
         </Link>
         <Link to="/panel/ideas" className={buttonVariants({ variant: 'outline' })}>
           Pomysły mieszkańców
+        </Link>
+        <Link to="/panel/innovations" className={buttonVariants({ variant: 'outline' })}>
+          Baza wiedzy: innowacje
         </Link>
       </CardContent>
     </Card>
