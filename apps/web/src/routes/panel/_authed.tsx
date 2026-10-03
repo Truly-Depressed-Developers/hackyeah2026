@@ -1,6 +1,5 @@
-import { Link, Outlet, createFileRoute, redirect } from '@tanstack/react-router'
-import { Button } from '@/components/ui/button'
-import { usePanelLogout } from '@/features/panel/use-panel-auth'
+import { Outlet, createFileRoute, redirect } from '@tanstack/react-router'
+import { PanelHeader } from '@/features/panel/panel-header'
 import { sessionQueryOptions } from '@/lib/auth'
 
 // Guard for every Panel administratora page. UX only: the API refuses panel data without a session anyway.
@@ -15,30 +14,13 @@ export const Route = createFileRoute('/panel/_authed')({
 
 function PanelLayout() {
   const { session } = Route.useRouteContext()
-  const logout = usePanelLogout()
 
   return (
     <>
-      <header className="flex flex-wrap items-center justify-between gap-4">
-        <nav aria-label="Panel administratora" className="flex flex-wrap items-center gap-4">
-          <Link to="/panel" activeOptions={{ exact: true }} className="font-medium underline-offset-4 hover:underline rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground">
-            Panel administratora
-          </Link>
-          <Link
-            to="/panel/zgloszenia"
-            className="underline-offset-4 hover:underline aria-[current=page]:font-semibold aria-[current=page]:underline rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
-          >
-            Zgłoszenia
-          </Link>
-        </nav>
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-muted-foreground">{session.user.email}</span>
-          <Button variant="outline" size="sm" onClick={() => logout.mutate()} disabled={logout.isPending}>
-            Wyloguj
-          </Button>
-        </div>
-      </header>
-      <Outlet />
+      <PanelHeader user={session.user} />
+      <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-4 py-6 sm:px-6">
+        <Outlet />
+      </main>
     </>
   )
 }

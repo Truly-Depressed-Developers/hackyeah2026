@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Field, FieldLabel } from '@/components/ui/field'
@@ -6,6 +6,7 @@ import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
 import { Skeleton } from '@/components/ui/skeleton'
 import { trpc } from '@/lib/trpc'
 import { formatDate, kindLabel, statusLabel, tierLabel, type SubmissionDetail, type SubmissionStatus } from './labels'
+import { useSetSubmissionStatus } from './use-set-status'
 
 interface SubmissionDialogProps {
   id: string | undefined
@@ -32,15 +33,7 @@ export function SubmissionDialog({ id, onClose }: SubmissionDialogProps) {
 }
 
 function SubmissionDetails({ submission }: { submission: SubmissionDetail }) {
-  const queryClient = useQueryClient()
-  const setStatus = useMutation(
-    trpc.panel.submissions.setStatus.mutationOptions({
-      onSuccess: (updated) => {
-        queryClient.setQueryData(trpc.panel.submissions.get.queryKey({ id: updated.id }), updated)
-        return queryClient.invalidateQueries({ queryKey: trpc.panel.submissions.list.queryKey() })
-      },
-    }),
-  )
+  const setStatus = useSetSubmissionStatus()
 
   return (
     <>

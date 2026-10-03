@@ -21,7 +21,7 @@ function PanelHome() {
         <CardDescription>Zgłoszenia mieszkańców czekają na przejrzenie. Zarządzanie materiałami pojawi się wkrótce.</CardDescription>
       </CardHeader>
       <CardContent>
-        <Link to="/panel/zgloszenia" className={buttonVariants()}>
+        <Link to="/panel/submissions" className={buttonVariants()}>
           Przejdź do zgłoszeń
         </Link>
       </CardContent>

@@ -22,8 +22,8 @@ function LoginPage() {
   const login = usePanelLogin(redirectTo)
 
   return (
-    <div className="flex flex-1 items-center justify-center">
+    <main className="flex flex-1 items-center justify-center p-6">
       <LoginForm onSubmit={login.mutate} isPending={login.isPending} error={login.error?.message} />
-    </div>
+    </main>
   )
 }

@@ -30,3 +30,6 @@ export const tierLabel = { solution: 'Rozwiązanie', related: 'Rozwiązanie pokr
 
 const dateFormat = new Intl.DateTimeFormat('pl-PL', { dateStyle: 'short', timeStyle: 'short' })
 export const formatDate = (iso: string) => dateFormat.format(new Date(iso))
+
+/** Short description of what the Mieszkaniec left: the Pomysł title, or the Zapytanie for the rest. */
+export const summary = (row: Pick<SubmissionRow, 'idea' | 'query'>) => row.idea?.title ?? row.query

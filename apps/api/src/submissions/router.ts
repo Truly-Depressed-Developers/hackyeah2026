@@ -81,7 +81,7 @@ export const submissionsRouter = router({
   }),
 })
 
-const PAGE_SIZE = 20
+export const PAGE_SIZES = [10, 20, 50] as const
 
 /** Panel administratora: only a logged-in Pracownik ROPS reads Zgłoszenia (they hold contact data). */
 export const panelSubmissionsRouter = router({
@@ -89,6 +89,7 @@ export const panelSubmissionsRouter = router({
     .input(
       z.object({
         page: z.number().int().min(1).default(1),
+        pageSize: z.union(PAGE_SIZES.map((n) => z.literal(n))).default(20),
         kind: kindSchema.optional(),
         status: statusSchema.optional(),
         q: z.string().trim().max(200).optional(),
@@ -107,12 +108,18 @@ export const panelSubmissionsRouter = router({
           .from(submission)
           .where(where)
           .orderBy(desc(submission.createdAt))
-          .limit(PAGE_SIZE)
-          .offset((input.page - 1) * PAGE_SIZE),
+          .limit(input.pageSize)
+          .offset((input.page - 1) * input.pageSize),
         db.select({ total: count() }).from(submission).where(where),
       ])
       const total = totals?.total ?? 0
-      return { items: rows.map(toDto), total, page: input.page, pageCount: Math.max(1, Math.ceil(total / PAGE_SIZE)) }
+      return {
+        items: rows.map(toDto),
+        total,
+        page: input.page,
+        pageSize: input.pageSize,
+        pageCount: Math.max(1, Math.ceil(total / input.pageSize)),
+      }
     }),
 
   get: panelProcedure.input(z.object({ id: z.uuid() })).query(async ({ input }) => {
