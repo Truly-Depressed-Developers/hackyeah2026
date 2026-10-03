@@ -23,6 +23,11 @@ Labels `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`; wontf
 
 Single-context: root `CONTEXT.md` + `docs/adr/`. See `docs/agents/domain.md`.
 
+### Voice input
+
+Dictation (S-04) is built; screens consume `useVoiceQuery` rather than touching the
+Web Speech API. See `.claude/skills/voice-input/SKILL.md`.
+
 ## Accessibility audit
 
 Every change that touches UI (resident app, kiosk, Panel administratora) is done only after a WCAG 2.1 AA audit of the changed screens, run in the browser before opening the PR. The audit covers:
