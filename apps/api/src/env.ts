@@ -10,14 +10,8 @@ function required(name: string): string {
   return value
 }
 
-const decideMode = process.env.DECIDE_MODE ?? 'mock'
-if (decideMode !== 'mock' && decideMode !== 'http') {
-  throw new Error(`DECIDE_MODE must be "mock" or "http", got "${decideMode}".`)
-}
-
 export const env = {
   DATABASE_URL: required('DATABASE_URL'),
   PORT: Number(process.env.PORT ?? process.env.API_PORT ?? 3000),
-  DECIDE_MODE: decideMode,
-  DECIDE_URL: process.env.DECIDE_URL ?? 'http://localhost:8000',
+  AI_URL: (process.env.AI_URL ?? 'http://localhost:8000').replace(/\/+$/, ''),
 }
