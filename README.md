@@ -25,12 +25,12 @@ pnpm db:seed
 pnpm dev
 ```
 
-Open http://localhost:5173, describe a problem and click **Szukaj**. With `VITE_MOCK_SEARCH=true` the
-results come from the in-browser mock. The API runs on http://localhost:3000; Vite proxies `/trpc` and `/ai` to it.
+Open http://localhost:5173, describe a problem and click **Szukaj**. While `AI_URL` is empty the
+results come from the API's mock. The API runs on http://localhost:3000; Vite proxies `/trpc` and `/ai` to it.
 Stop with `Ctrl+C`, then `docker compose down` (add `-v` to also wipe the database).
 
 > Port 5432 or 3000 already taken? Change `DB_PORT` (and the port in `DATABASE_URL`) or `API_PORT` in `.env`.
-> `.env` is read by both apps, drizzle-kit and docker compose. `VITE_MOCK_SEARCH=true` fakes the AI service.
+> `.env` is read by both apps, drizzle-kit and docker compose. An empty `AI_URL` mocks the AI service.
 
 ## Scripts (repo root)
 
@@ -52,11 +52,11 @@ apps/api/src
   env.ts            reads the root .env
   db/schema.ts      Drizzle tables
   router.ts         tRPC router; exports AppRouter
+  ai/               mock of the AI service (used while AI_URL is empty) + generated schema.d.ts
   index.ts          Hono server, mounts tRPC at /trpc and forwards /ai/* to AI_URL
 apps/web/src
   lib/trpc.ts       tRPC client + QueryClient
   lib/ai/           AI-service client: generated schema.d.ts + TanStack Query hooks ($ai)
-  mocks/            MSW fake of the AI service (VITE_MOCK_SEARCH)
   routes/           file-based routes (routeTree.gen.ts is generated; commit it)
   components/ui/    shadcn components (add more: cd apps/web && pnpm dlx shadcn@latest add <name>)
 ```
@@ -121,15 +121,15 @@ calls the AI service through generated TanStack Query hooks (`$ai` in `apps/web/
 at `/ai/*`, which Hono forwards to `AI_URL`. Why: `docs/adr/0001-ai-calls-via-openapi-passthrough.md`.
 
 - `packages/ai-contract/openapi.yaml` is the draft contract. `pnpm gen:ai` turns it into
-  `apps/web/src/lib/ai/schema.d.ts`.
-- With `VITE_MOCK_SEARCH=true`, MSW answers `/ai/*` in the browser (`apps/web/src/mocks/handlers.ts`).
+  `apps/web/src/lib/ai/schema.d.ts` and `apps/api/src/ai/schema.d.ts`.
+- While `AI_URL` is empty (locally and on Render), Hono answers `/ai/search` from `apps/api/src/ai/fixtures.ts`.
 
 To switch to the real service:
 
-1. Start it and set `AI_URL` in `.env` (default `http://localhost:8000`).
+1. Start it and set `AI_URL` in `.env` (e.g. `http://localhost:8000`), or on Render.
 2. Run `pnpm gen:ai -- --remote`. This fetches `${AI_URL}/openapi.json` and overwrites `schema.d.ts`.
 3. Run `pnpm typecheck` and fix whatever the real contract changed.
-4. Set `VITE_MOCK_SEARCH=false` and restart `pnpm dev`.
+4. Restart `pnpm dev`. Clearing `AI_URL` switches back to the mock.
 
 ## PWA (optional)
 

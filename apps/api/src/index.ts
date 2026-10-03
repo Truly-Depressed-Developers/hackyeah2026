@@ -6,6 +6,7 @@ import { trpcServer } from '@hono/trpc-server'
 import { Hono } from 'hono'
 import { proxy } from 'hono/proxy'
 import { auth } from './auth.js'
+import { mockSearch } from './ai/mock.js'
 import { env } from './env.js'
 import { appRouter } from './router.js'
 import { createContext } from './trpc.js'
@@ -15,6 +16,8 @@ const app = new Hono()
 app.get('/health', (c) => c.json({ ok: true }))
 app.on(['GET', 'POST'], '/api/auth/*', (c) => auth.handler(c.req.raw))
 app.use('/trpc/*', trpcServer({ router: appRouter, createContext }))
+
+if (!env.AI_URL) app.post('/ai/search', mockSearch)
 
 app.all('/ai/*', async (c) => {
   const url = new URL(c.req.url)
@@ -34,7 +37,7 @@ if (existsSync(webDist)) {
 }
 
 const server = serve({ fetch: app.fetch, port: env.PORT }, (info) => {
-  console.log(`API running on http://localhost:${info.port} (AI_URL=${env.AI_URL})`)
+  console.log(`API running on http://localhost:${info.port} (AI: ${env.AI_URL || 'mock'})`)
 })
 
 process.on('SIGINT', () => {
