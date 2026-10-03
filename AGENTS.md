@@ -8,3 +8,17 @@ Read `docs/README.md` inside that installed package first, then read the relevan
 
 This block is written and re-added by `turbo` before repository-scoped commands when an AI agent is detected. In the Turborepo source repository, its template is defined in `crates/turborepo-cli/src/cli/agent_guidance.rs`. Removing the managed block while updates are enabled means a later qualifying invocation will add it again. Set `"agentGuidance": false` in the root `turbo.json` or `turbo.jsonc` to opt out; this does not remove an existing block. Keep the block committed with your work to avoid an uncommitted change on the next agent invocation.
 <!-- END:turborepo-agent-rules -->
+
+## Agent skills
+
+### Issue tracker
+
+Issues live in Linear — team `Hackyeah2026` (key `HAC`), project `HubMI` — via Linear MCP tools. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Labels `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`; wontfix → `Canceled` status. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: root `CONTEXT.md` + `docs/adr/`. See `docs/agents/domain.md`.
