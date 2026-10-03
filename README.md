@@ -69,8 +69,9 @@ Production is a single service: the API also serves the built web app, so there 
 1. **Database (Neon)**: create a free project at https://neon.com and copy its connection string.
    Create the tables from your machine:
    ```sh
-   DATABASE_URL='postgres://...neon.tech/neondb?sslmode=require' pnpm db:push
+   DATABASE_URL='postgres://...neon.tech/neondb?sslmode=verify-full' pnpm db:push
    ```
+   Use `sslmode=verify-full` instead of `require` (avoids a pg warning; same for Render).
    Re-run this after every schema change (env vars take precedence over `.env`).
 2. **App (Render)**: in the Render dashboard choose **New → Blueprint**, connect GitHub and pick this repo.
    An org owner has to approve the Render GitHub app for the organization.
