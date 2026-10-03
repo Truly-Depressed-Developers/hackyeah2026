@@ -19,7 +19,7 @@ export async function realCatalog(c: Context): Promise<Response> {
   try {
     const url = new URL(`${env.AI_URL}/api/documents`)
     url.searchParams.set('limit', '1000')
-    if (env.AI_COLLECTION) url.searchParams.set('collection_name', env.AI_COLLECTION)
+    url.searchParams.set('collection_name', env.AI_COLLECTION)
     const response = await fetch(url, { headers: { 'x-api-key': env.AI_API_KEY }, signal: AbortSignal.timeout(TIMEOUT_MS) })
     if (!response.ok) throw new Error(`AI service responded ${response.status}`)
 
