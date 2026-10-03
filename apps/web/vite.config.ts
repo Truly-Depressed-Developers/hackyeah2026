@@ -29,7 +29,8 @@ export default defineConfig(({ mode }) => {
     server: {
       proxy: {
         '/trpc': `http://localhost:${env.API_PORT || 3000}`,
-        '/ai': `http://localhost:${env.API_PORT || 3000}`,
+        '/api': `http://localhost:${env.API_PORT || 3000}`,
+        '/ai':`http://localhost:${env.API_PORT || 3000}`,
       },
     },
   }

@@ -1,6 +1,6 @@
 # HubMI
 
-Resident-facing search over the ROPS operator's knowledge base: a resident describes a problem in their own words and gets matched results, each closed with an action.
+Resident-facing search over the ROPS knowledge base: a resident describes a problem in their own words and gets matched results, each closed with an action.
 
 ## Language
 
@@ -10,9 +10,15 @@ Resident-facing search over the ROPS operator's knowledge base: a resident descr
 Anonymous person describing a problem or need, on the web or at a kiosk. Has no account.
 _Avoid_: user, citizen, client
 
-**Operator**:
-The single ROPS role that logs into the panel and curates the knowledge base.
-_Avoid_: admin, CRM user
+**Pracownik ROPS** (ROPS staff member):
+A person with an account in the Panel administratora; all of them have the same rights. The MVP has one predefined account.
+_Avoid_: operator, admin, administrator, CRM user
+
+### Panel
+
+**Panel administratora** (Admin panel):
+The closed part of the app where Pracownicy ROPS manage resident submissions and the knowledge base.
+_Avoid_: CRM, panel operatora
 
 ### Search
 
@@ -21,7 +27,7 @@ The resident's free-form description of a problem or need, in everyday language,
 _Avoid_: search term, prompt
 
 **Wynik** (Result):
-One item from the operator's knowledge base returned for a Zapytanie. It always has a **Rodzaj** and a **Poziom dopasowania**.
+One item from the ROPS knowledge base returned for a Zapytanie. It always has a **Rodzaj** and a **Poziom dopasowania**.
 _Avoid_: hit, answer, card (card is a UI element)
 
 **Rodzaj wyniku** (Result kind):
@@ -59,3 +65,4 @@ _Avoid_: button, CTA
 ## Flagged ambiguities
 
 - An early search contract grouped results by kind (solutions / helpers / facts). Resolved: the primary grouping is **Poziom dopasowania**, and kind is a label.
+- The PRD and roadmap call the panel user **Operator** and assume a single fixed account. Resolved (HAC-6): the person is a **Pracownik ROPS**, the place is the **Panel administratora**; one predefined account in the MVP, more accounts possible later.

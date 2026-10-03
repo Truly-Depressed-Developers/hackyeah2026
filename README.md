@@ -21,6 +21,7 @@ cp .env.example .env
 pnpm install
 docker compose up -d
 pnpm db:push
+pnpm db:seed
 pnpm dev
 ```
 
@@ -41,6 +42,7 @@ Stop with `Ctrl+C`, then `docker compose down` (add `-v` to also wipe the databa
 | `pnpm lint`       | Lint the whole repo with oxlint (`pnpm lint:fix` to autofix)    |
 | `pnpm db:push`    | Push the Drizzle schema (`apps/api/src/db/schema.ts`) to the DB  |
 | `pnpm db:studio`  | Open Drizzle Studio                                             |
+| `pnpm db:seed`    | Create the predefined Panel administratora account (`ADMIN_EMAIL` / `ADMIN_PASSWORD`) |
 | `pnpm gen:ai`     | Generate AI-service types (`-- --remote` for `${AI_URL}/openapi.json`) |
 
 ## Layout
@@ -76,7 +78,9 @@ Production is a single service: the API also serves the built web app, so there 
    Re-run this after every schema change (env vars take precedence over `.env`).
 2. **App (Render)**: in the Render dashboard choose **New → Blueprint**, connect GitHub and pick this repo.
    An org owner has to approve the Render GitHub app for the organization.
-   When asked, set `DATABASE_URL` to the Neon string (and `AI_URL` once the AI service is deployed).
+   When asked, set `DATABASE_URL` to the Neon string, `BETTER_AUTH_URL` to the service URL
+   (and `AI_URL` once the AI service is deployed). Then create the panel account from your machine:
+   `DATABASE_URL=... ADMIN_EMAIL=... ADMIN_PASSWORD=... pnpm db:seed`.
 3. Every push to `main` redeploys. Health check: `/health`.
 
 Free-tier caveats: the service sleeps after 15 min without traffic and takes about a minute to wake up,
