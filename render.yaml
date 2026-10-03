@@ -11,6 +11,10 @@ services:
         sync: false
       - key: AI_URL
         sync: false
+      - key: AI_API_KEY
+        sync: false
+      - key: AI_COLLECTION
+        sync: false
       - key: BETTER_AUTH_SECRET
         generateValue: true
       - key: BETTER_AUTH_URL
