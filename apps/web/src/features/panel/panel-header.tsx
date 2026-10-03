@@ -16,7 +16,8 @@ import { usePanelLogout } from './use-panel-auth'
 // Few sections, so a top bar rather than a sidebar. S-08 (materiały) adds its link here.
 const sections = [
   { to: '/panel', label: 'Start', exact: true },
-  { to: '/panel/submissions', label: 'Zgłoszenia', exact: false },
+  { to: '/panel/needs', label: 'Potrzeby', exact: false },
+  { to: '/panel/ideas', label: 'Pomysły', exact: false },
 ] as const
 
 const navLink = buttonVariants({
@@ -37,7 +38,7 @@ export function PanelHeader({ user }: { user: { name: string; email: string } })
     <header className="border-b">
       <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 py-2 sm:px-6">
         <div className="flex min-w-0 flex-wrap items-center gap-x-6 gap-y-1">
-          <Link to="/panel" className="flex items-baseline gap-2 rounded-md">
+          <Link to="/panel" activeOptions={{ exact: true }} className="flex items-baseline gap-2 rounded-md">
             <span className="text-xl leading-6 font-[650] tracking-[-0.02em]">HubMI</span>
             <span className="text-sm text-muted-foreground">Panel administratora</span>
           </Link>

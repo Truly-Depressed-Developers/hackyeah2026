@@ -1,9 +1,11 @@
-import { panelSubmissionsRouter, submissionsRouter } from './submissions/router.js'
+import { ideasRouter, panelIdeasRouter } from './ideas/router.js'
+import { needsRouter, panelNeedsRouter } from './needs/router.js'
 import { panelProcedure, router } from './trpc.js'
 
 export const appRouter = router({
   // Public procedures the resident app calls.
-  submissions: submissionsRouter,
+  needs: needsRouter,
+  ideas: ideasRouter,
 
   // Panel administratora. Every procedure under here is on panelProcedure.
   panel: router({
@@ -11,7 +13,8 @@ export const appRouter = router({
       name: ctx.session.user.name,
       email: ctx.session.user.email,
     })),
-    submissions: panelSubmissionsRouter,
+    needs: panelNeedsRouter,
+    ideas: panelIdeasRouter,
   }),
 })
 

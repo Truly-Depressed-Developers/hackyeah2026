@@ -14,7 +14,10 @@ import {
 export const PAGE_SIZES = [10, 20, 50] as const
 export type PageSize = (typeof PAGE_SIZES)[number]
 
-interface SubmissionsPaginationProps {
+// Server-side paging for the Panel administratora lists.
+interface ListPaginationProps {
+  /** Names the navigation, e.g. "Strony listy potrzeb". */
+  label: string
   page: number
   pageCount: number
   pageSize: PageSize
@@ -32,7 +35,7 @@ function pageWindow(page: number, pageCount: number): (number | null)[] {
   return sorted.flatMap((p, i) => (i > 0 && p - sorted[i - 1]! > 1 ? [null, p] : [p]))
 }
 
-export function SubmissionsPagination(props: SubmissionsPaginationProps) {
+export function ListPagination(props: ListPaginationProps) {
   const { page, pageCount, pageSize, total } = props
   const from = total === 0 ? 0 : (page - 1) * pageSize + 1
   const to = Math.min(page * pageSize, total)
@@ -68,7 +71,7 @@ export function SubmissionsPagination(props: SubmissionsPaginationProps) {
       </div>
 
       {pageCount > 1 && (
-        <Pagination aria-label="Strony listy zgłoszeń" className="mx-0 w-auto justify-start sm:justify-end">
+        <Pagination aria-label={props.label} className="mx-0 w-auto justify-start sm:justify-end">
           <PaginationContent className="flex-wrap">
             <PaginationItem>
               <PaginationPrevious

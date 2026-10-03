@@ -14,7 +14,9 @@ import { Route as PanelRouteImport } from './routes/panel'
 import { Route as PanelAuthedRouteImport } from './routes/panel/_authed'
 import { Route as PanelLoginRouteImport } from './routes/panel/login'
 import { Route as PanelAuthedIndexRouteImport } from './routes/panel/_authed/index'
-import { Route as PanelAuthedSubmissionsRouteImport } from './routes/panel/_authed/submissions'
+import { Route as PanelAuthedNeedsRouteImport } from './routes/panel/_authed/needs'
+import { Route as PanelAuthedIdeasIndexRouteImport } from './routes/panel/_authed/ideas/index'
+import { Route as PanelAuthedIdeasIdeaIdRouteImport } from './routes/panel/_authed/ideas/$ideaId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -40,9 +42,19 @@ const PanelAuthedIndexRoute = PanelAuthedIndexRouteImport.update({
   path: '/',
   getParentRoute: () => PanelAuthedRoute,
 } as any)
-const PanelAuthedSubmissionsRoute = PanelAuthedSubmissionsRouteImport.update({
-  id: '/submissions',
-  path: '/submissions',
+const PanelAuthedNeedsRoute = PanelAuthedNeedsRouteImport.update({
+  id: '/needs',
+  path: '/needs',
+  getParentRoute: () => PanelAuthedRoute,
+} as any)
+const PanelAuthedIdeasIndexRoute = PanelAuthedIdeasIndexRouteImport.update({
+  id: '/ideas/',
+  path: '/ideas/',
+  getParentRoute: () => PanelAuthedRoute,
+} as any)
+const PanelAuthedIdeasIdeaIdRoute = PanelAuthedIdeasIdeaIdRouteImport.update({
+  id: '/ideas/$ideaId',
+  path: '/ideas/$ideaId',
   getParentRoute: () => PanelAuthedRoute,
 } as any)
 
@@ -50,14 +62,18 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/panel': typeof PanelRouteWithChildren
   '/panel/login': typeof PanelLoginRoute
-  '/panel/submissions': typeof PanelAuthedSubmissionsRoute
+  '/panel/needs': typeof PanelAuthedNeedsRoute
   '/panel/': typeof PanelAuthedIndexRoute
+  '/panel/ideas/$ideaId': typeof PanelAuthedIdeasIdeaIdRoute
+  '/panel/ideas/': typeof PanelAuthedIdeasIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/panel': typeof PanelAuthedIndexRoute
   '/panel/login': typeof PanelLoginRoute
-  '/panel/submissions': typeof PanelAuthedSubmissionsRoute
+  '/panel/needs': typeof PanelAuthedNeedsRoute
+  '/panel/ideas/$ideaId': typeof PanelAuthedIdeasIdeaIdRoute
+  '/panel/ideas': typeof PanelAuthedIdeasIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -65,22 +81,39 @@ export interface FileRoutesById {
   '/panel': typeof PanelRouteWithChildren
   '/panel/_authed': typeof PanelAuthedRouteWithChildren
   '/panel/login': typeof PanelLoginRoute
-  '/panel/_authed/submissions': typeof PanelAuthedSubmissionsRoute
+  '/panel/_authed/needs': typeof PanelAuthedNeedsRoute
   '/panel/_authed/': typeof PanelAuthedIndexRoute
+  '/panel/_authed/ideas/$ideaId': typeof PanelAuthedIdeasIdeaIdRoute
+  '/panel/_authed/ideas/': typeof PanelAuthedIdeasIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/panel' | '/panel/login' | '/panel/submissions' | '/panel/'
+  fullPaths:
+    | '/'
+    | '/panel'
+    | '/panel/login'
+    | '/panel/needs'
+    | '/panel/'
+    | '/panel/ideas/$ideaId'
+    | '/panel/ideas/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/panel' | '/panel/login' | '/panel/submissions'
+  to:
+    | '/'
+    | '/panel'
+    | '/panel/login'
+    | '/panel/needs'
+    | '/panel/ideas/$ideaId'
+    | '/panel/ideas'
   id:
     | '__root__'
     | '/'
     | '/panel'
     | '/panel/_authed'
     | '/panel/login'
-    | '/panel/_authed/submissions'
+    | '/panel/_authed/needs'
     | '/panel/_authed/'
+    | '/panel/_authed/ideas/$ideaId'
+    | '/panel/_authed/ideas/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -125,24 +158,42 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PanelAuthedIndexRouteImport
       parentRoute: typeof PanelAuthedRoute
     }
-    '/panel/_authed/submissions': {
-      id: '/panel/_authed/submissions'
-      path: '/submissions'
-      fullPath: '/panel/submissions'
-      preLoaderRoute: typeof PanelAuthedSubmissionsRouteImport
+    '/panel/_authed/needs': {
+      id: '/panel/_authed/needs'
+      path: '/needs'
+      fullPath: '/panel/needs'
+      preLoaderRoute: typeof PanelAuthedNeedsRouteImport
+      parentRoute: typeof PanelAuthedRoute
+    }
+    '/panel/_authed/ideas/': {
+      id: '/panel/_authed/ideas/'
+      path: '/ideas'
+      fullPath: '/panel/ideas/'
+      preLoaderRoute: typeof PanelAuthedIdeasIndexRouteImport
+      parentRoute: typeof PanelAuthedRoute
+    }
+    '/panel/_authed/ideas/$ideaId': {
+      id: '/panel/_authed/ideas/$ideaId'
+      path: '/ideas/$ideaId'
+      fullPath: '/panel/ideas/$ideaId'
+      preLoaderRoute: typeof PanelAuthedIdeasIdeaIdRouteImport
       parentRoute: typeof PanelAuthedRoute
     }
   }
 }
 
 interface PanelAuthedRouteChildren {
-  PanelAuthedSubmissionsRoute: typeof PanelAuthedSubmissionsRoute
+  PanelAuthedNeedsRoute: typeof PanelAuthedNeedsRoute
   PanelAuthedIndexRoute: typeof PanelAuthedIndexRoute
+  PanelAuthedIdeasIdeaIdRoute: typeof PanelAuthedIdeasIdeaIdRoute
+  PanelAuthedIdeasIndexRoute: typeof PanelAuthedIdeasIndexRoute
 }
 
 const PanelAuthedRouteChildren: PanelAuthedRouteChildren = {
-  PanelAuthedSubmissionsRoute: PanelAuthedSubmissionsRoute,
+  PanelAuthedNeedsRoute: PanelAuthedNeedsRoute,
   PanelAuthedIndexRoute: PanelAuthedIndexRoute,
+  PanelAuthedIdeasIdeaIdRoute: PanelAuthedIdeasIdeaIdRoute,
+  PanelAuthedIdeasIndexRoute: PanelAuthedIdeasIndexRoute,
 }
 
 const PanelAuthedRouteWithChildren = PanelAuthedRoute._addFileChildren(

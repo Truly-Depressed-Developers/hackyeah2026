@@ -1,8 +1,8 @@
 import { count } from 'drizzle-orm'
 import { db } from './index.js'
-import { submission, type IdeaContent, type ShownResult } from './schema.js'
+import { idea, need, type IdeaAnswer, type ShownResult } from './schema.js'
 
-// Fictional Zgłoszenia so the Panel administratora has data before the S-03 forms exist.
+// Fictional Potrzeby and Pomysły so the Panel administratora has data before the S-03 forms exist.
 // No real personal data: contacts use example.com and the 600 000 0xx range.
 
 const queries = [
@@ -29,7 +29,7 @@ const shown: ShownResult[] = [
   { id: 'dla-seniorow__bawita', title: 'BaWita', tier: 'related' },
 ]
 
-const ideas: IdeaContent[] = [
+const ideas: { title: string; answers: IdeaAnswer[] }[] = [
   {
     title: 'Sąsiedzka zmiana opieki',
     answers: [
@@ -58,33 +58,50 @@ const ideas: IdeaContent[] = [
 const kinds = ['gap', 'gap', 'contact_request', 'idea'] as const
 const statuses = ['new', 'new', 'new', 'in_progress', 'done'] as const
 
-export async function seedSubmissions(total = 60) {
-  const [existing] = await db.select({ n: count() }).from(submission)
+const contactFor = (i: number) => (i % 2 === 0 ? `mieszkaniec${i}@example.com` : `600 000 ${String(i).padStart(3, '0')}`)
+
+export async function seedNeeds(total = 60) {
+  const [existing] = await db.select({ n: count() }).from(need)
   if ((existing?.n ?? 0) > 0) {
-    console.log('Zgłoszenia already seeded, skipping.')
+    console.log('Potrzeby already seeded, skipping.')
     return
   }
 
   const now = Date.now()
   const rows = Array.from({ length: total }, (_, i) => {
     const kind = kinds[i % kinds.length]!
-    // Every third non-gap Zgłoszenie comes from a search that did show Wyniki ("Nic tu nie pasuje?").
+    // Every third non-gap Potrzeba comes from a search that did show Wyniki ("Nic tu nie pasuje?").
     const sawResults = kind !== 'gap' && i % 3 === 0
     const createdAt = new Date(now - i * 47 * 60 * 1000)
-    const hasContact = kind !== 'gap'
+    const isContactRequest = kind === 'contact_request'
     return {
       kind,
       status: statuses[i % statuses.length]!,
       query: queries[i % queries.length]!,
       noMatch: !sawResults,
       shownResults: sawResults ? shown : [],
-      contact: hasContact ? (i % 2 === 0 ? `mieszkaniec${i}@example.com` : `600 000 ${String(i).padStart(3, '0')}`) : null,
-      consentAt: hasContact ? createdAt : null,
-      idea: kind === 'idea' ? ideas[i % ideas.length]! : null,
+      contact: isContactRequest ? contactFor(i) : null,
+      consentAt: isContactRequest ? createdAt : null,
       createdAt,
       updatedAt: createdAt,
     }
   })
-  await db.insert(submission).values(rows)
-  console.log(`Created ${rows.length} fictional Zgłoszenia.`)
+  const inserted = await db.insert(need).values(rows).returning({ id: need.id, kind: need.kind, createdAt: need.createdAt })
+
+  // A Pomysł for every Potrzeba of kind 'idea', plus a few proposed without a search.
+  const fromNeeds = inserted
+    .filter((row) => row.kind === 'idea')
+    .map((row, i) => ({ needId: row.id as string | null, createdAt: row.createdAt, i }))
+  const standalone = [0, 1, 2].map((i) => ({ needId: null, createdAt: new Date(now - (i * 5 + 2) * 60 * 60 * 1000), i: i + 100 }))
+  const ideaRows = [...fromNeeds, ...standalone].map(({ needId, createdAt, i }) => ({
+    needId,
+    status: statuses[i % statuses.length]!,
+    ...ideas[i % ideas.length]!,
+    contact: contactFor(i + 1),
+    consentAt: createdAt,
+    createdAt,
+    updatedAt: createdAt,
+  }))
+  await db.insert(idea).values(ideaRows)
+  console.log(`Created ${rows.length} fictional Potrzeby and ${ideaRows.length} Pomysły.`)
 }

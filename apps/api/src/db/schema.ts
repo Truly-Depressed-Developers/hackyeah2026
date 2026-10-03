@@ -67,9 +67,9 @@ export const verification = pgTable(
   (t) => [index('verification_identifier_idx').on(t.identifier)],
 )
 
-// Zgłoszenia (see CONTEXT.md): what the Panel administratora lists when a Mieszkaniec found no help.
-export const submissionKind = pgEnum('submission_kind', ['gap', 'idea', 'contact_request'])
-export const submissionStatus = pgEnum('submission_status', ['new', 'in_progress', 'done'])
+// Potrzeby and Pomysły (see CONTEXT.md). Both share the simple handling Stan for now.
+export const handlingStatus = pgEnum('handling_status', ['new', 'in_progress', 'done'])
+export const needKind = pgEnum('need_kind', ['gap', 'idea', 'contact_request'])
 
 /** A Wynik the Mieszkaniec saw before giving up; a snapshot, so later knowledge-base edits don't rewrite history. */
 export interface ShownResult {
@@ -78,28 +78,47 @@ export interface ShownResult {
   tier: 'solution' | 'related'
 }
 
-/** Pomysł content. The step-by-step form sends it whole at the end; new steps are new answers, not new columns. */
-export interface IdeaContent {
-  title: string
-  answers: { question: string; answer: string }[]
+/** One answered step of the Pomysł form. New steps are new answers, not new columns. */
+export interface IdeaAnswer {
+  question: string
+  answer: string
 }
 
-export const submission = pgTable(
-  'submission',
+export const need = pgTable(
+  'need',
   {
     id: uuid().primaryKey().defaultRandom(),
-    kind: submissionKind().notNull(),
-    status: submissionStatus().notNull().default('new'),
+    kind: needKind().notNull(),
+    // Not used for kind 'idea': that one is handled through its Pomysł.
+    status: handlingStatus().notNull().default('new'),
     query: text().notNull(),
     noMatch: boolean('no_match').notNull(),
     shownResults: jsonb('shown_results').$type<ShownResult[]>().notNull().default([]),
-    // Pomysł and Prośba o kontakt only; a Luka has neither.
+    // Prośba o kontakt only.
     contact: text(),
     consentAt: timestamp('consent_at', { withTimezone: true }),
-    idea: jsonb().$type<IdeaContent>(),
     ...timestamps,
   },
-  (t) => [index('submission_status_created_idx').on(t.status, t.createdAt), index('submission_kind_idx').on(t.kind)],
+  (t) => [index('need_status_created_idx').on(t.status, t.createdAt), index('need_kind_idx').on(t.kind)],
 )
 
-export type Submission = typeof submission.$inferSelect
+export const idea = pgTable(
+  'idea',
+  {
+    id: uuid().primaryKey().defaultRandom(),
+    // The Potrzeba it came from; null when proposed without a search.
+    needId: uuid('need_id')
+      .unique()
+      .references(() => need.id, { onDelete: 'set null' }),
+    status: handlingStatus().notNull().default('new'),
+    title: text().notNull(),
+    answers: jsonb().$type<IdeaAnswer[]>().notNull().default([]),
+    contact: text().notNull(),
+    consentAt: timestamp('consent_at', { withTimezone: true }).notNull(),
+    ...timestamps,
+  },
+  (t) => [index('idea_status_created_idx').on(t.status, t.createdAt)],
+)
+
+export type Need = typeof need.$inferSelect
+export type Idea = typeof idea.$inferSelect

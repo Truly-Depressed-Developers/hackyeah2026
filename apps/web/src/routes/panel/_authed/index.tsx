@@ -18,11 +18,14 @@ function PanelHome() {
         <CardTitle>
           <h1>Witaj{me.data ? `, ${me.data.name}` : ''}</h1>
         </CardTitle>
-        <CardDescription>Zgłoszenia mieszkańców czekają na przejrzenie. Zarządzanie materiałami pojawi się wkrótce.</CardDescription>
+        <CardDescription>Potrzeby i pomysły mieszkańców czekają na przejrzenie. Zarządzanie materiałami pojawi się wkrótce.</CardDescription>
       </CardHeader>
-      <CardContent>
-        <Link to="/panel/submissions" className={buttonVariants()}>
-          Przejdź do zgłoszeń
+      <CardContent className="flex flex-wrap gap-2">
+        <Link to="/panel/needs" className={buttonVariants()}>
+          Potrzeby mieszkańców
+        </Link>
+        <Link to="/panel/ideas" className={buttonVariants({ variant: 'outline' })}>
+          Pomysły mieszkańców
         </Link>
       </CardContent>
     </Card>
