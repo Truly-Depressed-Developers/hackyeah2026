@@ -34,8 +34,72 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CatalogResponse'
+  /catalog/{id}:
+    get:
+      operationId: innovation
+      summary: One knowledge-base record with everything the innovation page shows.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: dla-seniorow__bawita
+      responses:
+        '200':
+          description: The record.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Innovation'
+        '404':
+          description: No record with that id.
 components:
   schemas:
+    Innovation:
+      type: object
+      required: [id, title, featured, beneficiaries, source]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        subtitle:
+          type: string
+          description: One-line description, cleaned from record "Opis".
+        featured:
+          type: boolean
+          description: Selected by ROPS for wider rollout ("Innowacja wybrana do upowszechniania").
+        category:
+          type: string
+        categorySlug:
+          type: string
+        solution:
+          type: string
+          description: From "Rozwiązanie".
+        problem:
+          type: string
+          description: From "Problem".
+        targetGroup:
+          type: string
+          description: From "Grupa docelowa".
+        beneficiaries:
+          type: array
+          description: Institutions that can use it, split from "Odbiorcy i instytucje".
+          items:
+            type: string
+        effectiveness:
+          type: string
+          description: From "Skuteczność" (test results). Missing when ROPS has not published them.
+        authors:
+          type: array
+          description: Public author attribution from ROPS. Only sent when the server enables it (AI_SHOW_AUTHORS), see the NFR on personal data.
+          items:
+            type: string
+        source:
+          $ref: '#/components/schemas/Source'
+        links:
+          $ref: '#/components/schemas/Links'
     CatalogResponse:
       type: object
       required: [items]
@@ -54,6 +118,12 @@ components:
           type: string
         summary:
           type: string
+        subtitle:
+          type: string
+        featured:
+          type: boolean
+        hasVideo:
+          type: boolean
         category:
           type: string
           example: Innowacje dla seniorów

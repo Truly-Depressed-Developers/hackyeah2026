@@ -35,10 +35,51 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/catalog/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One knowledge-base record with everything the innovation page shows. */
+        get: operations["innovation"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        Innovation: {
+            id: string;
+            title: string;
+            /** @description One-line description, cleaned from record "Opis". */
+            subtitle?: string;
+            /** @description Selected by ROPS for wider rollout ("Innowacja wybrana do upowszechniania"). */
+            featured: boolean;
+            category?: string;
+            categorySlug?: string;
+            /** @description From "Rozwiązanie". */
+            solution?: string;
+            /** @description From "Problem". */
+            problem?: string;
+            /** @description From "Grupa docelowa". */
+            targetGroup?: string;
+            /** @description Institutions that can use it, split from "Odbiorcy i instytucje". */
+            beneficiaries: string[];
+            /** @description From "Skuteczność" (test results). Missing when ROPS has not published them. */
+            effectiveness?: string;
+            /** @description Public author attribution from ROPS. Only sent when the server enables it (AI_SHOW_AUTHORS), see the NFR on personal data. */
+            authors?: string[];
+            source: components["schemas"]["Source"];
+            links?: components["schemas"]["Links"];
+        };
         CatalogResponse: {
             items: components["schemas"]["CatalogItem"][];
         };
@@ -46,6 +87,9 @@ export interface components {
             id: string;
             title: string;
             summary: string;
+            subtitle?: string;
+            featured?: boolean;
+            hasVideo?: boolean;
             /** @example Innowacje dla seniorów */
             category?: string;
             /**
@@ -189,6 +233,36 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["CatalogResponse"];
                 };
+            };
+        };
+    };
+    innovation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example dla-seniorow__bawita */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The record. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Innovation"];
+                };
+            };
+            /** @description No record with that id. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

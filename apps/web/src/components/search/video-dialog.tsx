@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, type ReactElement, type ReactNode } from 'react'
 import { IconPlayerPlay } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
@@ -13,14 +13,20 @@ export function youtubeId(url: string) {
   }
 }
 
-export function VideoDialog({ videoId, title, primary }: { videoId: string; title: string; primary: boolean }) {
+type Props = { videoId: string; title: string; primary?: boolean; trigger?: ReactElement; children?: ReactNode }
+
+export function VideoDialog({ videoId, title, primary = false, trigger, children }: Props) {
   const titleRef = useRef<HTMLHeadingElement>(null)
 
   return (
     <Dialog>
-      <DialogTrigger render={<Button variant={primary ? 'default' : 'outline'} className="h-11 px-4 text-base" />}>
-        <IconPlayerPlay aria-hidden="true" />
-        Obejrzyj film
+      <DialogTrigger render={trigger ?? <Button variant={primary ? 'default' : 'outline'} className="h-11 px-4 text-base" />}>
+        {children ?? (
+          <>
+            <IconPlayerPlay aria-hidden="true" />
+            Obejrzyj film
+          </>
+        )}
       </DialogTrigger>
       {/* Focus the title, not the iframe: keys inside a cross-origin iframe never reach us, so Esc would not close. */}
       <DialogContent initialFocus={titleRef} className="gap-3 pt-14 sm:max-w-3xl">
