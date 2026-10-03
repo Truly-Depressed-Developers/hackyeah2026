@@ -17,7 +17,7 @@ export const env = {
   PORT: Number(process.env.PORT ?? process.env.API_PORT ?? 3000),
   AI_URL: aiUrl,
   AI_API_KEY: aiUrl ? required('AI_API_KEY') : '',
-  AI_COLLECTION: process.env.AI_COLLECTION ?? '',
+  AI_COLLECTION: aiUrl ? required('AI_COLLECTION') : '',
   BETTER_AUTH_SECRET: required('BETTER_AUTH_SECRET'),
   // Public URL the browser uses (Vite in dev, the Render URL in production).
   BETTER_AUTH_URL: process.env.BETTER_AUTH_URL ?? 'http://localhost:5173',

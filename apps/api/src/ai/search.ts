@@ -30,7 +30,8 @@ export async function realSearch(c: Context): Promise<Response> {
   const body: QueryRequest = {
     query: parsed.data.query,
     n_results: N_RESULTS,
-    collection_name: env.AI_COLLECTION || parsed.data.collection,
+    collection_name: env.AI_COLLECTION,
+    max_distance: RELATED_MAX_DISTANCE,
   }
 
   let response: Response
@@ -70,7 +71,7 @@ export function toSearchResponse(matches: QueryMatch[]): SearchResponse {
 
 function toResult(match: QueryMatch): Result | null {
   const meta = match.metadata ?? {}
-  const text = (key: string) => clean(meta[key])
+  const text = (key: keyof typeof meta) => clean(meta[key])
   const sections = parseSections(match.document ?? '')
 
   const title = text('title') ?? sections['Tytuł innowacji']
@@ -89,7 +90,7 @@ function toResult(match: QueryMatch): Result | null {
     why: problem ? firstSentence(problem) : `Przeznaczone dla: ${lowerFirst(truncate(targetGroup ?? title, 200))}`,
     whyGenerated: false,
     source: { label: 'Biblioteka Innowacji Społecznych', url: text('source_url') },
-    details: { problem, targetGroup },
+    details: { problem, targetGroup, effectiveness: sections['Skuteczność'] },
     links: { video: text('youtube_video'), pdf: firstPdf(meta.details_pdf), download: text('file_zip') },
   }
 }
