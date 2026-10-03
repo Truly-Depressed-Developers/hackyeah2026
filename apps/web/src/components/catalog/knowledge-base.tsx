@@ -48,10 +48,11 @@ export function KnowledgeBase() {
             type="button"
             aria-pressed={filter === category.slug}
             onClick={() => pick(category.slug)}
+            style={filter === category.slug ? { background: category.tint } : undefined}
             className={cn(
-              'inline-flex h-11 shrink-0 items-center gap-2.5 rounded-full bg-muted py-0 pr-[1.125rem] pl-1.5 text-[0.9375rem] font-medium whitespace-nowrap text-secondary-foreground transition-colors hover:bg-accent hover:text-foreground',
+              'inline-flex h-11 shrink-0 items-center gap-2.5 rounded-full bg-muted py-0 pr-[1.125rem] pl-1.5 text-[0.9375rem] font-medium whitespace-nowrap text-secondary-foreground transition-colors hover:bg-border hover:text-foreground',
               'focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring',
-              'aria-pressed:bg-accent aria-pressed:font-semibold aria-pressed:text-foreground aria-pressed:ring-1 aria-pressed:ring-foreground/10',
+              'aria-pressed:font-semibold aria-pressed:text-foreground aria-pressed:shadow-[inset_0_0_0_1px_rgb(15_27_45/0.06)]',
             )}
           >
             <CategoryIcon category={category} />
@@ -115,7 +116,7 @@ function CatalogTile({ item }: { item: CatalogItem }) {
     </>
   )
   const className =
-    'flex h-full min-h-[10.75rem] flex-col gap-2 rounded-[1.125rem] border bg-card px-5 py-[1.125rem] text-card-foreground shadow-sm transition-shadow hover:shadow-md focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring'
+    'flex h-full min-h-[10.75rem] flex-col gap-2 rounded-[1.125rem] border border-tile-border bg-tile px-5 py-[1.125rem] text-card-foreground shadow-[0_1px_2px_0_rgb(15_27_45/0.05),0_4px_12px_-6px_rgb(15_27_45/0.08)] transition-[box-shadow,border-color] hover:border-[#C9D3DF] hover:shadow-[0_10px_24px_-12px_rgb(15_27_45/0.18)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring'
 
   return (
     <li>

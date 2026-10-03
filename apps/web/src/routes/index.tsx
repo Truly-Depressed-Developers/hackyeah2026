@@ -42,7 +42,7 @@ function StartPage() {
       <main className="flex flex-1 flex-col">
         <section
           aria-labelledby="hero-title"
-          className="flex flex-col items-center border-b bg-muted/60 px-4 pt-14 pb-16 text-center sm:px-6 sm:pt-[4.5rem] sm:pb-[4.75rem]"
+          className="flex flex-col items-center border-b bg-hero px-4 pt-14 pb-16 text-center sm:px-6 sm:pt-[4.5rem] sm:pb-[4.75rem]"
         >
           <div className="flex w-full max-w-[53.75rem] flex-col items-center">
             <h1 id="hero-title" className="text-4xl leading-[1.1] font-[650] tracking-[-0.04em] sm:text-[3.25rem]">
@@ -53,7 +53,7 @@ function StartPage() {
             </p>
 
             <form role="search" aria-label="Wyszukaj rozwiązanie" onSubmit={onSubmit} className="mt-11 w-full">
-              <div className="flex h-16 items-center gap-2.5 rounded-full border bg-card py-0 pr-2 pl-5 text-left shadow-[0_12px_32px_-12px_rgb(15_27_45/0.12)] focus-within:border-ring focus-within:ring-4 focus-within:ring-ring/20 sm:h-[4.75rem] sm:pr-2.5 sm:pl-7">
+              <div className="flex h-16 items-center gap-2.5 rounded-full border bg-card py-0 pr-2 pl-5 text-left shadow-[0_12px_32px_-12px_rgb(15_27_45/0.12)] focus-within:border-primary focus-within:shadow-[0_0_0_4px_rgb(34_99_173/0.18),0_12px_32px_-12px_rgb(15_27_45/0.14)] sm:h-[4.75rem] sm:pr-2.5 sm:pl-7">
                 <label htmlFor="q" className="sr-only">
                   Opisz swój problem lub potrzebę
                 </label>
@@ -67,7 +67,7 @@ function StartPage() {
                   placeholder="Np. mama po udarze potrzebuje opieki w domu"
                   className="h-full min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-muted-foreground sm:text-[1.1875rem]"
                 />
-                <Button type="submit" className="h-12 shrink-0 rounded-full px-5 text-base sm:h-14 sm:px-7">
+                <Button type="submit" className="h-12 shrink-0 rounded-full px-5 text-base font-semibold shadow-[0_6px_14px_-6px_rgb(34_99_173/0.55)] sm:h-14 sm:px-7">
                   <IconSearch aria-hidden="true" className="sm:hidden" />
                   <span className="max-sm:sr-only">Szukaj</span>
                 </Button>
@@ -78,7 +78,7 @@ function StartPage() {
 
         {q ? (
           <section aria-label="Wyniki wyszukiwania" className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 pt-8 pb-16 sm:px-6">
-            <Link to="/" search={{}} replace className="inline-flex min-h-11 w-fit items-center gap-1.5 text-sm underline-offset-2 hover:underline">
+            <Link to="/" search={{}} replace className="inline-flex min-h-11 w-fit items-center gap-1.5 text-sm text-primary underline-offset-2 hover:text-primary-strong hover:underline">
               <IconArrowLeft aria-hidden="true" className="size-4" />
               Wróć do bazy wiedzy
             </Link>

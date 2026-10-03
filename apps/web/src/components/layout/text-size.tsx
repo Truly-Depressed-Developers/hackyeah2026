@@ -55,7 +55,7 @@ export function TextSizeSwitch() {
           onClick={() => choose(size.id)}
           className={cn(
             'inline-flex h-10 min-w-11 items-center justify-center rounded-full px-3 leading-none font-semibold text-secondary-foreground transition-colors hover:text-foreground focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring',
-            'aria-pressed:bg-background aria-pressed:text-foreground aria-pressed:shadow-sm aria-pressed:ring-1 aria-pressed:ring-ring/40',
+            'aria-pressed:bg-background aria-pressed:text-primary-strong aria-pressed:shadow-[0_1px_3px_0_rgb(15_27_45/0.12),0_0_0_1px_rgb(34_99_173/0.25)]',
             size.glyph,
           )}
         >
