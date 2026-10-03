@@ -1,3 +1,4 @@
+import { panelAnalyticsRouter } from './analytics/router.js'
 import { ideasRouter, panelIdeasRouter } from './ideas/router.js'
 import { panelInnovationsRouter } from './innovations/router.js'
 import { needsRouter, panelNeedsRouter } from './needs/router.js'
@@ -17,6 +18,7 @@ export const appRouter = router({
     needs: panelNeedsRouter,
     ideas: panelIdeasRouter,
     innovations: panelInnovationsRouter,
+    analytics: panelAnalyticsRouter,
   }),
 })
 

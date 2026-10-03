@@ -95,12 +95,21 @@ _Avoid_: session, user, account
 A Mieszkaniec using an Akcja on a Wynik of a given Wyszukiwanie. The signal that a Wynik was useful.
 _Avoid_: click, conversion
 
+**Znaleziona pomoc** (Help found):
+A Wyszukiwanie with at least one Użycie Akcji that did not end in a Potrzeba. Its share of all Wyszukiwania is the main success number in Statystyki.
+_Avoid_: success rate, conversion
+
+**Statystyki** (Statistics):
+The page of the Panel administratora that shows Wyszukiwania, Wizyty and Użycia Akcji over a chosen range. It shows only aggregates, never a single Wizyta.
+_Avoid_: analytics, dashboard, raporty
+
 ## Relationships
 
 - A **Potrzeba** leads to at most one **Pomysł**; a **Pomysł** comes from at most one **Potrzeba**.
 - One **Zapytanie** produces zero or more **Rozwiązania** and zero or more **Rozwiązania pokrewne**, or **Brak odpowiedzi**.
 - Every returned **Wynik** has exactly one **Rodzaj**, one **Poziom dopasowania** and one **Uzasadnienie dopasowania**.
 - A **Wizyta** has zero or more **Wyszukiwania**; a **Wyszukiwanie** has zero or more **Użycia Akcji** and may end in one **Potrzeba**.
+- Every **Brak odpowiedzi** leaves a **Luka** automatically, so in Statystyki a **Wyszukiwanie** counts as ended in a **Potrzeba** only for a **Prośba o kontakt** or a **Pomysł**; one with only a **Luka** counts as **Brak odpowiedzi**.
 
 ## Flagged ambiguities
 

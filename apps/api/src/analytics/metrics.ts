@@ -5,8 +5,9 @@ export const TIME_ZONE = 'Europe/Warsaw'
 export type SearchOutcome = 'helpful' | 'no_action' | 'no_match' | 'need'
 
 /**
- * How a Wyszukiwanie ended. A Potrzeba wins (the Mieszkaniec said nothing helped), then Brak odpowiedzi;
- * "znaleziona pomoc" is at least one Użycie Akcji and no Potrzeba.
+ * How a Wyszukiwanie ended. A Potrzeba the Mieszkaniec left wins (they said nothing helped), then Brak odpowiedzi;
+ * Znaleziona pomoc is at least one Użycie Akcji and no Potrzeba. `needs` excludes the automatic Luka,
+ * which every Brak odpowiedzi gets.
  */
 export function searchOutcome({ noMatch, actions, needs }: { noMatch: boolean | null; actions: number; needs: number }): SearchOutcome {
   if (needs > 0) return 'need'
