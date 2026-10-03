@@ -17,8 +17,24 @@ _Avoid_: operator, admin, administrator, CRM user
 ### Panel
 
 **Panel administratora** (Admin panel):
-The closed part of the app where Pracownicy ROPS manage resident submissions and the knowledge base.
+The closed part of the app where Pracownicy ROPS manage Potrzeby, Pomysły and the knowledge base.
 _Avoid_: CRM, panel operatora
+
+**Potrzeba** (Need):
+A Zapytanie for which the Mieszkaniec found no help, kept as a signal for ROPS: a **Luka**, a **Prośba o kontakt**, or one that led to a **Pomysł**. It keeps the Zapytanie and the Wyniki the Mieszkaniec saw.
+_Avoid_: zgłoszenie, submission, ticket, case
+
+**Luka** (Gap):
+A Potrzeba saved automatically when a Zapytanie ends in Brak odpowiedzi and the Mieszkaniec leaves nothing else. It has no contact.
+_Avoid_: gap, missing result
+
+**Prośba o kontakt** (Contact request):
+A Potrzeba where the Mieszkaniec has no idea of their own and leaves their contact, so ROPS can reach them once a solution exists.
+_Avoid_: callback, lead
+
+**Pomysł** (Idea):
+A solution a Mieszkaniec proposes, filled in step by step, together with their contact. It usually comes from a Potrzeba, but can also be proposed without a search. Pracownicy ROPS manage Pomysły separately from Potrzeby.
+_Avoid_: proposal, propozycja rozwiązania
 
 ### Search
 
@@ -59,6 +75,7 @@ _Avoid_: button, CTA
 
 ## Relationships
 
+- A **Potrzeba** leads to at most one **Pomysł**; a **Pomysł** comes from at most one **Potrzeba**.
 - One **Zapytanie** produces zero or more **Rozwiązania** and zero or more **Rozwiązania pokrewne**, or **Brak odpowiedzi**.
 - Every returned **Wynik** has exactly one **Rodzaj**, one **Poziom dopasowania** and one **Uzasadnienie dopasowania**.
 

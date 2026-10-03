@@ -1,9 +1,10 @@
 import { Outlet, createFileRoute } from '@tanstack/react-router'
 
+// Each panel page owns its layout: the login centers a card, the logged-in pages get the top bar.
 export const Route = createFileRoute('/panel')({
   component: () => (
-    <main className="mx-auto flex min-h-svh max-w-3xl flex-col gap-6 p-6">
+    <div className="flex min-h-svh flex-col">
       <Outlet />
-    </main>
+    </div>
   ),
 })
