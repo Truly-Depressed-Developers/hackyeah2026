@@ -24,7 +24,7 @@ export interface components {
     schemas: {
         SearchRequest: {
             /**
-             * @description Knowledge collection to search. Meaning TBD with the AI dev.
+             * @description Chroma collection name to search. Exact name TBD with the AI dev.
              * @example knowledge
              */
             collection: string;
