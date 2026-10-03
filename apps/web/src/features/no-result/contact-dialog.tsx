@@ -6,6 +6,7 @@ import { IconAlertCircle, IconCheck, IconMail, IconMessage } from '@tabler/icons
 import { cn } from 'cn'
 import { z } from 'zod'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
+import { isEmail, isPhone } from '@/lib/contact'
 import { trpc } from '@/lib/trpc'
 
 const MODES = {
@@ -16,7 +17,7 @@ const MODES = {
     autoComplete: 'email',
     placeholder: 'np. jan.kowalski@poczta.pl',
     error: 'To nie wygląda na poprawny adres e-mail. Sprawdź, czy zawiera znak @ i końcówkę, np. .pl lub .com.',
-    valid: (value: string) => /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(value),
+    valid: isEmail,
   },
   phone: {
     label: 'Numer telefonu',
@@ -25,7 +26,7 @@ const MODES = {
     autoComplete: 'tel',
     placeholder: 'np. 600 123 456',
     error: 'Numer telefonu powinien mieć 9 cyfr, np. 600 123 456.',
-    valid: (value: string) => /^(\+?48)?\d{9}$/.test(value.replace(/[\s-]/g, '')),
+    valid: isPhone,
   },
 } as const
 

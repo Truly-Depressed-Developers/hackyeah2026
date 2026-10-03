@@ -22,6 +22,10 @@ function rememberGap(query: string, id: string) {
   }
 }
 
+export function storedGapId(query: string): string | undefined {
+  return readGaps()[query]
+}
+
 /** Records a Luka once per Zapytanie (also across refreshes) and returns its id for upgrading it later. */
 export function useGap(query: string) {
   const [gapId, setGapId] = useState<string | undefined>(() => readGaps()[query])

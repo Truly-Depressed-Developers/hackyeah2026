@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PanelRouteImport } from './routes/panel'
+import { Route as PomyslRouteImport } from './routes/pomysl'
 import { Route as InnowacjaIdRouteImport } from './routes/innowacja.$id'
 import { Route as PanelAuthedRouteImport } from './routes/panel/_authed'
 import { Route as PanelLoginRouteImport } from './routes/panel/login'
@@ -27,6 +28,11 @@ const IndexRoute = IndexRouteImport.update({
 const PanelRoute = PanelRouteImport.update({
   id: '/panel',
   path: '/panel',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PomyslRoute = PomyslRouteImport.update({
+  id: '/pomysl',
+  path: '/pomysl',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InnowacjaIdRoute = InnowacjaIdRouteImport.update({
@@ -67,6 +73,7 @@ const PanelAuthedIdeasIdeaIdRoute = PanelAuthedIdeasIdeaIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/panel': typeof PanelRouteWithChildren
+  '/pomysl': typeof PomyslRoute
   '/innowacja/$id': typeof InnowacjaIdRoute
   '/panel/login': typeof PanelLoginRoute
   '/panel/needs': typeof PanelAuthedNeedsRoute
@@ -77,6 +84,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/panel': typeof PanelAuthedIndexRoute
+  '/pomysl': typeof PomyslRoute
   '/innowacja/$id': typeof InnowacjaIdRoute
   '/panel/login': typeof PanelLoginRoute
   '/panel/needs': typeof PanelAuthedNeedsRoute
@@ -87,6 +95,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/panel': typeof PanelRouteWithChildren
+  '/pomysl': typeof PomyslRoute
   '/innowacja/$id': typeof InnowacjaIdRoute
   '/panel/_authed': typeof PanelAuthedRouteWithChildren
   '/panel/login': typeof PanelLoginRoute
@@ -100,6 +109,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/panel'
+    | '/pomysl'
     | '/innowacja/$id'
     | '/panel/login'
     | '/panel/needs'
@@ -110,6 +120,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/panel'
+    | '/pomysl'
     | '/innowacja/$id'
     | '/panel/login'
     | '/panel/needs'
@@ -119,6 +130,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/panel'
+    | '/pomysl'
     | '/innowacja/$id'
     | '/panel/_authed'
     | '/panel/login'
@@ -131,6 +143,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   PanelRoute: typeof PanelRouteWithChildren
+  PomyslRoute: typeof PomyslRoute
   InnowacjaIdRoute: typeof InnowacjaIdRoute
 }
 
@@ -148,6 +161,13 @@ declare module '@tanstack/react-router' {
       path: '/panel'
       fullPath: '/panel'
       preLoaderRoute: typeof PanelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pomysl': {
+      id: '/pomysl'
+      path: '/pomysl'
+      fullPath: '/pomysl'
+      preLoaderRoute: typeof PomyslRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/innowacja/$id': {
@@ -235,6 +255,7 @@ const PanelRouteWithChildren = PanelRoute._addFileChildren(PanelRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   PanelRoute: PanelRouteWithChildren,
+  PomyslRoute: PomyslRoute,
   InnowacjaIdRoute: InnowacjaIdRoute,
 }
 export const routeTree = rootRouteImport

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { Link } from '@tanstack/react-router'
 import { IconBell, IconBulb, IconLayoutGrid } from '@tabler/icons-react'
 import { ContactDialog } from './contact-dialog'
 import { useGap } from './use-gap'
@@ -41,16 +42,13 @@ export function NoResult({ query, onBrowse }: Props) {
           title="Zgłoś pomysł na rozwiązanie"
           text="Wiesz, co mogłoby pomóc? Opisz pomysł albo powiedz go głosem — może stać się nową innowacją."
         >
-          {/* The Pomysł form has no design yet (HAC-20). */}
-          <button
-            type="button"
-            aria-disabled="true"
-            aria-label="Zgłoś pomysł — wkrótce"
-            title="Formularz pomysłu — wkrótce"
-            className="mt-auto inline-flex h-14 w-fit items-center rounded-full bg-primary px-7 text-base font-semibold text-primary-foreground shadow-[0_6px_14px_-6px_rgb(34_99_173/0.55)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          <Link
+            to="/pomysl"
+            search={{ q: query, krok: 1 }}
+            className="mt-auto inline-flex h-14 w-fit items-center rounded-full bg-primary px-7 text-base font-semibold text-primary-foreground shadow-[0_6px_14px_-6px_rgb(34_99_173/0.55)] hover:bg-primary-hover focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring"
           >
             Zgłoś pomysł
-          </button>
+          </Link>
         </Option>
       </div>
 
