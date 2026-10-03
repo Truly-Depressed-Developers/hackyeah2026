@@ -2,7 +2,6 @@ import { existsSync, writeFileSync } from 'node:fs'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import openapiTS, { astToString } from 'openapi-typescript'
 
-// Default: the draft spec in packages/ai-contract. `--remote`: the live FastAPI spec at ${AI_URL}/openapi.json.
 const rootEnvFile = fileURLToPath(new URL('../../../.env', import.meta.url))
 if (existsSync(rootEnvFile)) process.loadEnvFile(rootEnvFile)
 

@@ -23,7 +23,7 @@ export function summarize(data: SearchResponse) {
 export function SearchResults({ data }: { data: SearchResponse }) {
   const containerRef = useRef<HTMLDivElement>(null)
 
-  // Mounted once per finished search: move focus to the first heading so keyboard and screen-reader users land on the results.
+  // Remounts per finished search, so [] focuses the results once each time.
   useEffect(() => {
     containerRef.current?.querySelector<HTMLElement>('h2')?.focus()
   }, [])

@@ -19,7 +19,6 @@ export default defineConfig(({ mode }) => {
       react(),
       tailwindcss(),
       pwa(),
-      // Serves the mock worker in dev; mocks are switched on by VITE_MOCK_SEARCH (src/mocks).
       msw(),
     ],
     resolve: {

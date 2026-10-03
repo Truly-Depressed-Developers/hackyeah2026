@@ -13,7 +13,6 @@ const app = new Hono()
 app.get('/health', (c) => c.json({ ok: true }))
 app.use('/trpc/*', trpcServer({ router: appRouter }))
 
-// Passthrough to the Python AI service: /ai/search → ${AI_URL}/search (docs/adr/0001).
 app.all('/ai/*', async (c) => {
   const url = new URL(c.req.url)
   const target = `${env.AI_URL}${url.pathname.slice('/ai'.length)}${url.search}`

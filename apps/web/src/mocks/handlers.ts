@@ -1,7 +1,6 @@
 import { delay, http, HttpResponse } from 'msw'
 import type { Result, SearchResponse } from '@/lib/ai/client'
 
-// Demo stand-in for the Python AI service. Typical data until F-01 and the design land.
 // Trigger words: "nic" → Brak odpowiedzi, "pokrewne" → only Rozwiązania pokrewne, "błąd" → HTTP 500.
 
 const BIBLIOTEKA = { label: 'Biblioteka Innowacji Społecznych', url: 'https://example.org/biblioteka' }
