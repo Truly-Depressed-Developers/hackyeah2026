@@ -12,9 +12,19 @@ export const SEARCH_COLLECTION = 'knowledge'
 
 const TIMEOUT_MS = 10_000
 
+// Plain AbortController instead of AbortSignal.any/timeout: those are missing before Safari 17.4 (older iPads),
+// where they throw before the request is sent.
+function fetchWithTimeout(request: Request) {
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS)
+  if (request.signal.aborted) controller.abort()
+  else request.signal.addEventListener('abort', () => controller.abort(), { once: true })
+  return fetch(request, { signal: controller.signal }).finally(() => clearTimeout(timer))
+}
+
 const fetchClient = createFetchClient<paths>({
   baseUrl: '/ai',
-  fetch: (request) => fetch(request, { signal: AbortSignal.any([request.signal, AbortSignal.timeout(TIMEOUT_MS)]) }),
+  fetch: fetchWithTimeout,
 })
 
 export const $ai = createClient(fetchClient)
