@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { z } from 'zod'
-import { isEmail, isPhone } from '@/lib/contact'
+import { consentGivenNow, isEmail, isPhone } from '@/lib/contact'
 import { trpc } from '@/lib/trpc'
 
 /**
@@ -85,8 +85,7 @@ export function useContactRequest({ query, gapId, shownResults = [] }: UseContac
       gapId,
       shownResults,
       contact,
-      // Zgoda powstaje w momencie wysłania formularza, nie wcześniej.
-      consentAt: new Date(),
+      consentAt: consentGivenNow(),
     })
     setSentTo(contact)
   }

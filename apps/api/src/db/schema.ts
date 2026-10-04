@@ -1,4 +1,4 @@
-import { boolean, index, jsonb, pgEnum, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { boolean, index, jsonb, pgEnum, pgTable, text, timestamp, unique, uuid } from 'drizzle-orm/pg-core'
 
 // better-auth core tables. Every user is a Pracownik ROPS with access to the Panel administratora.
 const timestamps = {
@@ -115,10 +115,33 @@ export const idea = pgTable(
     answers: jsonb().$type<IdeaAnswer[]>().notNull().default([]),
     contact: text().notNull(),
     consentAt: timestamp('consent_at', { withTimezone: true }).notNull(),
+    // A Pracownik ROPS opens the Pomysł for testing; only then is it public on /testy.
+    openForTesting: boolean('open_for_testing').notNull().default(false),
     ...timestamps,
   },
-  (t) => [index('idea_status_created_idx').on(t.status, t.createdAt)],
+  (t) => [index('idea_status_created_idx').on(t.status, t.createdAt), index('idea_open_for_testing_idx').on(t.openForTesting)],
+)
+
+/** A Mieszkaniec who left their contact to test a Pomysł. ROPS reaches out by hand when the tests start. */
+export const testSignup = pgTable(
+  'test_signup',
+  {
+    id: uuid().primaryKey().defaultRandom(),
+    ideaId: uuid('idea_id')
+      .notNull()
+      .references(() => idea.id, { onDelete: 'cascade' }),
+    name: text().notNull(),
+    contact: text().notNull(),
+    consentAt: timestamp('consent_at', { withTimezone: true }).notNull(),
+    ...timestamps,
+  },
+  (t) => [
+    index('test_signup_idea_created_idx').on(t.ideaId, t.createdAt),
+    // Pressing "Zapisz się" twice still leaves one Tester.
+    unique('test_signup_idea_contact_uq').on(t.ideaId, t.contact),
+  ],
 )
 
 export type Need = typeof need.$inferSelect
 export type Idea = typeof idea.$inferSelect
+export type TestSignup = typeof testSignup.$inferSelect

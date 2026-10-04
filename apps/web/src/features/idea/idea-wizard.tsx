@@ -3,14 +3,16 @@ import { Controller, useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { Navigate, useNavigate, useRouter } from '@tanstack/react-router'
-import { IconAlertCircle, IconArrowLeft, IconArrowRight, IconCheck, IconDots } from '@tabler/icons-react'
+import { IconArrowLeft, IconArrowRight, IconCheck, IconDots } from '@tabler/icons-react'
 import { cn } from 'cn'
 import { CategoryIcon } from '@/components/category-badge'
+import { FieldErrorText, fieldClass, labelClass, type FieldMessage } from '@/components/resident/controls'
 import { VoiceButton } from '@/components/search/voice-button'
 import { VoiceDialog } from '@/components/search/voice-dialog'
 import { unavailableHint } from '@/components/search/voice-search'
 import { storedGapId } from '@/features/no-result/use-gap'
 import { CATEGORIES, type Category } from '@/lib/categories'
+import { consentGivenNow } from '@/lib/contact'
 import { probeVoiceSupport } from '@/lib/speech-recognition'
 import { trpc } from '@/lib/trpc'
 import { ideaSchema, OTHER_GROUP, QUESTIONS, STAGES, STEP_FIELDS, TOTAL_STEPS, stageTitle, toAnswers, type IdeaValues } from './idea-form'
@@ -19,13 +21,8 @@ const OTHER_CATEGORY: Category = { slug: 'other', label: OTHER_GROUP, icon: Icon
 
 const voiceSupport = probeVoiceSupport()
 
-// Consent is given at the moment the resident sends the form.
-const consentGivenNow = () => new Date()
-
 // Each step mounts a new heading; focusing it on mount moves screen-reader and keyboard users to the new question.
 const focusOnMount = (element: HTMLHeadingElement | null) => element?.focus()
-
-type FieldError = { message?: string } | undefined
 
 type Props = { step: number; query: string | undefined }
 
@@ -357,7 +354,7 @@ type TextStepProps = {
   max: number
   length: number
   placeholder: string
-  error: FieldError
+  error: FieldMessage
   field: ReturnType<ReturnType<typeof useForm<IdeaValues>>['register']>
   voiceLabel: string
   onDictated: (text: string) => void
@@ -410,16 +407,6 @@ function TextStep({ question, help, label, max, length, placeholder, error, fiel
   )
 }
 
-function FieldErrorText({ id, error }: { id?: string; error: FieldError }) {
-  if (!error?.message) return null
-  return (
-    <span id={id} role="alert" className="flex items-start gap-2 px-1.5 text-[0.9375rem] leading-[1.375rem] font-medium text-[#B42318]">
-      <IconAlertCircle aria-hidden="true" className="mt-px size-5 shrink-0" />
-      {error.message}
-    </span>
-  )
-}
-
 function SummaryRow({ label, value, editLabel, onEdit }: { label: string; value: string | undefined; editLabel: string; onEdit: () => void }) {
   return (
     <div className="flex flex-wrap items-start gap-x-4 gap-y-1 border-t px-5 py-4 first:border-t-0 sm:flex-nowrap">
@@ -441,9 +428,6 @@ function SummaryRow({ label, value, editLabel, onEdit }: { label: string; value:
 
 const card = 'mx-auto flex w-full max-w-[51.25rem] flex-col gap-5'
 const questionClass = 'text-[1.625rem] leading-[2.125rem] font-[650] tracking-[-0.03em] outline-none sm:text-[1.875rem] sm:leading-[2.375rem]'
-const labelClass = 'text-[0.9375rem] leading-5 font-semibold'
-const fieldClass =
-  'h-[3.75rem] w-full rounded-full border border-input bg-white px-[1.375rem] text-lg outline-none placeholder:text-muted-foreground focus:border-primary focus:shadow-[0_0_0_4px_rgb(34_99_173/0.18)] aria-invalid:border-[#D92D20] aria-invalid:bg-[#FFFBFA] aria-invalid:shadow-[0_0_0_4px_rgb(217_45_32/0.14)]'
 const pill = 'inline-flex h-14 items-center justify-center gap-2.5 rounded-full px-6 text-base font-semibold focus-visible:outline-3 focus-visible:outline-offset-[3px] focus-visible:outline-ring [&_svg]:size-5'
 const primaryButton = cn(pill, 'bg-primary text-primary-foreground shadow-[0_6px_14px_-6px_rgb(34_99_173/0.55)] hover:bg-primary-hover disabled:opacity-70')
 const lightButton = cn(pill, 'bg-white text-foreground shadow-[0_0_0_1px_var(--border),0_1px_2px_rgb(15_27_45/0.05)] hover:shadow-[0_0_0_1px_var(--input),0_6px_14px_-8px_rgb(15_27_45/0.2)]')

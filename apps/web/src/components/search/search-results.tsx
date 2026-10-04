@@ -1,14 +1,8 @@
 import { useEffect, useRef } from 'react'
 import { TILE_GRID } from '@/components/innovation/innovation-tile'
 import type { Result, SearchResponse } from '@/lib/ai/client'
+import { countLabel } from '@/lib/plural'
 import { ResultCard } from './result-card'
-
-const plural = new Intl.PluralRules('pl')
-
-export function countLabel(n: number, forms: Record<'one' | 'few' | 'many', string>) {
-  const rule = plural.select(n)
-  return `${n} ${rule === 'one' || rule === 'few' ? forms[rule] : forms.many}`
-}
 
 export function summarize(data: SearchResponse) {
   if (data.noMatch) return 'Nie znaleźliśmy pasujących rozwiązań.'

@@ -7,6 +7,7 @@ import { buttonVariants } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useSetIdeaStatus } from '@/features/ideas/use-set-status'
+import { useSetOpenForTesting } from '@/features/ideas/use-set-open-for-testing'
 import type { IdeaDetail } from '@/features/ideas/labels'
 import { formatDate, statusBadge, statusLabel } from '@/features/panel/handling'
 import { StatusField } from '@/features/panel/status-field'
@@ -40,6 +41,7 @@ function IdeaPage() {
 
 function IdeaDetails({ idea }: { idea: IdeaDetail }) {
   const setStatus = useSetIdeaStatus()
+  const setOpenForTesting = useSetOpenForTesting()
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_20rem]">
@@ -67,6 +69,29 @@ function IdeaDetails({ idea }: { idea: IdeaDetail }) {
             <p className="text-muted-foreground">Mieszkaniec podał tylko tytuł.</p>
           )}
         </section>
+
+        <section aria-labelledby="testers-heading" className="flex flex-col gap-4">
+          <h2 id="testers-heading" className="text-lg font-semibold">
+            Chętni na testy
+          </h2>
+          {idea.testers.length > 0 ? (
+            <ul className="flex flex-col gap-3">
+              {idea.testers.map((tester) => (
+                <li key={tester.id} className="flex flex-wrap items-baseline gap-x-4 gap-y-1 rounded-xl border p-4">
+                  <span className="font-medium break-words">{tester.name}</span>
+                  <span className="break-all">{tester.contact}</span>
+                  <span className="ml-auto text-sm whitespace-nowrap text-muted-foreground">
+                    Zapisał(a) się {formatDate(tester.createdAt)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-muted-foreground">
+              {idea.openForTesting ? 'Nikt jeszcze się nie zapisał.' : 'Pomysł nie jest otwarty na testy.'}
+            </p>
+          )}
+        </section>
       </div>
 
       <aside className="flex flex-col gap-4" aria-label="Obsługa pomysłu">
@@ -83,6 +108,30 @@ function IdeaDetails({ idea }: { idea: IdeaDetail }) {
               onChange={(status) => setStatus.mutate({ id: idea.id, status })}
               state={setStatus}
             />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <h2>Testy</h2>
+            </CardTitle>
+            <CardDescription>Otwarty pomysł trafia na publiczną listę, na której mieszkańcy zapisują się na testy.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-start gap-3">
+              <input
+                id="idea-open-for-testing"
+                type="checkbox"
+                checked={idea.openForTesting}
+                disabled={setOpenForTesting.isPending}
+                onChange={(event) => setOpenForTesting.mutate({ id: idea.id, openForTesting: event.target.checked })}
+                className="mt-0.5 size-5 shrink-0 accent-primary"
+              />
+              <label htmlFor="idea-open-for-testing" className="text-sm">
+                Szukamy testerów tego pomysłu
+              </label>
+            </div>
           </CardContent>
         </Card>
 
