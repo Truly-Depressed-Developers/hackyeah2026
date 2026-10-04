@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { TILE_GRID } from '@/components/innovation/innovation-tile'
 import type { Result, SearchResponse } from '@/lib/ai/client'
 import { ResultCard } from './result-card'
 
@@ -72,7 +73,7 @@ function Tier(props: { id: string; title: string; description: string; results: 
         </h2>
         <p className="text-muted-foreground">{props.description}</p>
       </div>
-      <ul className="flex flex-col gap-3">
+      <ul className={TILE_GRID}>
         {props.results.map((result) => (
           <ResultCard key={result.id} result={result} />
         ))}
