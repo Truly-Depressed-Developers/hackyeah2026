@@ -43,6 +43,7 @@ export const ACTION_LABELS: Record<string, string> = {
   pdf: 'Dokument PDF',
   download: 'Pobranie materiałów',
   phone: 'Telefon',
+  sms: 'SMS z kiosku',
   source: 'Strona źródłowa',
 }
 

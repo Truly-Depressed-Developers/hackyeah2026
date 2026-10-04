@@ -89,6 +89,10 @@ A short AI-written sentence on why a Wynik fits the Zapytanie. It is labeled as 
 Something the resident can do with a Wynik: read more, watch a video, open a document or page, call. Which Akcje a Wynik offers depends on what it contains, not on its Rodzaj. Every Wynik offers at least one.
 _Avoid_: button, CTA
 
+**Odbiór wyniku** (Result takeaway):
+How a Mieszkaniec takes a Wynik from the kiosk to their own device: a printout, an SMS with a link to it, or a QR code. Sending the SMS counts as an Akcja; the phone number is used once and never kept.
+_Avoid_: share, export
+
 ### Analytics
 
 **Wyszukiwanie** (Search):

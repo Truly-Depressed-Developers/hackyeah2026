@@ -1,8 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
+import { useMutation } from '@tanstack/react-query'
 import { IconCheck, IconDeviceMobileMessage, IconPrinter, IconQrcode } from '@tabler/icons-react'
 import { cn } from 'cn'
 import { QrCode } from '@/components/innovation/qr-code'
+import { trackAction } from '@/lib/analytics'
 import { isPhone } from '@/lib/contact'
+import { trpc } from '@/lib/trpc'
 import { CTA, CTA_MUTED, CTA_OUTLINE, FIELD, TILE } from '../kiosk-ui'
 
 /**
@@ -30,7 +33,8 @@ const SIMULATED_MS = 2200
 type Takeaway =
   | { kind: 'none' }
   | { kind: 'print'; done: boolean }
-  | { kind: 'sms'; phase: 'form' | 'sending' | 'sent'; number: string }
+  // After sending, `number` keeps only the last 3 digits for the confirmation.
+  | { kind: 'sms'; phase: 'form' | 'sending' | 'sent' | 'failed'; number: string }
   | { kind: 'qr' }
 
 export function Takeaway({ id, title }: { id: string; title: string }) {
@@ -50,10 +54,9 @@ export function Takeaway({ id, title }: { id: string; title: string }) {
 
       {/*
         Wszystkie trzy sposoby odbioru są widoczne zawsze, też w buildzie produkcyjnym.
-        Druk i SMS to na razie sam front — rozwiązują się na timerze, bez backendu —
-        więc każdy z tych paneli niesie widoczną adnotację o trybie demonstracyjnym.
-        To ona, a nie ukrywanie kafelków, pilnuje, żeby kiosk nie obiecał mieszkańcowi
-        wiadomości, która nigdy nie przyjdzie. Kod QR działa naprawdę.
+        Druk to na razie sam front — rozwiązuje się na timerze, bez backendu — więc jego
+        panel niesie widoczną adnotację o trybie demonstracyjnym. SMS idzie naprawdę
+        (HAC-21, textbee.dev), a gdy się nie uda, panel kieruje do kodu QR. Kod QR działa naprawdę.
       */}
       {state.kind === 'none' && (
         <div className="grid grid-cols-3 gap-4">
@@ -71,7 +74,7 @@ export function Takeaway({ id, title }: { id: string; title: string }) {
       )}
 
       {state.kind === 'print' && <Print done={state.done} onDone={() => setState({ kind: 'print', done: true })} onBack={() => setState({ kind: 'none' })} />}
-      {state.kind === 'sms' && <Sms state={state} setState={setState} />}
+      {state.kind === 'sms' && <Sms id={id} state={state} setState={setState} onQr={() => setState({ kind: 'qr' })} />}
       {state.kind === 'qr' && <Qr id={id} onBack={() => setState({ kind: 'none' })} />}
     </section>
   )
@@ -107,29 +110,47 @@ function Print({ done, onDone, onBack }: { done: boolean; onDone: () => void; on
   )
 }
 
-function Sms({ state, setState }: { state: Extract<Takeaway, { kind: 'sms' }>; setState: (next: Takeaway) => void }) {
+function Sms({ id, state, setState, onQr }: { id: string; state: Extract<Takeaway, { kind: 'sms' }>; setState: (next: Takeaway) => void; onQr: () => void }) {
   const inputRef = useRef<HTMLInputElement>(null)
+  const outcomeRef = useRef<HTMLParagraphElement>(null)
   const valid = isPhone(state.number)
+  const send = useMutation(trpc.kiosk.sendResultSms.mutationOptions())
 
   // Panel zastąpił kafelek, który go otworzył, więc fokus musi za nim pójść —
   // inaczej czytnik ekranu zostałby na elemencie, którego już nie ma.
+  // Tak samo po wysyłce: przycisk znika, więc fokus idzie na komunikat o wyniku.
   useEffect(() => {
     if (state.phase === 'form') inputRef.current?.focus()
+    if (state.phase === 'sent' || state.phase === 'failed') outcomeRef.current?.focus()
   }, [state.phase])
-
-  useSimulatedDelay(state.phase === 'sending', () => setState({ ...state, phase: 'sent' }))
 
   if (state.phase === 'sent') {
     return (
       <div className="flex flex-col items-center gap-4 rounded-[28px] border border-border bg-card p-8 text-center">
         <IconCheck aria-hidden="true" className="size-14 text-[var(--hub-niebieski-ciemny)]" />
-        <p role="status" className="text-[calc(26px*var(--hub-skala))] font-bold">
+        <p ref={outcomeRef} tabIndex={-1} role="status" className="text-[calc(26px*var(--hub-skala))] font-bold outline-none">
           Wysłano SMS
         </p>
-        <p className="hub-tekst-s text-[var(--hub-tekst-2)]">
-          Adres i opis są już w drodze na numer kończący się na {state.number.slice(-3)}.
+        <p className="hub-tekst-s text-[var(--hub-tekst-2)]">Link do opisu i adresu jest w drodze na numer kończący się na {state.number}.</p>
+      </div>
+    )
+  }
+
+  if (state.phase === 'failed') {
+    return (
+      <div className="flex flex-col items-center gap-4 rounded-[28px] border border-border bg-card p-8 text-center">
+        <p ref={outcomeRef} tabIndex={-1} role="alert" className="text-[calc(26px*var(--hub-skala))] font-bold outline-none">
+          Nie udało się wysłać SMS-a
         </p>
-        <DemoNote />
+        <p className="hub-tekst-s text-[var(--hub-tekst-2)]">Sprawdź numer albo zeskanuj kod QR telefonem.</p>
+        <div className="flex flex-wrap justify-center gap-4">
+          <button type="button" onClick={() => setState({ ...state, phase: 'form' })} className={CTA_OUTLINE}>
+            Popraw numer
+          </button>
+          <button type="button" onClick={onQr} className={cn(CTA, 'h-[72px] text-[22px]')}>
+            Pokaż kod QR
+          </button>
+        </div>
       </div>
     )
   }
@@ -139,10 +160,22 @@ function Sms({ state, setState }: { state: Extract<Takeaway, { kind: 'sms' }>; s
       className="flex flex-col gap-4 rounded-[28px] border border-border bg-card p-8"
       onSubmit={(event) => {
         event.preventDefault()
-        if (valid) setState({ ...state, phase: 'sending' })
+        if (!valid || send.isPending) return
+        setState({ ...state, phase: 'sending' })
+        send.mutate(
+          { innovationId: id, phone: state.number },
+          {
+            // Z kiosku znika cały numer; zostają tylko 3 ostatnie cyfry do potwierdzenia.
+            onSuccess: () => {
+              trackAction(id, 'sms')
+              setState({ kind: 'sms', phase: 'sent', number: state.number.replace(/\D/g, '').slice(-3) })
+            },
+            onError: () => setState({ ...state, phase: 'failed' }),
+          },
+        )
       }}
     >
-      <p className="text-[calc(26px*var(--hub-skala))] font-bold">Wyślę SMS z adresem i opisem</p>
+      <p className="text-[calc(26px*var(--hub-skala))] font-bold">Wyślę SMS z linkiem do opisu i adresu</p>
 
       <label htmlFor="hub-telefon" className="hub-tekst-s font-semibold">
         Numer telefonu
@@ -165,9 +198,13 @@ function Sms({ state, setState }: { state: Extract<Takeaway, { kind: 'sms' }>; s
         />
       </div>
       <p id="hub-sms-info" className="hub-tekst-xs text-muted-foreground">
-        Numer służy tylko do wysłania tej wiadomości. Po wysłaniu usunę go z kiosku.
+        Numer służy tylko do wysłania tej wiadomości. Nigdzie go nie zapisuję.
       </p>
-      <DemoNote />
+      {state.phase === 'sending' && (
+        <p role="status" className="sr-only">
+          Wysyłam SMS…
+        </p>
+      )}
 
       <div className="flex flex-wrap gap-4">
         <button type="button" onClick={() => setState({ kind: 'none' })} className={CTA_OUTLINE}>
@@ -215,7 +252,7 @@ function Qr({ id, onBack }: { id: string; onBack: () => void }) {
 function DemoNote() {
   return (
     <p className="hub-tekst-xs rounded-2xl bg-[var(--hub-bursztyn-jasny)] px-4 py-2 text-[var(--hub-bursztyn)]">
-      Tryb demonstracyjny - nic nie zostało naprawdę wysłane ani wydrukowane.
+      Tryb demonstracyjny - nic nie zostało naprawdę wydrukowane.
     </p>
   )
 }

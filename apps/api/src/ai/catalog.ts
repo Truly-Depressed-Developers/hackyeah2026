@@ -32,6 +32,12 @@ export async function realInnovation(c: Context): Promise<Response> {
   return item ? c.json(item) : c.json({ error: 'Not found' }, 404)
 }
 
+/** One Innowacja by id from the same source the catalog serves (the AI service, or the mock without AI_URL). */
+export async function findInnovation(id: string) {
+  const items = env.AI_URL ? await loadInnovations() : mockInnovations()
+  return items?.find((innovation) => innovation.id === id) ?? null
+}
+
 export function mockCatalog(c: Context): Response {
   return c.json({ items: mockInnovations().map(toCatalogItem) })
 }
