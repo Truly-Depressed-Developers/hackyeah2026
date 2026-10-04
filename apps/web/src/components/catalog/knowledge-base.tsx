@@ -1,14 +1,14 @@
 import { useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
-import { Link } from '@tanstack/react-router'
-import { IconChevronDown, IconMovie, IconRosetteDiscountCheck } from '@tabler/icons-react'
+import { IconChevronDown } from '@tabler/icons-react'
 import { cn } from 'cn'
-import { CategoryBadge, CategoryIcon } from '@/components/category-badge'
+import { CategoryIcon } from '@/components/category-badge'
+import { InnovationTile, TILE_GRID } from '@/components/innovation/innovation-tile'
 import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 import { $ai, type CatalogItem } from '@/lib/ai/client'
 import { markFromCatalog, track } from '@/lib/analytics'
-import { ALL_CATEGORIES, CATEGORIES, categoryFor } from '@/lib/categories'
+import { ALL_CATEGORIES, CATEGORIES } from '@/lib/categories'
 
 const FIRST_PAGE = 12
 const NEXT_PAGE = 9
@@ -73,7 +73,7 @@ export function KnowledgeBase() {
           </Button>
         </div>
       ) : (
-        <ul ref={listRef} className="grid grid-cols-[repeat(auto-fill,minmax(min(18.75rem,100%),1fr))] gap-4">
+        <ul ref={listRef} className={TILE_GRID}>
           {shown.map((item) => (
             <CatalogTile key={item.id} item={item} />
           ))}
@@ -108,35 +108,17 @@ export function KnowledgeBase() {
 }
 
 function CatalogTile({ item }: { item: CatalogItem }) {
-  const category = categoryFor(item.categorySlug)
   return (
-    <li>
-      <Link
-        to="/innowacja/$id"
-        params={{ id: item.id }}
-        onClick={markFromCatalog}
-        className="flex h-full min-h-[12.25rem] flex-col gap-2 rounded-[1.125rem] border border-tile-border bg-tile px-5 py-[1.125rem] text-card-foreground shadow-[0_1px_2px_0_rgb(15_27_45/0.05),0_4px_12px_-6px_rgb(15_27_45/0.08)] transition-[box-shadow,border-color] hover:border-[#C9D3DF] hover:shadow-[0_10px_24px_-12px_rgb(15_27_45/0.18)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring"
-      >
-        {category && <CategoryBadge category={category} />}
-        <span className="mt-1 text-[1.0625rem] leading-[1.4375rem] font-semibold tracking-[-0.01em]">{item.title}</span>
-        <span className="line-clamp-3 text-[0.9375rem] leading-[1.3125rem] text-muted-foreground">{item.subtitle ?? item.summary}</span>
-        <span className="mt-auto flex flex-wrap items-center gap-x-3.5 gap-y-1.5 pt-1.5 text-[0.8125rem] leading-[1.125rem] text-muted-foreground">
-          {item.hasVideo && (
-            <span className="inline-flex items-center gap-1.5">
-              <IconMovie aria-hidden="true" className="size-4" />
-              Film
-            </span>
-          )}
-          {item.featured && (
-            <span className="inline-flex items-center gap-1.5 text-[#7A4300]">
-              <IconRosetteDiscountCheck aria-hidden="true" className="size-4" />
-              Polecana
-            </span>
-          )}
-          <span>Biblioteka Innowacji ROPS</span>
-        </span>
-      </Link>
-    </li>
+    <InnovationTile
+      id={item.id}
+      onClick={markFromCatalog}
+      title={item.title}
+      subtitle={item.subtitle ?? item.summary}
+      categorySlug={item.categorySlug}
+      hasVideo={item.hasVideo}
+      featured={item.featured}
+      sourceLabel="Biblioteka Innowacji ROPS"
+    />
   )
 }
 

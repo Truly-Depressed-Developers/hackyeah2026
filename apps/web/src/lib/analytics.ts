@@ -171,13 +171,6 @@ export function trackAction(innovationId: string, action: Action) {
   track({ type: 'action_used', innovationId, action, ...(position && { searchId: current.id, position }) })
 }
 
-export function trackExpanded(innovationId: string) {
-  const current = currentSearch()
-  const position = current?.positions[innovationId]
-  if (current && position) track({ type: 'result_expanded', searchId: current.id, innovationId, position })
-  trackAction(innovationId, 'read_more')
-}
-
 let nextInnovationFrom: 'search' | 'catalog' | null = null
 
 /** A catalog tile was opened (call on click). */
