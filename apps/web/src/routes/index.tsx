@@ -103,7 +103,7 @@ function StartPage() {
         {q && noMatch ? (
           <NoResult query={q} onBrowse={() => navigate({ search: {}, replace: true })} />
         ) : q ? (
-          <section aria-label="Wyniki wyszukiwania" className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 pt-8 pb-16 sm:px-6">
+          <section aria-label="Wyniki wyszukiwania" className="mx-auto flex w-full max-w-[73.75rem] flex-col gap-6 px-4 pt-8 pb-16 sm:px-6">
             <Link to="/" search={{}} replace className="inline-flex min-h-11 w-fit items-center gap-1.5 text-sm text-primary underline-offset-2 hover:text-primary-strong hover:underline">
               <IconArrowLeft aria-hidden="true" className="size-4" />
               Wróć do bazy wiedzy
