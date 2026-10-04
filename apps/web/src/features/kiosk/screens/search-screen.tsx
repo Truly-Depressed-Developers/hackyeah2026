@@ -103,8 +103,14 @@ export function SearchScreen({ mode, draft, onMode, onDraft, onSubmit, onOpen }:
         )}
       </form>
 
-      {/* Poza <form>, żeby kafelki katalogu nie miały nic wspólnego z wysyłką opisu. */}
-      <KioskCatalog onOpen={onOpen} />
+      {/*
+        Katalog znika, gdy tylko mieszkaniec wybierze sposób opisania sprawy: wtedy
+        liczy się pole albo mikrofon, a lista pod spodem tylko odciąga uwagę i spycha
+        przycisk szukania poza ekran. Wraca, gdy nic nie jest wpisywane ani mówione.
+
+        Poza <form>, żeby kafelki katalogu nie miały nic wspólnego z wysyłką opisu.
+      */}
+      {mode === null && <KioskCatalog onOpen={onOpen} />}
     </div>
   )
 }

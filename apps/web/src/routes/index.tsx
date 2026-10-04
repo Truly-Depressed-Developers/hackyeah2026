@@ -8,6 +8,7 @@ import { SearchResults, summarize } from '@/components/search/search-results'
 import { VoiceSearch } from '@/components/search/voice-search'
 import { Button } from '@/components/ui/button'
 import { NoResult } from '@/features/no-result/no-result'
+import { SearchProgress } from '@/features/search-progress/search-progress'
 import { $ai, SEARCH_COLLECTION } from '@/lib/ai/client'
 
 export const Route = createFileRoute('/')({
@@ -101,9 +102,14 @@ function StartPage() {
               Wróć do bazy wiedzy
             </Link>
 
-            <p role="status" className="min-h-6 text-muted-foreground">
-              {status}
-            </p>
+            {/* Podczas szukania narrację prowadzi SearchProgress, więc nie dublujemy komunikatu. */}
+            {!search.isFetching && (
+              <p role="status" className="min-h-6 text-muted-foreground">
+                {status}
+              </p>
+            )}
+
+            {search.isFetching && <SearchProgress />}
 
             {search.isError && !search.isFetching && (
               <div role="alert" className="flex flex-col items-start gap-3 rounded-xl border border-destructive p-4">

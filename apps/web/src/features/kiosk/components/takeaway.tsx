@@ -6,12 +6,14 @@ import { isPhone } from '@/lib/contact'
 import { CTA, CTA_MUTED, CTA_OUTLINE, FIELD, TILE } from '../kiosk-ui'
 
 /**
- * Druk i SMS nie mają backendu — rozwiązują się na timerze. Powiedzenie realnemu
- * mieszkańcowi „Wysłano SMS", gdy nic nie wyszło, to utrata zaufania, a nie skrót
- * demowy, więc obie opcje są za flagą i kiosk nie trafi z nimi do prawdziwego punktu
- * przez przypadek. Kod QR działa naprawdę i jest dostępny zawsze.
+ * Druk i SMS to na razie sam front — rozwiązują się na timerze, bez backendu.
+ *
+ * W dev są widoczne domyślnie, żeby dało się nad nimi pracować. W buildzie
+ * produkcyjnym trzeba je włączyć jawnie: powiedzenie realnemu mieszkańcowi
+ * „Wysłano SMS", gdy nic nie wyszło, to utrata zaufania, a nie skrót demowy.
+ * Kod QR działa naprawdę i jest dostępny zawsze.
  */
-const DEMO = import.meta.env.VITE_KIOSK_DEMO === 'true'
+const DEMO = import.meta.env.DEV || import.meta.env.VITE_KIOSK_DEMO === 'true'
 
 /** Origin kiosku bywa localhost albo adresem w LAN-ie, którego telefon nie otworzy. */
 const PUBLIC_URL = import.meta.env.VITE_PUBLIC_URL ?? window.location.origin

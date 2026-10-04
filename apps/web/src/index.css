@@ -208,3 +208,11 @@
   0%, 100% { opacity: 1; }
   50% { opacity: 0.2; }
 }
+
+/* Lupa wodząca po kartce podczas szukania — wspólna dla wersji web i kiosku. */
+@keyframes search-glass {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(150%, 60%); }
+  50% { transform: translate(40%, 170%); }
+  75% { transform: translate(220%, 120%); }
+}

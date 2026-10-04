@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import type { CSSProperties, Dispatch } from 'react'
-import { useBlocker, useNavigate } from '@tanstack/react-router'
+import { useBlocker } from '@tanstack/react-router'
 import { $ai, SEARCH_COLLECTION } from '@/lib/ai/client'
 import { KioskHeader } from './kiosk-header'
 import { DetailScreen } from './screens/detail-screen'
@@ -12,12 +12,11 @@ import { SearchScreen } from './screens/search-screen'
 import { useKioskSession, type KioskAction } from './use-kiosk-session'
 
 export function KioskApp() {
-  const navigate = useNavigate()
   const [session, dispatch] = useKioskSession()
   const { stage } = session
 
   useRootFontSizeReset()
-  useKioskBackButton(stage.name !== 'entry', dispatch)
+  useKioskBackButton(dispatch)
 
   /*
    * Reducer trzyma intencję, React Query trzyma stan serwera. Ekrany wyników, braku
@@ -44,10 +43,10 @@ export function KioskApp() {
       <KioskHeader
         skala={session.skala}
         onSkala={(skala) => dispatch({ type: 'setSkala', skala })}
-        onEnd={() => {
-          dispatch({ type: 'end' })
-          navigate({ to: '/' })
-        }}
+        // „Zakończ" czyści sesję i zostawia mieszkańca na ekranie startowym kiosku.
+        // Celowo NIE wychodzi na `/`: urządzenie stoi w punkcie publicznym i nie ma
+        // z niego prowadzić żadne wyjście do reszty aplikacji.
+        onEnd={() => dispatch({ type: 'end' })}
       />
 
       <main className="hub-panel hub-przewijanie absolute inset-x-0 top-28 bottom-0 flex flex-col px-14 pb-12">
@@ -83,7 +82,7 @@ export function KioskApp() {
       )
     }
 
-    if (search.isPending || search.isFetching) return <LoadingScreen key="loading" />
+    if (search.isPending || search.isFetching) return <LoadingScreen key="loading" query={stage.query ?? ''} />
 
     if (search.isError) {
       return (
@@ -131,9 +130,10 @@ function useRootFontSizeReset() {
 }
 
 /**
- * Kiosk nie pcha nic do URL-a, więc sprzętowy Back wyrzuciłby mieszkańca z aplikacji
- * w środku przepływu. Zamieniamy go na „jeden ekran kiosku wstecz". Na ekranie
- * startowym nie blokujemy — tam wyjście z kiosku jest poprawne.
+ * Kiosk jest zamknięty: cofanie nigdy z niego nie wyprowadza, tylko przesuwa o jeden
+ * ekran wstecz, a na ekranie startowym nie robi nic. Żeby opuścić `/kiosk`, trzeba znać
+ * adres innej trasy — urządzenie stoi w punkcie publicznym i przypadkowe wyjście do
+ * reszty aplikacji byłoby błędem, nie udogodnieniem.
  *
  * Przez `useBlocker` routera, a nie własne `history.pushState`: surowe wpisy rozjeżdżają
  * wewnętrzny indeks historii TanStacka i późniejsze `navigate()` przestaje działać
@@ -145,9 +145,8 @@ function useRootFontSizeReset() {
  * przy odświeżeniu), a na iPadOS jest zawodny. Na docelowym sprzęcie przeglądarka i tak
  * chodzi w trybie kiosku, bez przycisku wstecz, więc ten przypadek nie występuje.
  */
-function useKioskBackButton(midFlow: boolean, dispatch: Dispatch<KioskAction>) {
+function useKioskBackButton(dispatch: Dispatch<KioskAction>) {
   useBlocker({
-    disabled: !midFlow,
     // Kiosk nie ma niezapisanych danych w rozumieniu przeglądarki; pytanie
     // „czy na pewno opuścić stronę?" przy odświeżeniu byłoby tylko szumem.
     enableBeforeUnload: false,
