@@ -9,7 +9,7 @@ import { CTA, FIELD } from '../kiosk-ui'
 import { ScreenTitle } from '../screen-title'
 import type { CarriedResult, KioskMode } from '../use-kiosk-session'
 
-/** Poniżej tego zapytanie to szum, nie opis sprawy - próg z `use-voice-query.ts`. */
+/** Poniżej tego zapytanie to szum, nie opis sprawy — próg z `use-voice-query.ts`. */
 const MIN_QUERY_LENGTH = 3
 
 interface SearchScreenProps {
@@ -33,15 +33,15 @@ export function SearchScreen({ mode, draft, onMode, onDraft, onSubmit, onOpen }:
   }, [dictated, onDraft])
 
   const canSubmit = draft.trim().length >= MIN_QUERY_LENGTH
-  // W trakcie mówienia przycisk szukania tylko rozpraszałby - najpierw „Zatrzymaj”.
+  // W trakcie mówienia przycisk szukania tylko rozpraszałby — najpierw „Zatrzymaj”.
   const showSubmit = mode !== null && !voice.isListening
 
   /**
-   * „Powiedz" od razu słucha - osobny przycisk „Zacznij mówić" byłby drugim
+   * „Powiedz" od razu słucha — osobny przycisk „Zacznij mówić" byłby drugim
    * kliknięciem po tym, jak mieszkaniec już zadeklarował, że chce mówić.
    *
    * `start()` leci wprost z handlera kliknięcia, bo Safari uruchamia mikrofon
-   * tylko w obrębie gestu użytkownika - wywołanie z efektu zostałoby odrzucone.
+   * tylko w obrębie gestu użytkownika — wywołanie z efektu zostałoby odrzucone.
    */
   function chooseMode(next: KioskMode) {
     onMode(next)
@@ -68,7 +68,7 @@ export function SearchScreen({ mode, draft, onMode, onDraft, onSubmit, onOpen }:
 
         {mode === 'napisz' && (
           <div className="flex flex-col gap-3">
-            {/* Etykieta widoczna, nie placeholder - placeholder znika przy pisaniu. */}
+            {/* Etykieta widoczna, nie placeholder — placeholder znika przy pisaniu. */}
             <label htmlFor="hub-opis" className="hub-tekst-s font-semibold">
               Opisz swoją sprawę
             </label>
@@ -88,7 +88,7 @@ export function SearchScreen({ mode, draft, onMode, onDraft, onSubmit, onOpen }:
         {mode === 'powiedz' && (
           <>
             <ListeningPanel voice={voice} text={draft} onStart={voice.start} onEdit={() => onMode('napisz')} />
-            {/* Stabilny komunikat dla czytnika - żywa transkrypcja celowo poza live region. */}
+            {/* Stabilny komunikat dla czytnika — żywa transkrypcja celowo poza live region. */}
             <p role="status" className="sr-only">
               {voice.isListening ? 'Słucham.' : draft.length > 0 ? 'Gotowe. Sprawdź, czy dobrze Cię zrozumiałem.' : ''}
             </p>

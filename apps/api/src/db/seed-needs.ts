@@ -29,7 +29,7 @@ const shown: ShownResult[] = [
   { id: 'dla-seniorow__bawita', title: 'BaWita', tier: 'related' },
 ]
 
-// Question texts mirror QUESTIONS in apps/web/src/features/idea/idea-form.ts - the seed has to read
+// Question texts mirror QUESTIONS in apps/web/src/features/idea/idea-form.ts — the seed has to read
 // like the real form, because /testy picks answers out by question text.
 const ideas: { title: string; answers: IdeaAnswer[] }[] = [
   {

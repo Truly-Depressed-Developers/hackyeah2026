@@ -23,7 +23,7 @@ export interface UseVoiceQuery {
   error: string | null
   /** Settled part of the live transcript. Pair with `interimText` to style the two apart. */
   finalText: string
-  /** Words the engine is still revising - render these muted. */
+  /** Words the engine is still revising — render these muted. */
   interimText: string
   /** The whole thing in one string: live transcript while listening, draft otherwise. */
   displayText: string
@@ -32,7 +32,7 @@ export interface UseVoiceQuery {
   setDraft: (value: string) => void
   start: () => void
   stop: () => void
-  /** Start or stop, whichever applies - wire to a single mic button. */
+  /** Start or stop, whichever applies — wire to a single mic button. */
   toggle: () => void
   /** Drop the transcript and the draft. */
   reset: () => void
@@ -43,7 +43,7 @@ export interface UseVoiceQuery {
 
 /**
  * Everything a search surface needs: dictation, plus an editable draft the resident
- * can correct before searching. Headless - bring your own markup.
+ * can correct before searching. Headless — bring your own markup.
  *
  * Feeding voice into a field you already own? Use the lower-level `useVoiceInput`
  * and write `result.text` into your own state instead.

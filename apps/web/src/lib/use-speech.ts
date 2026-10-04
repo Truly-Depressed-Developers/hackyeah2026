@@ -37,7 +37,7 @@ export function useSpeech(text: string) {
     setPaused(false)
   }
 
-  /** Czytaj albo przerwij - jeden przycisk, tak jak używa tego strona innowacji. */
+  /** Czytaj albo przerwij — jeden przycisk, tak jak używa tego strona innowacji. */
   function toggle() {
     if (speaking) stop()
     else speak()
@@ -46,7 +46,7 @@ export function useSpeech(text: string) {
   /**
    * Pauza i wznowienie dla kiosku, gdzie odczyt ma osobne sterowanie play/pause + stop.
    *
-   * `speechSynthesis.pause()` bywa zawodne w niektórych wydaniach WebKita - jeśli na
+   * `speechSynthesis.pause()` bywa zawodne w niektórych wydaniach WebKita — jeśli na
    * docelowym iPadzie stan nie trzyma, zdegraduj przycisk pauzy do zatrzymania.
    */
   function pause() {

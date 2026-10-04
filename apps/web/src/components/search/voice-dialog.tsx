@@ -6,7 +6,7 @@ import { useVoiceQuery } from '@/hooks/use-voice-query'
 const DIALOG_SELECTOR = '[data-slot="dialog-content"]'
 
 /**
- * Deterministic bar shapes, straight from the design. Equalizer only - the Web Speech
+ * Deterministic bar shapes, straight from the design. Equalizer only — the Web Speech
  * API exposes no amplitude, so these animate on a timer rather than off the mic.
  */
 const BARS = Array.from({ length: 28 }, (_, i) => ({
@@ -48,7 +48,7 @@ export function VoiceDialog({ open, onOpenChange, title, confirmLabel, idleHint,
   }, [open, start])
 
   // Requesting the microphone can hand focus back to the trigger, which sits in the
-  // aria-hidden background once we are open - a screen reader would be stranded on an
+  // aria-hidden background once we are open — a screen reader would be stranded on an
   // element it cannot reach. Pull focus onto the heading once the engine has settled.
   //
   // A no-op when the dialog already placed focus itself; it only fires when focus has

@@ -1,6 +1,6 @@
 const plural = new Intl.PluralRules('pl')
 
-/** "1 rozwiązanie" / "2 rozwiązania" / "5 rozwiązań" - Polish needs three forms, not two. */
+/** "1 rozwiązanie" / "2 rozwiązania" / "5 rozwiązań" — Polish needs three forms, not two. */
 export function countLabel(n: number, forms: Record<'one' | 'few' | 'many', string>) {
   const rule = plural.select(n)
   return `${n} ${rule === 'one' || rule === 'few' ? forms[rule] : forms.many}`

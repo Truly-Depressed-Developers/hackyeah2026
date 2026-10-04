@@ -2,7 +2,7 @@ import { IconMicrophone } from '@tabler/icons-react'
 
 interface VoiceButtonProps {
   onClick: () => void
-  /** No speech engine on this device - keep the button visible but inert, per the design. */
+  /** No speech engine on this device — keep the button visible but inert, per the design. */
   unavailable?: boolean
   /** Why it is inert, as a tooltip. */
   unavailableHint?: string

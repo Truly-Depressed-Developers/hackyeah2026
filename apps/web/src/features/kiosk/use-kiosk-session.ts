@@ -3,18 +3,18 @@ import { useReducer } from 'react'
 export type KioskMode = 'napisz' | 'powiedz'
 
 /**
- * `GET /catalog/{id}` zwraca `Innovation`, które nie ma `why` ani `whyGenerated` -
+ * `GET /catalog/{id}` zwraca `Innovation`, które nie ma `why` ani `whyGenerated` —
  * uzasadnienie dopasowania żyje tylko na `Result`. Dlatego jedzie razem z kliknięciem
  * w kartę, zamiast być dociągane na ekranie szczegółu.
  *
  * `why` jest opcjonalne, bo do szczegółu można też wejść z katalogu na ekranie
- * startowym - tam nie ma żadnego zapytania, więc nie ma czego uzasadniać.
+ * startowym — tam nie ma żadnego zapytania, więc nie ma czego uzasadniać.
  */
 export type CarriedResult = { id: string; title: string; why?: string; whyGenerated?: boolean }
 
 /**
  * To, do czego mieszkaniec się zobowiązał. Ekrany `results` / `noResult` / `error` /
- * `loading` są POCHODNE od zapytania React Query, nie dispatchowane - inaczej refetch
+ * `loading` są POCHODNE od zapytania React Query, nie dispatchowane — inaczej refetch
  * mógłby się udać, a maszyna zostałaby na `error`.
  */
 export type KioskStage =
@@ -25,7 +25,7 @@ export type KioskStage =
 
 export interface KioskSession {
   stage: KioskStage
-  /** null dopóki mieszkaniec nie wybierze kafelka - to steruje kafelki-vs-przełącznik. */
+  /** null dopóki mieszkaniec nie wybierze kafelka — to steruje kafelki-vs-przełącznik. */
   mode: KioskMode | null
   /** Przeżywa entry → wyniki → entry, żeby „Wróć i opisz inaczej" wracało wypełnione. */
   draft: string
@@ -50,7 +50,7 @@ const INITIAL: KioskSession = { stage: { name: 'entry' }, mode: null, draft: '',
  * Czy po mieszkańcu został jakikolwiek ślad do wyczyszczenia. Steruje dostępnością
  * „Zakończ": na świeżym ekranie startowym ten przycisk nie miałby co zrobić.
  *
- * Porównujemy z całym stanem wyjściowym, a nie z listą wybranych pól - dzięki temu
+ * Porównujemy z całym stanem wyjściowym, a nie z listą wybranych pól — dzięki temu
  * nowe pole w sesji samo wejdzie do warunku, zamiast cicho go ominąć. Powiększony
  * tekst też liczy się jako ślad: następna osoba ma zacząć od ustawień domyślnych.
  */
@@ -77,7 +77,7 @@ function reducer(state: KioskSession, action: KioskAction): KioskSession {
       return { ...state, stage: { name: 'search', query }, draft: query }
     }
 
-    // Wejście w szczegół z wyników niesie zapytanie, wejście z katalogu nie -
+    // Wejście w szczegół z wyników niesie zapytanie, wejście z katalogu nie —
     // to ono decyduje, dokąd wróci „wstecz".
     case 'openDetail':
       if (state.stage.name === 'detail') return state
@@ -107,7 +107,7 @@ function reducer(state: KioskSession, action: KioskAction): KioskSession {
     /*
      * „Zakończ": pełny wipe. To jedyne miejsce, w które wejdzie później czyszczenie
      * sesji (queryClient.clear() + usunięcie `hubmi:gaps`), gdy dojdzie ekran
-     * bezczynności - stan komponentów to za mało, bo cache i sessionStorage trzymają
+     * bezczynności — stan komponentów to za mało, bo cache i sessionStorage trzymają
      * tekst poprzedniego mieszkańca do zamknięcia karty.
      */
     case 'end':

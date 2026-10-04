@@ -2,7 +2,7 @@ import { SearchingGlass } from './searching-glass'
 import { useSearchProgress } from './use-search-progress'
 
 /**
- * Stan szukania w wersji web. Zastępuje samo „Szukam rozwiązań…" - zapytanie
+ * Stan szukania w wersji web. Zastępuje samo „Szukam rozwiązań…" — zapytanie
  * semantyczne idzie do zewnętrznej usługi i potrafi trwać kilka sekund, a goła linijka
  * tekstu nie odróżnia tego od zawieszonej strony.
  */

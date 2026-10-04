@@ -3,7 +3,7 @@ import { categoryFor } from '@/lib/categories'
 
 /**
  * Pigułka kategorii w skali kiosku. `CategoryBadge` z wersji web ma zaszyte h-8
- * i 13 px tekstu - za mało z odległości wyciągniętej ręki - ale sam `CategoryIcon`
+ * i 13 px tekstu — za mało z odległości wyciągniętej ręki — ale sam `CategoryIcon`
  * to goły gradientowy krążek bez opinii o layoucie, więc reużywamy jego.
  *
  * Nieznany slug nie jest błędem: API może zwrócić kategorię, której UI jeszcze nie

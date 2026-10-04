@@ -17,14 +17,14 @@ type Voice = ReturnType<typeof useVoiceQuery>
 
 interface ListeningPanelProps {
   voice: Voice
-  /** Bieżący opis z reducera - po „Popraw tekst" może różnić się od transkrypcji. */
+  /** Bieżący opis z reducera — po „Popraw tekst" może różnić się od transkrypcji. */
   text: string
   onStart: () => void
   onEdit: () => void
 }
 
 /**
- * Panel słuchania w treści ekranu, nie modal - inaczej niż `voice-dialog.tsx` w wersji
+ * Panel słuchania w treści ekranu, nie modal — inaczej niż `voice-dialog.tsx` w wersji
  * web. Na kiosku nie ma czego przykrywać, a nakładka zabierałaby kontekst sprawy.
  *
  * Faza jest wyliczana z `useVoiceQuery`, bez własnego stanu: jedno źródło prawdy
@@ -40,7 +40,7 @@ export function ListeningPanel({ voice, text, onStart, onEdit }: ListeningPanelP
 }
 
 /**
- * Osiągalne tylko po zatrzymaniu nagrania bez rozpoznanego tekstu - wybór „Powiedz"
+ * Osiągalne tylko po zatrzymaniu nagrania bez rozpoznanego tekstu — wybór „Powiedz"
  * uruchamia mikrofon od razu, więc to nie jest pierwszy krok, tylko ponowienie.
  */
 function Idle({ onStart }: { onStart: () => void }) {
@@ -48,7 +48,7 @@ function Idle({ onStart }: { onStart: () => void }) {
     <div className="flex flex-col items-center gap-5 rounded-[28px] border border-border bg-card p-10 text-center">
       <p className="hub-tekst-m font-bold">Nie usłyszałem nic wyraźnego</p>
       <p className="hub-tekst-s text-muted-foreground">Spróbuj jeszcze raz - mów spokojnie, swoimi słowami.</p>
-      {/* start() wprost w handlerze kliknięcia - Safari wymaga gestu użytkownika. */}
+      {/* start() wprost w handlerze kliknięcia — Safari wymaga gestu użytkownika. */}
       <button type="button" onClick={onStart} className={cn(CTA, 'h-20 px-12')}>
         <IconMicrophone aria-hidden="true" className="size-9" />
         Powiedz jeszcze raz
@@ -144,7 +144,7 @@ function Confirm({ voice, text, onStart, onEdit }: { voice: Voice; text: string;
 
 /**
  * Stan prawdopodobny, nie skrajny: rozpoznawanie mowy wymaga bezpiecznego kontekstu
- * (HTTPS), a Chrome wysyła audio do usługi Google - kiosk po gołym HTTP albo offline
+ * (HTTPS), a Chrome wysyła audio do usługi Google — kiosk po gołym HTTP albo offline
  * nie ma dyktowania. Dlatego wyjście na klawiaturę jest tu głównym przyciskiem.
  */
 function Unavailable({ error, onEdit }: { error: string | null; onEdit: () => void }) {

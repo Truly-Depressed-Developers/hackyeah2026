@@ -50,7 +50,7 @@ export function categoryFor(slug: string | undefined) {
 
 /**
  * First Kategoria named in a free-text list of labels, as the Pomysł form stores them (joined with
- * ", "). Labels may themselves contain a comma - "Dzieci, młodzież i rodzina" - so this searches for
+ * ", "). Labels may themselves contain a comma — "Dzieci, młodzież i rodzina" — so this searches for
  * the labels rather than splitting the text apart.
  */
 export function firstCategoryIn(text: string | undefined) {

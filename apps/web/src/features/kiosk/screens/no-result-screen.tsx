@@ -7,7 +7,7 @@ import { CTA, CTA_MUTED } from '../kiosk-ui'
 import { ScreenTitle } from '../screen-title'
 
 export function NoResultScreen({ query, onBack }: { query: string; onBack: () => void }) {
-  // Zapisuje lukę w wiedzy (sygnał dla ROPS) raz na zapytanie - dedup siedzi w hooku.
+  // Zapisuje lukę w wiedzy (sygnał dla ROPS) raz na zapytanie — dedup siedzi w hooku.
   const gapId = useGap(query)
   const [showForm, setShowForm] = useState(false)
 

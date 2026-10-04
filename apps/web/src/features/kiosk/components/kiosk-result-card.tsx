@@ -5,12 +5,12 @@ import { CARD } from '../kiosk-ui'
 import { CategoryPill } from './category-pill'
 
 /**
- * Cała karta jest jednym przyciskiem - bez zagnieżdżonych akcji. Na ekranie dotykowym
+ * Cała karta jest jednym przyciskiem — bez zagnieżdżonych akcji. Na ekranie dotykowym
  * dwa cele w jednym kafelku to loteria, a dla czytnika ekranu zagnieżdżony przycisk
  * w przycisku jest nieprawidłowy. Wszystkie akcje czekają na ekranie szczegółu.
  *
  * Uwaga na kontrakt: `Result` NIE ma pola `featured`, więc odznaki „Polecana"
- * z prototypu nie da się tu pokazać - pojawia się dopiero na ekranie szczegółu,
+ * z prototypu nie da się tu pokazać — pojawia się dopiero na ekranie szczegółu,
  * który dostaje pełne `Innovation`.
  */
 export function KioskResultCard({ result, tier, onOpen }: { result: Result; tier: 'solution' | 'related'; onOpen: () => void }) {
@@ -43,7 +43,7 @@ export function KioskResultCard({ result, tier, onOpen }: { result: Result; tier
                 <span className="font-bold text-foreground">Dlaczego to pasuje: </span>
                 {result.why}
               </span>
-              {/* Nie podajemy tekstu LLM-a jako redakcyjnego - tak jak robi to wersja web. */}
+              {/* Nie podajemy tekstu LLM-a jako redakcyjnego — tak jak robi to wersja web. */}
               <span className="inline-flex items-center gap-2 text-muted-foreground">
                 {result.whyGenerated && <IconSparkles aria-hidden="true" className="size-5" />}
                 {result.whyGenerated ? 'Uzasadnienie wygenerowane przez AI' : 'Uzasadnienie dopasowania'}
@@ -52,7 +52,7 @@ export function KioskResultCard({ result, tier, onOpen }: { result: Result; tier
 
             <span className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[calc(18px*var(--hub-skala))] text-muted-foreground">
               {result.links?.video && (
-                /* Sam sygnał, że film czeka na ekranie szczegółu - tu nie ma odtwarzacza. */
+                /* Sam sygnał, że film czeka na ekranie szczegółu — tu nie ma odtwarzacza. */
                 <span className="inline-flex items-center gap-2">
                   <IconMovie aria-hidden="true" className="size-5" />
                   Film

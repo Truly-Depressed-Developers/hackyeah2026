@@ -12,7 +12,7 @@ import {
 export type VoiceStatus = 'unsupported' | 'idle' | 'listening' | 'error'
 
 export interface VoiceResult {
-  /** Normalized transcript - this is the string the API receives. */
+  /** Normalized transcript — this is the string the API receives. */
   text: string
   lang: string
   /** Mean confidence over the final segments, or null when the engine reports none. */
@@ -36,8 +36,8 @@ const DEFAULT_MAX_DURATION_MS = 60_000
 const MAX_RESTARTS = 10
 
 /**
- * Dictation through the browser's own speech engine. Audio stays on the device -
- * nothing is uploaded - and the caller gets a plain string to send to the API.
+ * Dictation through the browser's own speech engine. Audio stays on the device —
+ * nothing is uploaded — and the caller gets a plain string to send to the API.
  */
 export function useVoiceInput(options: UseVoiceInputOptions = {}) {
   const support: VoiceSupport = useMemo(() => probeVoiceSupport(), [])
@@ -182,7 +182,7 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}) {
         finish()
         return
       }
-      // Chrome ends the session on every longer pause - resume until the user stops us.
+      // Chrome ends the session on every longer pause — resume until the user stops us.
       restartsRef.current += 1
       if (restartsRef.current > MAX_RESTARTS) {
         finish()
@@ -237,14 +237,14 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}) {
     isListening,
     /** Settled transcript. */
     finalText,
-    /** Words the engine is still revising - render them muted. */
+    /** Words the engine is still revising — render them muted. */
     interimText,
     /** What to show on screen while dictating. */
     text: normalizeTranscript(`${finalText} ${interimText}`),
     error,
     start,
     stop,
-    /** Start or stop, whichever applies - wire this to a single mic button. */
+    /** Start or stop, whichever applies — wire this to a single mic button. */
     toggle,
     cancel,
   }

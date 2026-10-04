@@ -1,4 +1,4 @@
-// Web Speech API - the browser owns transcription, so audio never reaches our backend.
+// Web Speech API — the browser owns transcription, so audio never reaches our backend.
 // Note it may still leave the device: Chrome relays it to Google's recognition service
 // (hence no offline support), while on-device engines keep it local.
 // lib.dom (TS 7) ships the event and result types but not the SpeechRecognition
@@ -49,11 +49,11 @@ export function getSpeechRecognition(): SpeechRecognitionConstructor | null {
 export interface VoiceSupport {
   /** Browser exposes a SpeechRecognition constructor. */
   recognition: boolean
-  /** HTTPS or localhost - the API refuses to start outside a secure context. */
+  /** HTTPS or localhost — the API refuses to start outside a secure context. */
   secureContext: boolean
   /** getUserMedia exists, so there is a microphone pipeline at all. */
   microphone: boolean
-  /** All of the above - safe to offer the voice toggle. */
+  /** All of the above — safe to offer the voice toggle. */
   usable: boolean
 }
 
@@ -94,7 +94,7 @@ export function describeSpeechError(code: SpeechRecognitionErrorCode): string {
   return ERROR_MESSAGES[code] ?? 'Rozpoznawanie mowy nie zadziałało. Spróbuj ponownie lub wpisz problem.'
 }
 
-/** Errors that will not fix themselves - never auto-restart after one of these. */
+/** Errors that will not fix themselves — never auto-restart after one of these. */
 export function isFatalSpeechError(code: SpeechRecognitionErrorCode): boolean {
   return (
     code === 'not-allowed' ||

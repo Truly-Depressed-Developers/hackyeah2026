@@ -8,14 +8,14 @@ import { CTA, CTA_MUTED, CTA_OUTLINE, FIELD, TILE } from '../kiosk-ui'
 /**
  * Wdrożona aplikacja. To ona, a nie origin przeglądarki, jest domyślną bazą kodu QR:
  * kiosk chodzi pod adresem lokalnym albo w LAN-ie, a telefon mieszkańca takiego adresu
- * nie otworzy - `localhost` na telefonie to sam telefon.
+ * nie otworzy — `localhost` na telefonie to sam telefon.
  */
 const DEFAULT_PUBLIC_URL = 'https://hackyeah2026.onrender.com'
 
 /**
  * `||`, nie `??`: w .env zmienna bywa zadeklarowana pusta (`VITE_PUBLIC_URL=`), a to
  * jest pusty string, nie undefined. Przy `??` pusty string przechodził dalej i kod QR
- * zawierał goły path bez schematu i hosta - czyli nie link, tylko tekst, z którym
+ * zawierał goły path bez schematu i hosta — czyli nie link, tylko tekst, z którym
  * skaner telefonu robił co chciał (łącznie z podsuwaniem sklepu z aplikacjami).
  *
  * Ucinamy końcowe ukośniki, żeby `.../` nie dawało podwójnego slasha w adresie.
@@ -50,7 +50,7 @@ export function Takeaway({ id, title }: { id: string; title: string }) {
 
       {/*
         Wszystkie trzy sposoby odbioru są widoczne zawsze, też w buildzie produkcyjnym.
-        Druk i SMS to na razie sam front - rozwiązują się na timerze, bez backendu -
+        Druk i SMS to na razie sam front — rozwiązują się na timerze, bez backendu —
         więc każdy z tych paneli niesie widoczną adnotację o trybie demonstracyjnym.
         To ona, a nie ukrywanie kafelków, pilnuje, żeby kiosk nie obiecał mieszkańcowi
         wiadomości, która nigdy nie przyjdzie. Kod QR działa naprawdę.
@@ -111,7 +111,7 @@ function Sms({ state, setState }: { state: Extract<Takeaway, { kind: 'sms' }>; s
   const inputRef = useRef<HTMLInputElement>(null)
   const valid = isPhone(state.number)
 
-  // Panel zastąpił kafelek, który go otworzył, więc fokus musi za nim pójść -
+  // Panel zastąpił kafelek, który go otworzył, więc fokus musi za nim pójść —
   // inaczej czytnik ekranu zostałby na elemencie, którego już nie ma.
   useEffect(() => {
     if (state.phase === 'form') inputRef.current?.focus()
@@ -211,7 +211,7 @@ function Qr({ id, onBack }: { id: string; onBack: () => void }) {
   )
 }
 
-/** Żeby nikt nie wziął symulacji za działającą usługę - ani mieszkaniec, ani zespół. */
+/** Żeby nikt nie wziął symulacji za działającą usługę — ani mieszkaniec, ani zespół. */
 function DemoNote() {
   return (
     <p className="hub-tekst-xs rounded-2xl bg-[var(--hub-bursztyn-jasny)] px-4 py-2 text-[var(--hub-bursztyn)]">
