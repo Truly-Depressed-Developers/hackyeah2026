@@ -29,10 +29,15 @@ export function Takeaway({ id, title }: { id: string; title: string }) {
   const headingId = 'hub-odbior'
 
   return (
+    /*
+     * Etykieta sekcji to akapit, nie nagłówek. Odbiór stoi nad tytułem innowacji,
+     * więc <h2> dałoby nagłówek przed <h1> i skok h1→h3 w panelach niżej.
+     * `aria-labelledby` nadaje sekcji nazwę bez wchodzenia w hierarchię nagłówków.
+     */
     <section aria-labelledby={headingId} className="flex flex-col gap-5">
-      <h2 id={headingId} className="text-[calc(26px*var(--hub-skala))] font-bold">
+      <p id={headingId} className="text-[calc(26px*var(--hub-skala))] font-bold">
         Jak chcesz odebrać szczegóły i adres?
-      </h2>
+      </p>
 
       {state.kind === 'none' && (
         <div className="grid grid-cols-3 gap-4">
@@ -76,9 +81,9 @@ function Print({ done, onDone, onBack }: { done: boolean; onDone: () => void; on
   return (
     <div className="flex flex-col items-center gap-4 rounded-[28px] border border-border bg-card p-8 text-center">
       <IconPrinter aria-hidden="true" className="size-14 text-[var(--hub-niebieski-ciemny)]" />
-      <h3 role="status" className="text-[32px] font-bold">
+      <p role="status" className="text-[32px] font-bold">
         {done ? 'Gotowe — kartka czeka' : 'Drukuję kartkę z adresem…'}
-      </h3>
+      </p>
       <p className="hub-tekst-s text-[var(--hub-tekst-2)]">Odbierz ją z drukarki pod ekranem.</p>
       <DemoNote />
       {done && (
@@ -106,9 +111,9 @@ function Sms({ state, setState }: { state: Extract<Takeaway, { kind: 'sms' }>; s
     return (
       <div className="flex flex-col items-center gap-4 rounded-[28px] border border-border bg-card p-8 text-center">
         <IconCheck aria-hidden="true" className="size-14 text-[var(--hub-niebieski-ciemny)]" />
-        <h3 role="status" className="text-[calc(26px*var(--hub-skala))] font-bold">
+        <p role="status" className="text-[calc(26px*var(--hub-skala))] font-bold">
           Wysłano SMS
-        </h3>
+        </p>
         <p className="hub-tekst-s text-[var(--hub-tekst-2)]">
           Adres i opis są już w drodze na numer kończący się na {state.number.slice(-3)}.
         </p>
@@ -125,7 +130,7 @@ function Sms({ state, setState }: { state: Extract<Takeaway, { kind: 'sms' }>; s
         if (valid) setState({ ...state, phase: 'sending' })
       }}
     >
-      <h3 className="text-[calc(26px*var(--hub-skala))] font-bold">Wyślę SMS z adresem i opisem</h3>
+      <p className="text-[calc(26px*var(--hub-skala))] font-bold">Wyślę SMS z adresem i opisem</p>
 
       <label htmlFor="hub-telefon" className="hub-tekst-s font-semibold">
         Numer telefonu
@@ -167,7 +172,7 @@ function Sms({ state, setState }: { state: Extract<Takeaway, { kind: 'sms' }>; s
 function Qr({ id, onBack }: { id: string; onBack: () => void }) {
   return (
     <div className="flex flex-col items-center gap-4 rounded-[28px] border border-border bg-card p-8 text-center">
-      <h3 className="text-[calc(28px*var(--hub-skala))] font-bold">Zeskanuj kod aparatem w telefonie</h3>
+      <p className="text-[calc(28px*var(--hub-skala))] font-bold">Zeskanuj kod aparatem w telefonie</p>
       <QrCode
         value={`${PUBLIC_URL}/innowacja/${encodeURIComponent(id)}`}
         label="Kod QR z adresem strony tej innowacji"
