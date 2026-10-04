@@ -5,6 +5,10 @@ import { KioskResultCard } from '../components/kiosk-result-card'
 import { CTA_OUTLINE } from '../kiosk-ui'
 import { ScreenTitle } from '../screen-title'
 import type { CarriedResult } from '../use-kiosk-session'
+import { translator } from '@/lib/i18n'
+
+// The kiosk has no language switch.
+const POLISH = translator('pl')
 
 interface ResultsScreenProps {
   data: SearchResponse
@@ -23,7 +27,7 @@ export function ResultsScreen({ data, query, onOpen, onBack }: ResultsScreenProp
         </p>
         {/* Liczba wyników po polsku — ta sama funkcja, której używa wersja web. */}
         <p role="status" className="sr-only">
-          {summarize(data)}
+          {summarize(data, POLISH)}
         </p>
       </div>
 

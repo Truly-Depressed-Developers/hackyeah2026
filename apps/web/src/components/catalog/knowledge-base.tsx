@@ -40,12 +40,12 @@ export function KnowledgeBase() {
   return (
     <section aria-labelledby="kb-title" className="mx-auto flex w-full max-w-[73.75rem] flex-col gap-7 px-4 pt-12 pb-18 sm:px-6">
       <h2 id="kb-title" className="text-[1.875rem] leading-[2.375rem] font-[650] tracking-[-0.03em]">
-        {t('Baza wiedzy', 'Knowledge base')}
+        {t('kb.title')}
       </h2>
 
       <div
         role="group"
-        aria-label={t('Filtruj według kategorii', 'Filter by category')}
+        aria-label={t('kb.filter')}
         className="-m-1 flex gap-2 overflow-x-auto p-1 pr-12 [scrollbar-width:none] [mask-image:linear-gradient(to_right,#000_calc(100%-4rem),transparent)]"
       >
         {[ALL_CATEGORIES, ...CATEGORIES].map((category) => (
@@ -62,16 +62,16 @@ export function KnowledgeBase() {
             )}
           >
             <CategoryIcon category={category} />
-            {t(category.label, category.labelEn)}
+            {t.dynamic(`category.${category.slug}`, category.label)}
           </button>
         ))}
       </div>
 
       {catalog.isError ? (
         <div role="alert" className="flex flex-col items-start gap-3 rounded-xl border border-destructive p-4">
-          <p className="font-semibold text-destructive">{t('Nie udało się wczytać bazy wiedzy.', 'Could not load the knowledge base.')}</p>
+          <p className="font-semibold text-destructive">{t('kb.error')}</p>
           <Button variant="outline" className="h-11 px-4" onClick={() => catalog.refetch()}>
-            {t('Spróbuj ponownie', 'Try again')}
+            {t('common.retry')}
           </Button>
         </div>
       ) : (
@@ -86,7 +86,7 @@ export function KnowledgeBase() {
         {catalog.isPending && (
           <p role="status" className="flex items-center gap-2 text-sm text-muted-foreground">
             <Spinner />
-            {t('Wczytujemy innowacje…', 'Loading innovations…')}
+            {t('kb.loading')}
           </p>
         )}
         {catalog.isSuccess && shown.length < items.length && (
@@ -96,12 +96,12 @@ export function KnowledgeBase() {
             className="inline-flex min-h-11 items-center gap-2 rounded-full px-4 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring"
           >
             <IconChevronDown aria-hidden="true" className="size-4" />
-            {t('Pokaż kolejne innowacje', 'Show more innovations')} ({shown.length} {t('z', 'of')} {items.length})
+            {t('kb.more', { shown: shown.length, total: items.length })}
           </button>
         )}
         {catalog.isSuccess && shown.length >= items.length && (
           <p role="status" className="text-center text-sm text-muted-foreground">
-            {t('To wszystkie innowacje w tej kategorii', 'That is every innovation in this category')} ({items.length}).
+            {t('kb.all', { total: items.length })}
           </p>
         )}
       </div>

@@ -1,6 +1,17 @@
 import { useSyncExternalStore } from 'react'
+import en from '@/locales/en.json'
+import pl from '@/locales/pl.json'
 
 export type Lang = 'pl' | 'en'
+
+type PluralSuffix = 'one' | 'few' | 'many' | 'other'
+/** Keys in pl.json, minus the plural forms (`search.solutions_one`…), which go through `count`. */
+export type MessageKey = Exclude<keyof typeof pl, `${string}_${PluralSuffix}`>
+export type CountKey = keyof typeof pl extends infer K ? (K extends `${infer Base}_${PluralSuffix}` ? Base : never) : never
+
+// Compile-time check: en.json must translate every key pl.json has (plural forms differ per language).
+const english: Record<MessageKey, string> = en
+const messages: Record<Lang, Record<string, string>> = { pl, en: english }
 
 const STORAGE_KEY = 'pomost:lang'
 const listeners = new Set<() => void>()
@@ -37,11 +48,28 @@ const subscribe = (listener: () => void) => {
 
 export const useLang = () => useSyncExternalStore(subscribe, () => current)
 
-/**
- * Inline pairs instead of key files: the copy stays next to its markup. Only the interface is
- * translated; innovations and AI reports come from the AI service in Polish.
- */
+type Vars = Record<string, string | number>
+
+const fill = (text: string, vars?: Vars) => (vars ? text.replace(/\{(\w+)\}/g, (match, name: string) => String(vars[name] ?? match)) : text)
+
+export interface Translate {
+  (key: MessageKey, vars?: Vars): string
+  /** Polish needs one/few/many, English one/other; Intl.PluralRules picks the form for the language. */
+  count: (key: CountKey, count: number) => string
+  /** For keys built from data (category slugs); falls back when the key isn't in the dictionary. */
+  dynamic: (key: string, fallback: string) => string
+}
+
+export function translator(lang: Lang): Translate {
+  const dict = messages[lang]
+  const rules = new Intl.PluralRules(lang)
+  const t = ((key: MessageKey, vars?: Vars) => fill(dict[key] ?? pl[key], vars)) as Translate
+  t.count = (key, count) => fill(dict[`${key}_${rules.select(count)}`] ?? dict[`${key}_other`] ?? dict[`${key}_many`] ?? key, { count })
+  t.dynamic = (key, fallback) => dict[key] ?? fallback
+  return t
+}
+
+/** Only the interface is translated; innovations and AI reports come from the AI service in Polish. */
 export function useT() {
-  const lang = useLang()
-  return (pl: string, en: string) => (lang === 'en' ? en : pl)
+  return translator(useLang())
 }

@@ -15,7 +15,6 @@ import {
 export type Category = {
   slug: string
   label: string
-  labelEn: string
   icon: Icon
   gradient: [string, string]
   onGradient: string
@@ -24,7 +23,7 @@ export type Category = {
 
 export const ALL_CATEGORIES: Category = {
   slug: 'all',
-  label: 'Wszystkie', labelEn: 'All',
+  label: 'Wszystkie',
   icon: IconLayoutGrid,
   gradient: ['#E2E8F0', '#A8B5C7'],
   onGradient: '#0F1B2D',
@@ -32,15 +31,15 @@ export const ALL_CATEGORIES: Category = {
 }
 
 export const CATEGORIES: Category[] = [
-  { slug: 'dla-seniorow', label: 'Seniorzy', labelEn: 'Seniors', icon: IconOld, gradient: ['#FF8A7A', '#FF8A4C'], onGradient: '#0F1B2D', tint: '#FDE7E0' },
-  { slug: 'dla-dzieci-mlodziezy-i-rodziny', label: 'Dzieci, młodzież i rodzina', labelEn: 'Children, youth and family', icon: IconFriends, gradient: ['#D9E84B', '#2FDDE2'], onGradient: '#0F1B2D', tint: '#DDF5EC' },
-  { slug: 'dla-rynku-pracy', label: 'Rynek pracy', labelEn: 'Labour market', icon: IconBriefcase, gradient: ['#8C0AA6', '#A80033'], onGradient: '#FFFFFF', tint: '#F7DFF0' },
-  { slug: 'dla-osob-o-ograniczonej-mobilnosci', label: 'Ograniczona mobilność', labelEn: 'Limited mobility', icon: IconWheelchair, gradient: ['#EE8AF2', '#A9A1FC'], onGradient: '#0F1B2D', tint: '#ECE5FD' },
-  { slug: 'dla-osob-z-niepelnosprawnoscia-sensoryczna', label: 'Niepełnosprawność sensoryczna', labelEn: 'Sensory disability', icon: IconBlind, gradient: ['#FFC64F', '#FF8F40'], onGradient: '#0F1B2D', tint: '#FFF0D6' },
-  { slug: 'dla-cudzoziemcow', label: 'Cudzoziemcy', labelEn: 'Foreigners', icon: IconWorld, gradient: ['#4CC774', '#A6E635'], onGradient: '#0F1B2D', tint: '#E2F5DA' },
-  { slug: 'dla-osob-z-niepelnosprawnoscia-intelektualna', label: 'Niepełnosprawność intelektualna', labelEn: 'Intellectual disability', icon: IconBrain, gradient: ['#FFF34A', '#F2D600'], onGradient: '#0F1B2D', tint: '#FBF6C7' },
-  { slug: 'dla-osob-w-kryzysie-bezdomnosci', label: 'Kryzys bezdomności', labelEn: 'Homelessness', icon: IconHomeHand, gradient: ['#FF7DBB', '#FFDC4D'], onGradient: '#0F1B2D', tint: '#FFE4EF' },
-  { slug: 'dla-zdrowia-i-medycyny', label: 'Zdrowie i medycyna', labelEn: 'Health and medicine', icon: IconClipboardHeart, gradient: ['#40D9F2', '#6FB3F0'], onGradient: '#0F1B2D', tint: '#DCEFFB' },
+  { slug: 'dla-seniorow', label: 'Seniorzy', icon: IconOld, gradient: ['#FF8A7A', '#FF8A4C'], onGradient: '#0F1B2D', tint: '#FDE7E0' },
+  { slug: 'dla-dzieci-mlodziezy-i-rodziny', label: 'Dzieci, młodzież i rodzina', icon: IconFriends, gradient: ['#D9E84B', '#2FDDE2'], onGradient: '#0F1B2D', tint: '#DDF5EC' },
+  { slug: 'dla-rynku-pracy', label: 'Rynek pracy', icon: IconBriefcase, gradient: ['#8C0AA6', '#A80033'], onGradient: '#FFFFFF', tint: '#F7DFF0' },
+  { slug: 'dla-osob-o-ograniczonej-mobilnosci', label: 'Ograniczona mobilność', icon: IconWheelchair, gradient: ['#EE8AF2', '#A9A1FC'], onGradient: '#0F1B2D', tint: '#ECE5FD' },
+  { slug: 'dla-osob-z-niepelnosprawnoscia-sensoryczna', label: 'Niepełnosprawność sensoryczna', icon: IconBlind, gradient: ['#FFC64F', '#FF8F40'], onGradient: '#0F1B2D', tint: '#FFF0D6' },
+  { slug: 'dla-cudzoziemcow', label: 'Cudzoziemcy', icon: IconWorld, gradient: ['#4CC774', '#A6E635'], onGradient: '#0F1B2D', tint: '#E2F5DA' },
+  { slug: 'dla-osob-z-niepelnosprawnoscia-intelektualna', label: 'Niepełnosprawność intelektualna', icon: IconBrain, gradient: ['#FFF34A', '#F2D600'], onGradient: '#0F1B2D', tint: '#FBF6C7' },
+  { slug: 'dla-osob-w-kryzysie-bezdomnosci', label: 'Kryzys bezdomności', icon: IconHomeHand, gradient: ['#FF7DBB', '#FFDC4D'], onGradient: '#0F1B2D', tint: '#FFE4EF' },
+  { slug: 'dla-zdrowia-i-medycyny', label: 'Zdrowie i medycyna', icon: IconClipboardHeart, gradient: ['#40D9F2', '#6FB3F0'], onGradient: '#0F1B2D', tint: '#DCEFFB' },
 ]
 
 const bySlug = new Map(CATEGORIES.map((category) => [category.slug, category]))

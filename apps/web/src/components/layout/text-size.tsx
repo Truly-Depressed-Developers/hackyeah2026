@@ -4,9 +4,9 @@ import { track } from '@/lib/analytics'
 import { useT } from '@/lib/i18n'
 
 const SIZES = [
-  { id: 'small', label: 'Mniejszy tekst', labelEn: 'Smaller text', rootSize: '87.5%', glyph: 'text-[0.8125rem]' },
-  { id: 'normal', label: 'Standardowy tekst', labelEn: 'Standard text', rootSize: '100%', glyph: 'text-base' },
-  { id: 'large', label: 'Większy tekst', labelEn: 'Larger text', rootSize: '125%', glyph: 'text-xl' },
+  { id: 'small', label: 'Mniejszy tekst', rootSize: '87.5%', glyph: 'text-[0.8125rem]' },
+  { id: 'normal', label: 'Standardowy tekst', rootSize: '100%', glyph: 'text-base' },
+  { id: 'large', label: 'Większy tekst', rootSize: '125%', glyph: 'text-xl' },
 ] as const
 
 type SizeId = (typeof SIZES)[number]['id']
@@ -48,13 +48,13 @@ export function TextSizeSwitch() {
   return (
     <div role="group" aria-labelledby="text-size-label" className="flex h-[2.875rem] items-center gap-0.5 rounded-full bg-muted p-[3px]">
       <span id="text-size-label" className="pr-2 pl-3 text-sm text-secondary-foreground">
-        {t('Tekst', 'Text')}
+        {t('textSize.label')}
       </span>
       {SIZES.map((size) => (
         <button
           key={size.id}
           type="button"
-          aria-label={t(size.label, size.labelEn)}
+          aria-label={t(`textSize.${size.id}`)}
           aria-pressed={current === size.id}
           onClick={() => choose(size.id)}
           className={cn(

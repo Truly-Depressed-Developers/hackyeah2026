@@ -17,14 +17,14 @@ export function ActionDock() {
           <span aria-hidden="true" className={cn(fabIcon, 'bg-primary-soft text-primary shadow-[inset_0_0_0_1px_#CFDDF0]')}>
             <IconClipboardCheck className="size-[1.375rem]" stroke={2.25} />
           </span>
-          {t('Zostań testerem', 'Become a tester')}
+          {t('dock.tester')}
         </Link>
 
         <Link to="/pomysl" search={{ krok: 1 }} className={fab}>
           <span aria-hidden="true" className={cn(fabIcon, 'bg-primary text-white')}>
             <IconPlus className="size-[1.375rem]" stroke={2.5} />
           </span>
-          {t('Zgłoś pomysł', 'Suggest an idea')}
+          {t('dock.idea')}
         </Link>
       </div>
     </div>

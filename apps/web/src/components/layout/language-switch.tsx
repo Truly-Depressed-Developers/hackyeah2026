@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { cn } from 'cn'
-import { setLang, useLang, type Lang } from '@/lib/i18n'
+import { setLang, useLang, useT, type Lang } from '@/lib/i18n'
 
 const segmentButton =
   'inline-flex h-10 min-w-11 items-center justify-center gap-[7px] rounded-full px-3 text-sm leading-none font-semibold text-secondary-foreground transition-colors focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring'
@@ -9,10 +9,11 @@ const active = 'bg-background text-primary-strong shadow-[0_1px_3px_0_rgb(15_27_
 
 export function LanguageSwitch() {
   const lang = useLang()
+  const t = useT()
   const props = (value: Lang) => ({ 'aria-pressed': lang === value, onClick: () => setLang(value), className: cn(segmentButton, lang === value && active) })
 
   return (
-    <div role="group" aria-label={lang === 'en' ? 'Language' : 'Język'} className="flex h-[2.875rem] items-center gap-0.5 rounded-full bg-muted p-[3px]">
+    <div role="group" aria-label={t('header.language')} className="flex h-[2.875rem] items-center gap-0.5 rounded-full bg-muted p-[3px]">
       <button
         type="button"
         lang="pl"

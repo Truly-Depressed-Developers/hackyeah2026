@@ -16,7 +16,7 @@ export function SiteHeader() {
         <TextSizeSwitch />
         <LanguageSwitch />
         <Link to="/panel" className={buttonVariants({ variant: 'ghost', className: 'h-11 px-4' })}>
-          {t('Zaloguj się', 'Log in')}
+          {t('header.login')}
         </Link>
       </div>
     </header>

@@ -81,13 +81,13 @@ function TileBody({ title, subtitle, categorySlug, kindLabel, hasVideo, featured
         {hasVideo && (
           <span className="inline-flex items-center gap-1.5">
             <IconMovie aria-hidden="true" className="size-4" />
-            {t('Film', 'Video')}
+            {t('tile.video')}
           </span>
         )}
         {featured && (
           <span className="inline-flex items-center gap-1.5 text-[#7A4300]">
             <IconRosetteDiscountCheck aria-hidden="true" className="size-4" />
-            {t('Polecana', 'Featured')}
+            {t('tile.featured')}
           </span>
         )}
         {phone && (

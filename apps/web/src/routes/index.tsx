@@ -55,7 +55,7 @@ function StartPage() {
   }
 
   const noMatch = search.isSuccess && !search.isFetching && search.data.noMatch
-  const status = search.isFetching ? t('Szukam rozwiązań…', 'Searching…') : search.isSuccess ? summarize(search.data, t) : ''
+  const status = search.isFetching ? t('search.searching') : search.isSuccess ? summarize(search.data, t) : ''
 
   return (
     <div className="flex min-h-svh flex-col">
@@ -67,16 +67,16 @@ function StartPage() {
         >
           <div className="flex w-full max-w-[53.75rem] flex-col items-center">
             <h1 id="hero-title" className="text-4xl leading-[1.1] font-[650] tracking-[-0.04em] sm:text-[3.25rem]">
-              {t('W czym możemy Ci pomóc?', 'How can we help you?')}
+              {t('start.title')}
             </h1>
             <p id="hero-hint" className="mt-4 max-w-[35rem] text-lg leading-7 text-muted-foreground sm:text-[1.1875rem]">
-              {t('Napisz lub powiedz, z czym masz kłopot. Podpowiemy, gdzie szukać pomocy w Małopolsce.', 'Type or say what you are struggling with. We will point you to help in Małopolska.')}
+              {t('start.hint')}
             </p>
 
-            <form role="search" aria-label={t('Wyszukaj rozwiązanie', 'Search for a solution')} onSubmit={onSubmit} className="mt-11 flex w-full items-center gap-3 sm:gap-4">
+            <form role="search" aria-label={t('start.searchForm')} onSubmit={onSubmit} className="mt-11 flex w-full items-center gap-3 sm:gap-4">
               <div className="flex h-16 min-w-0 flex-1 items-center gap-2.5 rounded-full border bg-card py-0 pr-2 pl-5 text-left shadow-[0_12px_32px_-12px_rgb(15_27_45/0.12)] focus-within:border-primary focus-within:shadow-[0_0_0_4px_rgb(34_99_173/0.18),0_12px_32px_-12px_rgb(15_27_45/0.14)] sm:h-[4.75rem] sm:pr-2.5 sm:pl-7">
                 <label htmlFor="q" className="sr-only">
-                  {t('Opisz swój problem lub potrzebę', 'Describe your problem or need')}
+                  {t('start.searchLabel')}
                 </label>
                 <input
                   id="q"
@@ -86,12 +86,12 @@ function StartPage() {
                   onChange={(event) => setDraft(event.target.value)}
                   enterKeyHint="search"
                   aria-describedby="hero-hint"
-                  placeholder={t('Np. mama po udarze potrzebuje opieki w domu', 'E.g. my mum needs care at home after a stroke')}
+                  placeholder={t('start.placeholder')}
                   className="h-full min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-muted-foreground sm:text-[1.1875rem]"
                 />
                 <Button type="submit" className="h-12 shrink-0 rounded-full px-5 text-base font-semibold shadow-[0_6px_14px_-6px_rgb(34_99_173/0.55)] sm:h-14 sm:px-7">
                   <IconSearch aria-hidden="true" className="sm:hidden" />
-                  <span className="max-sm:sr-only">{t('Szukaj', 'Search')}</span>
+                  <span className="max-sm:sr-only">{t('start.search')}</span>
                 </Button>
               </div>
               <VoiceSearch
@@ -104,15 +104,15 @@ function StartPage() {
 
             <p className="mt-7 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-base leading-[1.375rem] text-muted-foreground">
               <span>
-                <b className="font-semibold text-[#3B4757]">{t('Reprezentujesz gminę, OPS lub organizację?', 'Representing a municipality, social services or an NGO?')}</b>{' '}
-                {t('Sprawdź, z jakiego naboru sfinansujesz swój projekt.', 'Find out which grant can fund your project.')}
+                <b className="font-semibold text-[#3B4757]">{t('start.advisorQuestion')}</b>{' '}
+                {t('start.advisorHint')}
               </span>
               <Link
                 to="/doradca"
                 className="inline-flex items-center gap-1.5 rounded-md px-0.5 py-1 font-[650] text-primary underline decoration-transparent decoration-2 underline-offset-4 transition-colors hover:text-primary-strong hover:decoration-current focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring"
               >
                 <IconSparkles aria-hidden="true" className="size-[1.125rem]" />
-                {t('Doradca grantowy AI', 'AI grant advisor')}
+                {t('start.advisorLink')}
                 <IconArrowRight aria-hidden="true" className="size-[1.125rem]" />
               </Link>
             </p>
@@ -125,7 +125,7 @@ function StartPage() {
           <section aria-label="Wyniki wyszukiwania" className="mx-auto flex w-full max-w-[73.75rem] flex-col gap-6 px-4 pt-8 pb-16 sm:px-6">
             <Link to="/" search={{}} replace className="inline-flex min-h-11 w-fit items-center gap-1.5 text-sm text-primary underline-offset-2 hover:text-primary-strong hover:underline">
               <IconArrowLeft aria-hidden="true" className="size-4" />
-              {t('Wróć do bazy wiedzy', 'Back to the knowledge base')}
+              {t('start.back')}
             </Link>
 
             {/* Podczas szukania narrację prowadzi SearchProgress, więc nie dublujemy komunikatu. */}
@@ -139,9 +139,9 @@ function StartPage() {
 
             {search.isError && !search.isFetching && (
               <div role="alert" className="flex flex-col items-start gap-3 rounded-xl border border-destructive p-4">
-                <p className="font-semibold text-destructive">{t('Coś poszło nie tak i nie udało się wyszukać.', 'Something went wrong and the search failed.')}</p>
+                <p className="font-semibold text-destructive">{t('start.error')}</p>
                 <Button variant="outline" className="h-11 px-4" onClick={() => search.refetch()}>
-                  {t('Spróbuj ponownie', 'Try again')}
+                  {t('common.retry')}
                 </Button>
               </div>
             )}

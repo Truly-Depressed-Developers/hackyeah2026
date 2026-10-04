@@ -1,24 +1,16 @@
 import { useEffect, useRef } from 'react'
 import { TILE_GRID } from '@/components/innovation/innovation-tile'
 import type { Result, SearchResponse } from '@/lib/ai/client'
-import { countLabel } from '@/lib/plural'
 import { ResultCard } from './result-card'
+import type { Translate } from '@/lib/i18n'
 
-export function summarize(data: SearchResponse, t: (pl: string, en: string) => string = (pl) => pl) {
-  if (data.noMatch) return t('Nie znaleźliśmy pasujących rozwiązań.', 'We found no matching solutions.')
+export function summarize(data: SearchResponse, t: Translate) {
+  if (data.noMatch) return t('search.noMatch')
   const parts = [
-    data.solutions.length > 0 &&
-      t(
-        countLabel(data.solutions.length, { one: 'rozwiązanie', few: 'rozwiązania', many: 'rozwiązań' }),
-        `${data.solutions.length} ${data.solutions.length === 1 ? 'solution' : 'solutions'}`,
-      ),
-    data.related.length > 0 &&
-      t(
-        countLabel(data.related.length, { one: 'rozwiązanie pokrewne', few: 'rozwiązania pokrewne', many: 'rozwiązań pokrewnych' }),
-        `${data.related.length} related ${data.related.length === 1 ? 'solution' : 'solutions'}`,
-      ),
+    data.solutions.length > 0 && t.count('search.solutions', data.solutions.length),
+    data.related.length > 0 && t.count('search.related', data.related.length),
   ].filter(Boolean)
-  return t(`Znaleźliśmy ${parts.join(' i ')}.`, `We found ${parts.join(' and ')}.`)
+  return t('search.found', { parts: parts.join(t('search.and')) })
 }
 
 export function SearchResults({ data }: { data: SearchResponse }) {

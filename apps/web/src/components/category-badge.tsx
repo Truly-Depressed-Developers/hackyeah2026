@@ -26,7 +26,7 @@ export function CategoryBadge({ category }: { category: Category }) {
   return (
     <span className="inline-flex h-8 w-fit items-center gap-2 rounded-full bg-muted py-0 pr-3 pl-1 text-[0.8125rem] font-medium">
       <CategoryIcon category={category} size="sm" />
-      {t(category.label, category.labelEn)}
+      {t.dynamic(`category.${category.slug}`, category.label)}
     </span>
   )
 }
