@@ -18,14 +18,14 @@ export function DataTable<TData extends RowData>({ columns, data, caption, empty
   const table = useTable({ features: dataTableFeatures, data, columns })
 
   return (
-    <div className="overflow-hidden rounded-xl border">
+    <div className="overflow-hidden rounded-2xl border bg-card shadow-xs">
       <Table>
         <caption className="sr-only">{caption}</caption>
-        <TableHeader className="bg-muted/50">
+        <TableHeader className="bg-muted/60">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id} className="h-11">{header.isPlaceholder ? null : <table.FlexRender header={header} />}</TableHead>
+                <TableHead key={header.id} className="h-11 text-xs font-semibold tracking-wide text-muted-foreground uppercase">{header.isPlaceholder ? null : <table.FlexRender header={header} />}</TableHead>
               ))}
             </TableRow>
           ))}
@@ -33,7 +33,7 @@ export function DataTable<TData extends RowData>({ columns, data, caption, empty
         <TableBody>
           {table.getRowModel().rows.length ? (
             table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id}>
+              <TableRow key={row.id} className="transition-colors hover:bg-primary-soft/50">
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id} className="py-3.5 text-[0.9375rem] leading-6">
                     <table.FlexRender cell={cell} />
@@ -43,7 +43,7 @@ export function DataTable<TData extends RowData>({ columns, data, caption, empty
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
+              <TableCell colSpan={columns.length} className="h-32 text-center text-muted-foreground">
                 {emptyMessage}
               </TableCell>
             </TableRow>

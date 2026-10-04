@@ -1,45 +1,10 @@
-import type { FormEvent } from 'react'
+import type { FormEvent, ReactNode } from 'react'
 import { IconSearch } from '@tabler/icons-react'
-import { PAGE_SIZES, type PageSize } from '@/components/list-pagination'
+import { cn } from 'cn'
 import { Button } from '@/components/ui/button'
-import { Field, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { isHandlingStatus, statusLabel, type HandlingStatus } from './handling'
-
-// URL state shared by the Panel administratora lists, so a view can be refreshed or shared with a colleague.
-
-export const DEFAULT_PAGE_SIZE: PageSize = 20
-
-export interface ListSearch {
-  page?: number
-  size?: PageSize
-  /** No value means the default view: Nowe. "all" shows every Stan. */
-  status?: HandlingStatus | 'all'
-  q?: string
-}
-
-export function parseListSearch(search: Record<string, unknown>): ListSearch {
-  const page = Number(search.page)
-  const size = Number(search.size)
-  const q = typeof search.q === 'string' ? search.q.trim() : ''
-  return {
-    page: Number.isInteger(page) && page > 1 ? page : undefined,
-    size: PAGE_SIZES.includes(size as PageSize) && size !== DEFAULT_PAGE_SIZE ? (size as PageSize) : undefined,
-    status: search.status === 'all' ? 'all' : isHandlingStatus(search.status) ? search.status : 'new',
-    q: q || undefined,
-  }
-}
-
-/** The values the list query needs, with URL defaults resolved. */
-export function listQuery(search: ListSearch) {
-  return {
-    page: search.page ?? 1,
-    pageSize: search.size ?? DEFAULT_PAGE_SIZE,
-    status: search.status === 'all' ? undefined : search.status,
-    q: search.q,
-  }
-}
 
 export function TextSearch({ label, value, onSearch }: { label: string; value?: string; onSearch: (q?: string) => void }) {
   function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -64,23 +29,50 @@ export function TextSearch({ label, value, onSearch }: { label: string; value?: 
   )
 }
 
+const STATUS_OPTIONS: { value: HandlingStatus | 'all'; label: string; dot?: string }[] = [
+  { value: 'new', label: statusLabel.new, dot: 'bg-sky-500' },
+  { value: 'in_progress', label: statusLabel.in_progress, dot: 'bg-amber-500' },
+  { value: 'done', label: statusLabel.done, dot: 'bg-emerald-500' },
+  { value: 'all', label: 'Wszystkie' },
+]
+
+/** Stan as a segmented switch: one click instead of a select, and the colours match the Stan tags in the list. */
 export function StatusFilter({ value, onChange }: { value?: HandlingStatus | 'all'; onChange: (status: HandlingStatus | 'all') => void }) {
   return (
-    <Field className="sm:w-48">
-      <FieldLabel htmlFor="filter-status">Stan</FieldLabel>
-      <NativeSelect
-        id="filter-status"
-        className="w-full bg-background"
-        value={value ?? 'new'}
-        onChange={(e) => onChange(isHandlingStatus(e.target.value) ? e.target.value : 'all')}
+    <div className="flex flex-col gap-2">
+      <span id="filter-status" className="text-sm font-medium">
+        Stan
+      </span>
+      <ToggleGroup
+        aria-labelledby="filter-status"
+        value={[value ?? 'new']}
+        onValueChange={(next) => {
+          const status = next[0]
+          if (status === 'all' || isHandlingStatus(status)) onChange(status)
+        }}
+        spacing={0}
+        className="flex-wrap rounded-xl border bg-background p-1 shadow-xs"
       >
-        <NativeSelectOption value="all">Wszystkie</NativeSelectOption>
-        {Object.entries(statusLabel).map(([status, label]) => (
-          <NativeSelectOption key={status} value={status}>
-            {label}
-          </NativeSelectOption>
+        {STATUS_OPTIONS.map((option) => (
+          <ToggleGroupItem
+            key={option.value}
+            value={option.value}
+            className="h-8 gap-2 rounded-lg! px-3 text-sm data-pressed:bg-primary-soft data-pressed:font-semibold data-pressed:text-primary-strong"
+          >
+            {option.dot && <span aria-hidden="true" className={cn('size-2 rounded-full', option.dot)} />}
+            {option.label}
+          </ToggleGroupItem>
         ))}
-      </NativeSelect>
-    </Field>
+      </ToggleGroup>
+    </div>
+  )
+}
+
+/** The filters strip above a list. */
+export function FilterBar({ children }: { children: ReactNode }) {
+  return (
+    <section aria-label="Filtry" className="flex flex-col gap-4 rounded-2xl border bg-card p-4 shadow-xs sm:flex-row sm:flex-wrap sm:items-end">
+      {children}
+    </section>
   )
 }

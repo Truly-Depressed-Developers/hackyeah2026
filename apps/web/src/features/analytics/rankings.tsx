@@ -2,9 +2,9 @@ import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { IconArrowDownRight, IconArrowUpRight, IconExternalLink } from '@tabler/icons-react'
 import { cn } from 'cn'
-import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { Tag } from '@/features/panel/tags'
 import { ChartPanel } from './chart-panel'
 import { fmtInt, fmtPct, type Analytics } from './format'
 
@@ -175,9 +175,9 @@ export function TopInnovations({ data, loading, error }: { data: Innovations | u
                 <TableCell className="text-right tabular-nums">{row.avgPosition.toLocaleString('pl-PL')}</TableCell>
                 <TableCell className="text-right tabular-nums">{fmtInt(row.actions)}</TableCell>
                 <TableCell className="text-right">
-                  <Badge variant={row.ctr >= 30 ? 'default' : 'secondary'} className="tabular-nums">
+                  <Tag tone={row.ctr >= 30 ? 'green' : row.ctr === 0 ? 'rose' : 'slate'} className="tabular-nums">
                     {fmtPct(row.ctr)}
-                  </Badge>
+                  </Tag>
                 </TableCell>
               </TableRow>
             ))}

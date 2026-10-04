@@ -94,6 +94,7 @@ export function fromStored({ id, document, metadata: m }: StoredDocument) {
     title: clean(m.title) ?? section('Tytuł innowacji'),
     categoryId: typeof m.category_id === 'number' ? m.category_id : null,
     categoryName: clean(m.category_name) ?? section('Kategoria'),
+    categorySlug: clean(m.category_slug) ?? null,
     problem: section(SECTIONS.problem),
     solution: section(SECTIONS.solution),
     targetGroup: section(SECTIONS.targetGroup),

@@ -2,7 +2,6 @@ import { Link } from '@tanstack/react-router'
 import { createColumnHelper } from '@tanstack/react-table'
 import { IconDotsVertical } from '@tabler/icons-react'
 import type { DataTableFeatures } from '@/components/data-table'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -13,8 +12,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { formatDate, statusBadge, statusLabel, type HandlingStatus } from '@/features/panel/handling'
-import { kindLabel, type NeedRow } from './labels'
+import { formatDate, statusLabel, type HandlingStatus } from '@/features/panel/handling'
+import { KindTag, StatusTag } from '@/features/panel/tags'
+import type { NeedRow } from './labels'
 
 const columnHelper = createColumnHelper<DataTableFeatures, NeedRow>()
 
@@ -25,20 +25,14 @@ interface ColumnActions {
 
 /** Stan of a Potrzeba; one that led to a Pomysł is handled there, so it shows the Pomysł's Stan. */
 export function NeedStatus({ need }: { need: Pick<NeedRow, 'status' | 'idea'> }) {
-  const status = need.idea?.status ?? need.status
-  return (
-    <Badge variant={statusBadge[status]}>
-      {need.idea && 'Pomysł: '}
-      {statusLabel[status]}
-    </Badge>
-  )
+  return <StatusTag status={need.idea?.status ?? need.status} prefix={need.idea ? 'Pomysł: ' : undefined} />
 }
 
 export function needColumns({ onOpen, onSetStatus }: ColumnActions) {
   return columnHelper.columns([
     columnHelper.accessor('kind', {
       header: 'Rodzaj',
-      cell: ({ row }) => <Badge variant="outline">{kindLabel[row.original.kind]}</Badge>,
+      cell: ({ row }) => <KindTag kind={row.original.kind} />,
     }),
     columnHelper.accessor('query', {
       header: 'Zapytanie mieszkańca',
