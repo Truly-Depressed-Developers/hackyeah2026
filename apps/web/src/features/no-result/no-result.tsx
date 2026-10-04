@@ -4,10 +4,12 @@ import { IconBell, IconBulb, IconLayoutGrid } from '@tabler/icons-react'
 import { trackNoResultOption } from '@/lib/analytics'
 import { ContactDialog } from './contact-dialog'
 import { useGap } from './use-gap'
+import { useT } from '@/lib/i18n'
 
 type Props = { query: string; onBrowse: () => void }
 
 export function NoResult({ query, onBrowse }: Props) {
+  const t = useT()
   const titleRef = useRef<HTMLHeadingElement>(null)
   const gapId = useGap(query)
   const [contactOpen, setContactOpen] = useState(false)
@@ -19,15 +21,15 @@ export function NoResult({ query, onBrowse }: Props) {
   return (
     <section aria-labelledby="no-result-title" className="mx-auto flex w-full max-w-[60rem] flex-col items-center gap-9 px-4 pt-14 pb-20 text-center sm:px-6">
       <h2 id="no-result-title" ref={titleRef} tabIndex={-1} className="text-[1.75rem] leading-9 font-[650] tracking-[-0.03em] outline-none sm:text-[2rem] sm:leading-10">
-        Nie mamy jeszcze rozwiązania dla tej sprawy
+        {t('noResult.title')}
       </h2>
 
       <div className="grid w-full grid-cols-[repeat(auto-fit,minmax(min(20rem,100%),1fr))] gap-4 text-left">
         <Option
           icon={<IconBell />}
           iconClassName="bg-[#EAF1FA] text-[#1A4F8C]"
-          title="Powiadom mnie, gdy pojawi się rozwiązanie"
-          text="Zostaw e-mail lub numer telefonu. Damy znać, gdy znajdziemy odpowiedź na Twoją sprawę."
+          title={t('noResult.notifyTitle')}
+          text={t('noResult.notifyText')}
         >
           <button
             type="button"
@@ -37,14 +39,14 @@ export function NoResult({ query, onBrowse }: Props) {
             }}
             className="mt-auto inline-flex h-14 w-fit items-center rounded-full bg-white px-7 text-base font-semibold text-[#1F2A3A] shadow-[0_0_0_1px_var(--border)] hover:bg-[#F6F8FB] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring"
           >
-            Zostaw kontakt
+            {t('noResult.leaveContact')}
           </button>
         </Option>
         <Option
           icon={<IconBulb />}
           iconClassName="bg-[#FFF3D6] text-[#7A4300]"
-          title="Zgłoś pomysł na rozwiązanie"
-          text="Wiesz, co mogłoby pomóc? Opisz pomysł albo powiedz go głosem - może stać się nową innowacją."
+          title={t('noResult.ideaTitle')}
+          text={t('noResult.ideaText')}
         >
           <Link
             to="/pomysl"
@@ -52,7 +54,7 @@ export function NoResult({ query, onBrowse }: Props) {
             onClick={() => trackNoResultOption('idea')}
             className="mt-auto inline-flex h-14 w-fit items-center rounded-full bg-primary px-7 text-base font-semibold text-primary-foreground shadow-[0_6px_14px_-6px_rgb(34_99_173/0.55)] hover:bg-primary-hover focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring"
           >
-            Zgłoś pomysł
+            {t('dock.idea')}
           </Link>
         </Option>
       </div>
@@ -66,7 +68,7 @@ export function NoResult({ query, onBrowse }: Props) {
         className="inline-flex h-11 items-center gap-2 rounded-full bg-muted px-[1.125rem] text-[0.9375rem] font-semibold text-[#1F2A3A] hover:bg-border focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring"
       >
         <IconLayoutGrid aria-hidden="true" className="size-[1.125rem]" />
-        Przeglądaj bazę wiedzy
+        {t('noResult.browse')}
       </button>
 
       <ContactDialog

@@ -4,9 +4,16 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { IconAlertCircle, IconCheck, IconMail, IconMessage } from '@tabler/icons-react'
 import { cn } from 'cn'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
+import { useT, type MessageKey } from '@/lib/i18n'
 import { CONTACT_MODES as MODES, useContactRequest, webContactSchema, type WebContactValues } from './contact-form'
 
 type FormValues = WebContactValues
+
+// CONTACT_MODES keeps Polish copy for the kiosk; the web dialog reads the same fields from the dictionary.
+const MODE_COPY: Record<FormValues['mode'], { label: MessageKey; placeholder: MessageKey; error: MessageKey }> = {
+  email: { label: 'contact.emailLabel', placeholder: 'contact.emailPlaceholder', error: 'contact.emailError' },
+  phone: { label: 'contact.phoneLabel', placeholder: 'contact.phonePlaceholder', error: 'contact.phoneError' },
+}
 
 type Props = {
   open: boolean
@@ -17,6 +24,7 @@ type Props = {
 }
 
 export function ContactDialog({ open, onOpenChange, query, gapId, onFinish }: Props) {
+  const t = useT()
   const titleRef = useRef<HTMLHeadingElement>(null)
   const { send, sentTo, submit } = useContactRequest({ query, gapId })
   const form = useForm<FormValues>({
@@ -26,6 +34,7 @@ export function ContactDialog({ open, onOpenChange, query, gapId, onFinish }: Pr
   })
   const modeKey = useWatch({ control: form.control, name: 'mode' })
   const mode = MODES[modeKey]
+  const copy = MODE_COPY[modeKey]
   const { errors } = form.formState
 
   // The form (and its focused button) unmounts on success, so move focus to the thank-you heading.
@@ -55,40 +64,40 @@ export function ContactDialog({ open, onOpenChange, query, gapId, onFinish }: Pr
               <IconCheck className="size-9" />
             </span>
             <DialogTitle ref={titleRef} tabIndex={-1} className="mt-1 text-[1.875rem] leading-[2.375rem] font-[650] tracking-[-0.03em] outline-none">
-              Dziękujemy!
+              {t('contact.thanks')}
             </DialogTitle>
             <DialogDescription className="max-w-[32.5rem] text-[1.0625rem] leading-[1.625rem] text-[#3B4757]">
-              Twoja sprawa trafiła do ROPS w Krakowie. Gdy znajdziemy rozwiązanie, damy znać na: <strong className="text-foreground">{sentTo}</strong>
+              {t('contact.sent')} <strong className="text-foreground">{sentTo}</strong>
             </DialogDescription>
             <button type="button" onClick={onFinish} className={cn(primaryPill, 'mt-2.5')}>
-              Wróć do strony głównej
+              {t('contact.home')}
             </button>
           </div>
         ) : (
           <form onSubmit={form.handleSubmit(onSubmit)} noValidate className="flex flex-col gap-[1.125rem] text-left">
             <div className="flex flex-col gap-2.5 pr-12">
               <DialogTitle ref={titleRef} tabIndex={-1} className="text-[1.625rem] leading-[2.125rem] font-[650] tracking-[-0.03em] outline-none sm:text-[1.875rem] sm:leading-[2.375rem]">
-                Powiadomimy Cię, gdy znajdziemy rozwiązanie
+                {t('contact.title')}
               </DialogTitle>
               <DialogDescription className="text-[1.0625rem] leading-[1.625rem] text-[#3B4757]">
-                Podaj jeden sposób kontaktu. Odezwiemy się tylko w tej sprawie.
+                {t('contact.lead')}
               </DialogDescription>
             </div>
 
             <div className="flex flex-col gap-1.5 rounded-2xl bg-muted px-[1.125rem] py-3.5">
-              <span className="text-[0.8125rem] leading-[1.125rem] font-semibold text-muted-foreground">Twoja sprawa</span>
+              <span className="text-[0.8125rem] leading-[1.125rem] font-semibold text-muted-foreground">{t('contact.yourCase')}</span>
               <span className="text-[1.0625rem] leading-6">„{query}”</span>
             </div>
 
             <div className="flex flex-col gap-2.5">
               <span id="contact-mode-label" className="text-[0.9375rem] leading-5 font-semibold">
-                Jak mamy się skontaktować?
+                {t('contact.how')}
               </span>
               <div role="group" aria-labelledby="contact-mode-label" className="flex h-[3.25rem] w-fit items-center gap-0.5 rounded-full bg-muted p-[3px]">
                 {(
                   [
-                    ['email', 'E-mail', IconMail],
-                    ['phone', 'Telefon (SMS)', IconMessage],
+                    ['email', t('contact.modeEmail'), IconMail],
+                    ['phone', t('contact.modePhone'), IconMessage],
                   ] as const
                 ).map(([value, label, Icon]) => (
                   <button
@@ -107,14 +116,14 @@ export function ContactDialog({ open, onOpenChange, query, gapId, onFinish }: Pr
 
             <div className="flex flex-col gap-2">
               <label htmlFor="contact-input" className="text-[0.9375rem] leading-5 font-semibold">
-                {mode.label}
+                {t(copy.label)}
               </label>
               <input
                 id="contact-input"
                 type={mode.type}
                 inputMode={mode.inputMode}
                 autoComplete={mode.autoComplete}
-                placeholder={mode.placeholder}
+                placeholder={t(copy.placeholder)}
                 aria-invalid={errors.contact ? true : undefined}
                 aria-describedby={errors.contact ? 'contact-error' : undefined}
                 {...form.register('contact')}
@@ -123,7 +132,7 @@ export function ContactDialog({ open, onOpenChange, query, gapId, onFinish }: Pr
               {errors.contact && (
                 <span id="contact-error" role="alert" className="flex items-start gap-2 px-1.5 text-[0.9375rem] leading-[1.375rem] font-medium text-[#B42318]">
                   <IconAlertCircle aria-hidden="true" className="mt-0.5 size-[1.125rem] shrink-0" />
-                  {errors.contact.message}
+                  {t(copy.error)}
                 </span>
               )}
             </div>
@@ -137,30 +146,30 @@ export function ContactDialog({ open, onOpenChange, query, gapId, onFinish }: Pr
                 className="size-6 shrink-0 cursor-pointer accent-primary"
               />
               <span>
-                Zgadzam się, aby ROPS w Krakowie skontaktował się ze mną w tej sprawie. Dane zostaną użyte tylko w tym celu i usunięte po odpowiedzi.{' '}
+                {t('contact.consent')}{' '}
                 <a href="#" className="text-primary underline underline-offset-2">
-                  Informacja o danych osobowych
+                  {t('contact.privacyLink')}
                 </a>
               </span>
             </label>
             {errors.consent && (
               <span id="consent-error" role="alert" className="-mt-3 flex items-start gap-2 pr-1.5 pl-9 text-[0.9375rem] leading-[1.375rem] font-medium text-[#B42318]">
-                {errors.consent.message}
+                {t('contact.consentError')}
               </span>
             )}
 
             {send.isError && (
               <p role="alert" className="font-medium text-[#B42318]">
-                Nie udało się wysłać. Spróbuj ponownie za chwilę.
+                {t('contact.sendError')}
               </p>
             )}
 
             <div className="flex flex-wrap justify-between gap-3">
               <button type="button" onClick={() => onOpenChange(false)} className={ghostPill}>
-                Anuluj
+                {t('form.cancel')}
               </button>
               <button type="submit" disabled={form.formState.isSubmitting} className={primaryPill}>
-                {form.formState.isSubmitting ? 'Wysyłamy…' : 'Wyślij'}
+                {form.formState.isSubmitting ? t('form.sending') : t('form.send')}
               </button>
             </div>
           </form>

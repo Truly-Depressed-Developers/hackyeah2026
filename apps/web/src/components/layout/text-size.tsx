@@ -4,9 +4,9 @@ import { track } from '@/lib/analytics'
 import { useT } from '@/lib/i18n'
 
 const SIZES = [
-  { id: 'small', label: 'Mniejszy tekst', rootSize: '87.5%', glyph: 'text-[0.8125rem]' },
-  { id: 'normal', label: 'Standardowy tekst', rootSize: '100%', glyph: 'text-base' },
-  { id: 'large', label: 'Większy tekst', rootSize: '125%', glyph: 'text-xl' },
+  { id: 'small', rootSize: '87.5%', glyph: 'text-[0.8125rem]' },
+  { id: 'normal', rootSize: '100%', glyph: 'text-base' },
+  { id: 'large', rootSize: '125%', glyph: 'text-xl' },
 ] as const
 
 type SizeId = (typeof SIZES)[number]['id']

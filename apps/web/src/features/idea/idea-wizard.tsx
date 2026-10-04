@@ -16,8 +16,9 @@ import { useIdeaTracking } from '@/lib/use-analytics'
 import { CATEGORIES, type Category } from '@/lib/categories'
 import { consentGivenNow } from '@/lib/contact'
 import { probeVoiceSupport } from '@/lib/speech-recognition'
+import { useT } from '@/lib/i18n'
 import { trpc } from '@/lib/trpc'
-import { ideaSchema, OTHER_GROUP, QUESTIONS, STAGES, STEP_FIELDS, TOTAL_STEPS, stageTitle, toAnswers, type IdeaValues } from './idea-form'
+import { ideaSchema, OTHER_GROUP, QUESTIONS, STAGES, STEP_FIELDS, TOTAL_STEPS, groupLabel, stageTitle, toAnswers, type IdeaValues } from './idea-form'
 
 const OTHER_CATEGORY: Category = { slug: 'other', label: OTHER_GROUP, icon: IconDots, gradient: ['#E2E8F0', '#A8B5C7'], onGradient: '#0F1B2D', tint: '' }
 
@@ -29,6 +30,7 @@ const focusOnMount = (element: HTMLHeadingElement | null) => element?.focus()
 type Props = { step: number; query: string | undefined }
 
 export function IdeaWizard({ step, query }: Props) {
+  const t = useT()
   const navigate = useNavigate({ from: '/pomysl' })
   const router = useRouter()
   // A refresh or deep link mid-way has no answers in memory, so it starts over at step 1.
@@ -88,26 +90,26 @@ export function IdeaWizard({ step, query }: Props) {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <button type="button" onClick={leave} className={backButton}>
               <IconArrowLeft aria-hidden="true" className="size-[1.125rem]" />
-              {query ? 'Wróć do wyników' : 'Wróć do strony głównej'}
+              {query ? t('idea.backToResults') : t('idea.backHome')}
             </button>
             {!done && (
               <span className="text-[0.9375rem] leading-5 font-semibold text-[#3B4757]">
-                Krok {step} z {TOTAL_STEPS}
+                {t('idea.stepOf', { step, total: TOTAL_STEPS })}
               </span>
             )}
           </div>
           <div className="flex flex-col gap-[1.125rem]">
             <h1 id="idea-title" className="text-[1.375rem] leading-7 font-[650] tracking-[-0.02em]">
-              Zgłoś pomysł na rozwiązanie
+              {t('idea.title')}
             </h1>
             {!done && (
               <div
                 role="progressbar"
-                aria-label="Postęp zgłoszenia"
+                aria-label={t('idea.progress')}
                 aria-valuemin={1}
                 aria-valuemax={TOTAL_STEPS}
                 aria-valuenow={step}
-                aria-valuetext={`Krok ${step} z ${TOTAL_STEPS}`}
+                aria-valuetext={t('idea.stepOf', { step, total: TOTAL_STEPS })}
                 className="flex gap-1.5"
               >
                 {Array.from({ length: TOTAL_STEPS }, (_, i) => (
@@ -126,13 +128,13 @@ export function IdeaWizard({ step, query }: Props) {
               <IconCheck className="size-10" />
             </span>
             <h2 ref={focusOnMount} tabIndex={-1} className={cn(questionClass, 'mt-1.5')}>
-              Dziękujemy za Twój pomysł!
+              {t('idea.done.title')}
             </h2>
             <p className="max-w-[35rem] text-[1.0625rem] leading-[1.625rem] text-[#3B4757]">
-              Zgłoszenie trafiło do zespołu ROPS w Krakowie. Gdy je przejrzymy, odezwiemy się na: <strong className="text-foreground">{sentTo}</strong>
+              {t('idea.done.text')} <strong className="text-foreground">{sentTo}</strong>
             </p>
             <button type="button" onClick={() => navigate({ to: '/', search: {} })} className={cn(primaryButton, 'mt-2')}>
-              Wróć do strony głównej
+              {t('idea.backHome')}
             </button>
           </div>
         ) : (
@@ -147,36 +149,36 @@ export function IdeaWizard({ step, query }: Props) {
             <div className={card}>
               {step === 1 && (
                 <TextStep
-                  question={QUESTIONS.title}
-                  help="Jednym, dwoma zdaniami: co chcesz zmienić lub usprawnić?"
-                  label="Krótki opis pomysłu"
+                  question={t(QUESTIONS.title)}
+                  help={t('idea.title.help')}
+                  label={t('idea.title.label')}
                   max={300}
                   length={values.title?.length ?? 0}
-                  placeholder="Np. Sąsiedzka grupa, która po wichurze pomaga seniorom zabezpieczyć dach i zgłosić szkodę."
+                  placeholder={t('idea.title.placeholder')}
                   error={errors.title}
                   field={form.register('title')}
-                  voiceLabel="Powiedz krótki opis pomysłu zamiast pisać"
+                  voiceLabel={t('idea.title.voice')}
                   onDictated={(text) => form.setValue('title', text.slice(0, 300), { shouldValidate: true, shouldDirty: true })}
                 />
               )}
               {step === 2 && (
                 <TextStep
-                  question={QUESTIONS.essence}
-                  help="Opisz, co jest w nim najważniejsze: jak by działał i czym różni się od tego, co już jest."
-                  label="Istota pomysłu"
+                  question={t(QUESTIONS.essence)}
+                  help={t('idea.essence.help')}
+                  label={t('idea.essence.label')}
                   max={1500}
                   length={values.essence?.length ?? 0}
-                  placeholder="Np. Wolontariusze z osiedla mają listę sąsiadów 70+. Po burzy obdzwaniają ich, sprawdzają szkody i pomagają wypełnić wniosek o zasiłek celowy."
+                  placeholder={t('idea.essence.placeholder')}
                   error={errors.essence}
                   field={form.register('essence')}
-                  voiceLabel="Powiedz, na czym polega pomysł, zamiast pisać"
+                  voiceLabel={t('idea.essence.voice')}
                   onDictated={(text) => form.setValue('essence', text.slice(0, 1500), { shouldValidate: true, shouldDirty: true })}
                 />
               )}
               {step === 3 && (
                 <>
-                  <Question id="q-groups" help="Możesz wybrać kilka grup.">
-                    {QUESTIONS.groups}
+                  <Question id="q-groups" help={t('idea.groups.help')}>
+                    {t(QUESTIONS.groups)}
                   </Question>
                   <Controller
                     control={form.control}
@@ -196,7 +198,7 @@ export function IdeaWizard({ step, query }: Props) {
                               <span className="[&>span]:size-10 [&_svg]:size-[1.375rem]">
                                 <CategoryIcon category={category} />
                               </span>
-                              {category.label}
+                              {groupLabel(t, category.label)}
                               {on && (
                                 <span aria-hidden="true" className="ml-auto flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-white">
                                   <IconCheck className="size-[0.9375rem]" />
@@ -213,8 +215,8 @@ export function IdeaWizard({ step, query }: Props) {
               )}
               {step === 4 && (
                 <>
-                  <Question id="q-stage" help="Wybierz to, co najlepiej pasuje. Każdy etap jest w porządku.">
-                    {QUESTIONS.stage}
+                  <Question id="q-stage" help={t('idea.stage.help')}>
+                    {t(QUESTIONS.stage)}
                   </Question>
                   <Controller
                     control={form.control}
@@ -237,8 +239,8 @@ export function IdeaWizard({ step, query }: Props) {
                                 <Icon className="size-6" />
                               </span>
                               <span className="flex flex-col gap-0.5">
-                                <span className="text-[1.0625rem] leading-6 font-semibold">{stage.title}</span>
-                                <span className="text-[0.9375rem] leading-[1.375rem] text-[#3B4757]">{stage.description}</span>
+                                <span className="text-[1.0625rem] leading-6 font-semibold">{t(stage.title)}</span>
+                                <span className="text-[0.9375rem] leading-[1.375rem] text-[#3B4757]">{t(stage.description)}</span>
                               </span>
                               <span aria-hidden="true" className="ml-auto size-6 shrink-0 rounded-full border-2 border-input group-aria-checked:border-[7px] group-aria-checked:border-primary" />
                             </button>
@@ -252,25 +254,25 @@ export function IdeaWizard({ step, query }: Props) {
               )}
               {step === 5 && (
                 <>
-                  <Question help="Odezwiemy się, gdy zespół ROPS przejrzy Twój pomysł.">
-                    Jak możemy się z Tobą skontaktować?
+                  <Question help={t('idea.contact.help')}>
+                    {t('idea.contact.question')}
                   </Question>
                   <div className="flex flex-col gap-2">
                     <label htmlFor="idea-name" className={labelClass}>
-                      Imię <span className="font-normal text-muted-foreground">(opcjonalnie)</span>
+                      {t(QUESTIONS.name)} <span className="font-normal text-muted-foreground">{t('idea.optional')}</span>
                     </label>
-                    <input id="idea-name" type="text" autoComplete="given-name" placeholder="np. Anna" {...form.register('name')} className={fieldClass} />
+                    <input id="idea-name" type="text" autoComplete="given-name" placeholder={t('idea.name.placeholder')} {...form.register('name')} className={fieldClass} />
                   </div>
                   <div className="flex flex-col gap-2">
                     <label htmlFor="idea-contact" className={labelClass}>
-                      E-mail lub numer telefonu
+                      {t('idea.contact.label')}
                     </label>
                     <input
                       id="idea-contact"
                       type="text"
                       inputMode="email"
                       autoComplete="email"
-                      placeholder="np. anna@poczta.pl albo 600 123 456"
+                      placeholder={t('idea.contact.placeholder')}
                       aria-invalid={errors.contact ? true : undefined}
                       aria-describedby={errors.contact ? 'idea-contact-error' : undefined}
                       {...form.register('contact')}
@@ -287,9 +289,9 @@ export function IdeaWizard({ step, query }: Props) {
                       className="size-6 shrink-0 cursor-pointer accent-primary"
                     />
                     <span>
-                      Zgadzam się, aby ROPS w Krakowie skontaktował się ze mną w sprawie tego pomysłu.{' '}
+                      {t('idea.consent')}{' '}
                       <a href="#" className="text-primary underline underline-offset-2">
-                        Informacja o danych osobowych
+                        {t('idea.privacy')}
                       </a>
                     </span>
                   </label>
@@ -298,37 +300,37 @@ export function IdeaWizard({ step, query }: Props) {
               )}
               {step === 6 && (
                 <>
-                  <Question help="Jeśli coś trzeba poprawić, wybierz „Zmień”.">
-                    Sprawdź swoje zgłoszenie
+                  <Question help={t('idea.summary.help')}>
+                    {t('idea.summary.question')}
                   </Question>
                   <dl className="flex flex-col overflow-hidden rounded-[1.25rem] border bg-white">
-                    <SummaryRow label="Krótki opis" value={values.title} editLabel="Zmień krótki opis" onEdit={() => goTo(1)} />
-                    <SummaryRow label="Na czym polega" value={values.essence} editLabel="Zmień opis pomysłu" onEdit={() => goTo(2)} />
-                    <SummaryRow label="Dla kogo" value={values.groups?.join(', ')} editLabel="Zmień grupy" onEdit={() => goTo(3)} />
-                    <SummaryRow label="Etap" value={stageTitle(values.stage ?? '')} editLabel="Zmień etap" onEdit={() => goTo(4)} />
+                    <SummaryRow label={t('idea.summary.title')} value={values.title} editLabel={t('idea.summary.editTitle')} onEdit={() => goTo(1)} />
+                    <SummaryRow label={t('idea.summary.essence')} value={values.essence} editLabel={t('idea.summary.editEssence')} onEdit={() => goTo(2)} />
+                    <SummaryRow label={t('idea.summary.groups')} value={values.groups?.map((group) => groupLabel(t, group)).join(', ')} editLabel={t('idea.summary.editGroups')} onEdit={() => goTo(3)} />
+                    <SummaryRow label={t('idea.summary.stage')} value={stageTitle(t, values.stage ?? '')} editLabel={t('idea.summary.editStage')} onEdit={() => goTo(4)} />
                     <SummaryRow
-                      label="Kontakt"
+                      label={t('idea.summary.contact')}
                       value={[values.name?.trim(), values.contact].filter(Boolean).join(' · ')}
-                      editLabel="Zmień kontakt"
+                      editLabel={t('idea.summary.editContact')}
                       onEdit={() => goTo(5)}
                     />
                   </dl>
                   {submit.isError && (
                     <p role="alert" className="font-medium text-[#B42318]">
-                      Nie udało się wysłać pomysłu. Spróbuj ponownie za chwilę.
+                      {t('idea.sendError')}
                     </p>
                   )}
                 </>
               )}
             </div>
 
-            <nav aria-label="Nawigacja kroków" className="mx-auto mt-auto flex w-full max-w-[51.25rem] justify-between gap-3 pt-7">
+            <nav aria-label={t('idea.stepsNav')} className="mx-auto mt-auto flex w-full max-w-[51.25rem] justify-between gap-3 pt-7">
               <button type="button" onClick={back} className={lightButton}>
                 <IconArrowLeft aria-hidden="true" />
-                {step === 1 ? 'Anuluj' : 'Wstecz'}
+                {step === 1 ? t('idea.cancel') : t('idea.back')}
               </button>
               <button type="submit" disabled={submit.isPending} className={primaryButton}>
-                {step === TOTAL_STEPS ? (submit.isPending ? 'Wysyłamy…' : 'Wyślij pomysł') : 'Dalej'}
+                {step === TOTAL_STEPS ? (submit.isPending ? t('idea.sending') : t('idea.send')) : t('idea.next')}
                 {step < TOTAL_STEPS && <IconArrowRight aria-hidden="true" />}
               </button>
             </nav>
@@ -366,6 +368,7 @@ type TextStepProps = {
 }
 
 function TextStep({ question, help, label, max, length, placeholder, error, field, voiceLabel, onDictated }: TextStepProps) {
+  const t = useT()
   const errorId = `${field.name}-error`
   const [listening, setListening] = useState(false)
   return (
@@ -399,9 +402,9 @@ function TextStep({ question, help, label, max, length, placeholder, error, fiel
         open={listening}
         onOpenChange={setListening}
         title={question}
-        confirmLabel="Gotowe"
-        idleHint="Naciśnij mikrofon i opowiedz o swoim pomyśle."
-        readyHint="Sprawdź, czy dobrze zrozumieliśmy, i naciśnij „Gotowe”."
+        confirmLabel={t('idea.voice.confirm')}
+        idleHint={t('idea.voice.idle')}
+        readyHint={t('idea.voice.ready')}
         onConfirm={onDictated}
       />
       <span className="-mt-3 self-end text-[0.8125rem] text-muted-foreground">
@@ -413,6 +416,7 @@ function TextStep({ question, help, label, max, length, placeholder, error, fiel
 }
 
 function SummaryRow({ label, value, editLabel, onEdit }: { label: string; value: string | undefined; editLabel: string; onEdit: () => void }) {
+  const t = useT()
   return (
     <div className="flex flex-wrap items-start gap-x-4 gap-y-1 border-t px-5 py-4 first:border-t-0 sm:flex-nowrap">
       <dt className="w-full text-sm leading-[1.375rem] font-semibold text-muted-foreground sm:w-[10.625rem] sm:shrink-0">{label}</dt>
@@ -424,7 +428,7 @@ function SummaryRow({ label, value, editLabel, onEdit }: { label: string; value:
           aria-label={editLabel}
           className="shrink-0 rounded-md px-1 text-[0.9375rem] font-semibold text-primary hover:text-primary-strong hover:underline focus-visible:outline-3 focus-visible:outline-offset-[3px] focus-visible:outline-ring"
         >
-          Zmień
+          {t('idea.summary.edit')}
         </button>
       </dd>
     </div>

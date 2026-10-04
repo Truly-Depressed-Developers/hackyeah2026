@@ -25,6 +25,7 @@ import { Spinner } from '@/components/ui/spinner'
 import { $ai, type Innovation } from '@/lib/ai/client'
 import { trackAction } from '@/lib/analytics'
 import { categoryFor } from '@/lib/categories'
+import { translator, useLang, useT } from '@/lib/i18n'
 import { useInnovationTracking } from '@/lib/use-analytics'
 import { useSpeech } from '@/lib/use-speech'
 import { QrCode } from './qr-code'
@@ -33,16 +34,15 @@ const pillButton = 'inline-flex h-14 items-center justify-center gap-2.5 rounded
 const lightButton = cn(pillButton, 'bg-white text-foreground shadow-[0_0_0_1px_var(--border),0_1px_2px_rgb(15_27_45/0.05)] hover:shadow-[0_0_0_1px_var(--input),0_6px_14px_-8px_rgb(15_27_45/0.2)]')
 const primaryButton = cn(pillButton, 'bg-primary text-primary-foreground shadow-[0_6px_14px_-6px_rgb(34_99_173/0.55)] hover:bg-primary-hover')
 const panel = 'flex flex-col gap-3.5 rounded-[1.25rem] border bg-white p-[1.375rem] shadow-[0_1px_2px_0_rgb(15_27_45/0.05),0_4px_12px_-6px_rgb(15_27_45/0.08)]'
-const newTab = <span className="sr-only">(otwiera się w nowej karcie)</span>
-
 export function InnovationPage({ id }: { id: string }) {
+  const t = useT()
   const query = $ai.useQuery('get', '/catalog/{id}', { params: { path: { id } } }, { staleTime: 10 * 60_000, retry: false })
 
   if (query.isPending) {
     return (
       <p role="status" className="flex items-center justify-center gap-2 px-4 py-24 text-muted-foreground">
         <Spinner />
-        Wczytujemy innowację…
+        {t('innovation.loading')}
       </p>
     )
   }
@@ -50,11 +50,11 @@ export function InnovationPage({ id }: { id: string }) {
   if (query.isError || !query.data) {
     return (
       <div role="alert" className="mx-auto flex w-full max-w-3xl flex-col items-start gap-4 px-4 py-16 sm:px-6">
-        <h1 className="text-2xl font-semibold">Nie udało się wczytać tej innowacji</h1>
-        <p className="text-muted-foreground">Mogła zostać usunięta z bazy albo chwilowo nie możemy się z nią połączyć.</p>
+        <h1 className="text-2xl font-semibold">{t('innovation.errorTitle')}</h1>
+        <p className="text-muted-foreground">{t('innovation.errorHint')}</p>
         <div className="flex flex-wrap gap-3">
           <Button variant="outline" className="h-11 px-4" onClick={() => query.refetch()}>
-            Spróbuj ponownie
+            {t('common.retry')}
           </Button>
           <BackLink />
         </div>
@@ -66,6 +66,8 @@ export function InnovationPage({ id }: { id: string }) {
 }
 
 function InnovationView({ item }: { item: Innovation }) {
+  const t = useT()
+  const lang = useLang()
   const titleRef = useRef<HTMLHeadingElement>(null)
   const category = categoryFor(item.categorySlug)
   const videoId = item.links?.video ? youtubeId(item.links.video) : null
@@ -74,12 +76,17 @@ function InnovationView({ item }: { item: Innovation }) {
   useInnovationTracking(item.id)
 
   useEffect(() => {
-    document.title = `${item.title} – Pomost`
     titleRef.current?.focus()
+  }, [])
+
+  // Keyed on `lang`, not `t`: `t` is a new function every render.
+  useEffect(() => {
+    const tr = translator(lang)
+    document.title = tr('innovation.documentTitle', { title: item.title })
     return () => {
-      document.title = 'Pomost – pomoc w Małopolsce'
+      document.title = tr('innovation.defaultDocumentTitle')
     }
-  }, [item.title])
+  }, [item.title, lang])
 
   return (
     <>
@@ -94,13 +101,13 @@ function InnovationView({ item }: { item: Innovation }) {
               {category && (
                 <span className="inline-flex h-9 items-center gap-2 rounded-full bg-white py-0 pr-3.5 pl-1 text-sm font-medium text-[#1F2A3A] shadow-[0_0_0_1px_var(--border)]">
                   <CategoryIcon category={category} size="sm" />
-                  {category.label}
+                  {t.dynamic(`category.${category.slug}`, category.label)}
                 </span>
               )}
               {item.featured && (
                 <span className="inline-flex h-9 items-center gap-1.5 rounded-full bg-[#FFF3D6] py-0 pr-3.5 pl-2.5 text-sm font-semibold text-[#7A4300]">
                   <IconRosetteDiscountCheck aria-hidden="true" className="size-[1.125rem]" />
-                  Polecana do upowszechniania
+                  {t('innovation.featured')}
                 </span>
               )}
             </div>
@@ -119,17 +126,17 @@ function InnovationView({ item }: { item: Innovation }) {
             {speech.supported && (
               <button type="button" className={lightButton} aria-pressed={speech.speaking} onClick={speech.toggle}>
                 {speech.speaking ? <IconPlayerStop aria-hidden="true" /> : <IconVolume aria-hidden="true" />}
-                {speech.speaking ? 'Zatrzymaj odczyt' : 'Odsłuchaj'}
+                {speech.speaking ? t('innovation.stopReading') : t('innovation.readAloud')}
               </button>
             )}
             <a href="#zabierz-na-telefon" className={primaryButton}>
               <IconDeviceMobile aria-hidden="true" />
-              Zabierz na telefon
+              {t('innovation.takeToPhone')}
             </a>
             {item.links?.download && (
               <a href={item.links.download} onClick={() => trackAction(item.id, 'download')} className={lightButton} download>
                 <IconDownload aria-hidden="true" />
-                Pobierz materiały
+                {t('innovation.download')}
               </a>
             )}
           </div>
@@ -138,11 +145,11 @@ function InnovationView({ item }: { item: Innovation }) {
 
       <div className="mx-auto flex w-full max-w-[73.75rem] flex-wrap items-start gap-10 px-4 pt-11 pb-18 sm:px-6">
         <article className="flex min-w-0 flex-[999_1_35rem] flex-col">
-          {item.solution && <ContentSection title="Na czym polega rozwiązanie?">{item.solution}</ContentSection>}
-          {item.problem && <ContentSection title="Jaki problem rozwiązuje?">{item.problem}</ContentSection>}
-          {item.targetGroup && <ContentSection title="Dla kogo?">{item.targetGroup}</ContentSection>}
+          {item.solution && <ContentSection title={t('innovation.solution')}>{item.solution}</ContentSection>}
+          {item.problem && <ContentSection title={t('innovation.problem')}>{item.problem}</ContentSection>}
+          {item.targetGroup && <ContentSection title={t('innovation.targetGroup')}>{item.targetGroup}</ContentSection>}
           {item.beneficiaries.length > 0 && (
-            <ContentSection title="Kto może z niej skorzystać?">
+            <ContentSection title={t('innovation.beneficiaries')}>
               <ul className="flex flex-wrap gap-2">
                 {item.beneficiaries.map((beneficiary) => (
                   <li key={beneficiary} className="inline-flex min-h-9 items-center rounded-full bg-muted px-3.5 py-1.5 text-[0.9375rem] leading-5 text-[#26303D]">
@@ -152,12 +159,12 @@ function InnovationView({ item }: { item: Innovation }) {
               </ul>
             </ContentSection>
           )}
-          <ContentSection title="Czy to działa?">
+          <ContentSection title={t('innovation.effectiveness')}>
             {item.effectiveness ? (
               <div className="flex gap-3.5 rounded-[1.125rem] bg-[#EDF7F1] px-[1.375rem] py-5">
                 <IconCircleCheck aria-hidden="true" className="mt-0.5 size-6 shrink-0 text-[#0F6B4F]" />
                 <div className="flex flex-col gap-1">
-                  <span className="text-sm leading-5 font-[650] text-[#0F6B4F]">Wyniki testu innowacji</span>
+                  <span className="text-sm leading-5 font-[650] text-[#0F6B4F]">{t('innovation.testResults')}</span>
                   <p className="text-lg leading-[1.875rem] text-[#1F2A3A]">{item.effectiveness}</p>
                 </div>
               </div>
@@ -165,7 +172,7 @@ function InnovationView({ item }: { item: Innovation }) {
               <div className="flex items-center gap-3 rounded-[1.125rem] bg-muted px-5 py-4 text-[#3B4757]">
                 <IconInfoCircle aria-hidden="true" className="size-6 shrink-0" />
                 <p className="text-base leading-6">
-                  ROPS nie opublikował jeszcze opisu wyników testu tej innowacji. Szczegóły mogą być w materiałach do pobrania.
+                  {t('innovation.noTestResults')}
                 </p>
               </div>
             )}
@@ -179,22 +186,22 @@ function InnovationView({ item }: { item: Innovation }) {
               <IconCoins className="size-6" />
             </span>
             <div className="flex min-w-0 flex-[1_1_20rem] flex-col gap-1.5">
-              <span className="text-[0.8125rem] font-bold tracking-[0.06em] text-primary uppercase">Dla gmin, OPS i organizacji</span>
+              <span className="text-[0.8125rem] font-bold tracking-[0.06em] text-primary uppercase">{t('innovation.grantCta.eyebrow')}</span>
               <h2 id="grant-cta-title" className="text-[1.375rem] leading-[1.8125rem] font-[650] tracking-[-0.015em]">
-                Chcesz wdrożyć to rozwiązanie u siebie?
+                {t('innovation.grantCta.title')}
               </h2>
               <p className="text-base leading-6 text-[#3B4757]">
-                Doradca grantowy AI sprawdzi, z jakiego naboru możesz je sfinansować, i przygotuje szkic wniosku.
+                {t('innovation.grantCta.text')}
               </p>
             </div>
             <Link to="/doradca" search={{ q: [item.title, item.subtitle].filter(Boolean).join(' - ') }} className={cn(primaryButton, 'shrink-0')}>
-              Sprawdź finansowanie
+              {t('innovation.grantCta.button')}
               <IconArrowRight aria-hidden="true" />
             </Link>
           </section>
         </article>
 
-        <aside aria-label="Materiały i udostępnianie" className="flex max-w-[23.75rem] min-w-0 flex-[1_1_20rem] flex-col gap-4">
+        <aside aria-label={t('innovation.asideLabel')} className="flex max-w-[23.75rem] min-w-0 flex-[1_1_20rem] flex-col gap-4">
           {videoId && (
             <div className={panel}>
               <VideoDialog
@@ -204,7 +211,7 @@ function InnovationView({ item }: { item: Innovation }) {
                 trigger={
                   <button
                     type="button"
-                    aria-label={`Obejrzyj film o innowacji ${item.title}`}
+                    aria-label={t('innovation.watchVideo', { title: item.title })}
                     className="relative block aspect-video w-full overflow-hidden rounded-[0.875rem] bg-[radial-gradient(120%_120%_at_20%_10%,#2C4A73_0%,#13243D_60%,#0B1626_100%)] focus-visible:outline-3 focus-visible:outline-offset-[3px] focus-visible:outline-ring"
                   />
                 }
@@ -214,23 +221,23 @@ function InnovationView({ item }: { item: Innovation }) {
                 </span>
               </VideoDialog>
               <div className="flex flex-col gap-0.5">
-                <h2 className="text-[1.0625rem] leading-6 font-[650]">Film o innowacji</h2>
-                <span className="text-sm text-muted-foreground">Odtworzy się na tym ekranie · YouTube</span>
+                <h2 className="text-[1.0625rem] leading-6 font-[650]">{t('innovation.video')}</h2>
+                <span className="text-sm text-muted-foreground">{t('innovation.videoHint')}</span>
               </div>
             </div>
           )}
 
           <div id="zabierz-na-telefon" className={cn(panel, 'scroll-mt-6')}>
-            <h2 className="text-[1.0625rem] leading-6 font-[650]">Zabierz na telefon</h2>
+            <h2 className="text-[1.0625rem] leading-6 font-[650]">{t('innovation.takeToPhone')}</h2>
             <div className="flex items-center gap-4">
-              <QrCode value={shareUrl} label={`Kod QR z adresem tej innowacji: ${shareUrl}`} />
-              <p className="text-[0.9375rem] leading-[1.375rem] text-[#3B4757]">Zeskanuj aparatem w telefonie, aby otworzyć tę innowację u siebie.</p>
+              <QrCode value={shareUrl} label={t('innovation.qrLabel', { url: shareUrl })} />
+              <p className="text-[0.9375rem] leading-[1.375rem] text-[#3B4757]">{t('innovation.qrHint')}</p>
             </div>
           </div>
 
           {item.authors && item.authors.length > 0 && (
             <div className={panel}>
-              <h2 className="text-[1.0625rem] leading-6 font-[650]">{item.authors.length > 1 ? 'Autorzy' : 'Autor'}</h2>
+              <h2 className="text-[1.0625rem] leading-6 font-[650]">{item.authors.length > 1 ? t('innovation.authors') : t('innovation.author')}</h2>
               <ul className="flex flex-col gap-2.5">
                 {item.authors.map((author) => (
                   <li key={author} className="flex items-center gap-3">
@@ -245,26 +252,26 @@ function InnovationView({ item }: { item: Innovation }) {
           )}
 
           <div className={panel}>
-            <h2 className="text-[1.0625rem] leading-6 font-[650]">Materiały</h2>
+            <h2 className="text-[1.0625rem] leading-6 font-[650]">{t('innovation.materials')}</h2>
             <ul className="flex flex-col">
               {item.links?.download && (
                 <MaterialRow
                   href={item.links.download}
                   icon={<IconFileZip />}
-                  title="Paczka materiałów"
-                  hint="Archiwum ZIP"
+                  title={t('innovation.materialsZip')}
+                  hint={t('innovation.materialsZipHint')}
                   download
                   onClick={() => trackAction(item.id, 'download')}
                 />
               )}
               {item.links?.pdf && (
-                <MaterialRow href={item.links.pdf} icon={<IconFileTypePdf />} title="Folder informacyjny" hint="Dokument PDF" onClick={() => trackAction(item.id, 'pdf')} />
+                <MaterialRow href={item.links.pdf} icon={<IconFileTypePdf />} title={t('innovation.materialsPdf')} hint={t('innovation.materialsPdfHint')} onClick={() => trackAction(item.id, 'pdf')} />
               )}
               {item.source.url && (
                 <MaterialRow
                   href={item.source.url}
                   icon={<IconExternalLink />}
-                  title="Strona innowacji"
+                  title={t('innovation.materialsPage')}
                   hint="rops.krakow.pl"
                   onClick={() => trackAction(item.id, 'source')}
                 />
@@ -272,7 +279,7 @@ function InnovationView({ item }: { item: Innovation }) {
             </ul>
           </div>
 
-          <p className="px-1 text-[0.8125rem] leading-[1.125rem] text-muted-foreground">Źródło: Biblioteka Innowacji Społecznych ROPS w Krakowie.</p>
+          <p className="px-1 text-[0.8125rem] leading-[1.125rem] text-muted-foreground">{t('innovation.source')}</p>
         </aside>
       </div>
     </>
@@ -280,13 +287,14 @@ function InnovationView({ item }: { item: Innovation }) {
 }
 
 function BackLink() {
+  const t = useT()
   return (
     <Link
       to="/"
       className="inline-flex h-11 items-center gap-2 rounded-full bg-white py-0 pr-[1.125rem] pl-3.5 text-[0.9375rem] font-semibold text-foreground shadow-[0_0_0_1px_var(--border)] hover:bg-[#F6F8FB] focus-visible:outline-3 focus-visible:outline-offset-[3px] focus-visible:outline-ring"
     >
       <IconArrowLeft aria-hidden="true" className="size-[1.125rem]" />
-      Wróć do bazy wiedzy
+      {t('start.back')}
     </Link>
   )
 }
@@ -303,6 +311,7 @@ function ContentSection({ title, children }: { title: string; children: ReactNod
 type MaterialRowProps = { href: string; icon: ReactNode; title: string; hint: string; download?: boolean; onClick?: () => void }
 
 function MaterialRow({ href, icon, title, hint, download, onClick }: MaterialRowProps) {
+  const t = useT()
   return (
     <li>
       <a
@@ -318,12 +327,13 @@ function MaterialRow({ href, icon, title, hint, download, onClick }: MaterialRow
           <span className="font-medium">{title}</span>
           <span className="text-[0.8125rem] text-muted-foreground">{hint}</span>
         </span>
-        {!download && newTab}
+        {!download && <span className="sr-only">{t('common.newTab')}</span>}
       </a>
     </li>
   )
 }
 
+// Stays Polish whatever the UI language: the content it introduces comes from the AI service in Polish.
 function readAloudText(item: Innovation) {
   return [
     item.title,

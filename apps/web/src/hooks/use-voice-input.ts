@@ -199,7 +199,7 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}) {
       recognition.start()
     } catch {
       wantsListeningRef.current = false
-      setError('Nie udało się uruchomić mikrofonu. Spróbuj ponownie.')
+      setError('voice.error.startFailed')
       setStatus('error')
       return
     }

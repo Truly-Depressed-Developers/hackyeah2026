@@ -1,5 +1,6 @@
 import { SearchingGlass } from './searching-glass'
 import { useSearchProgress } from './use-search-progress'
+import { useT } from '@/lib/i18n'
 
 /**
  * Stan szukania w wersji web. Zastępuje samo „Szukam rozwiązań…" — zapytanie
@@ -7,6 +8,7 @@ import { useSearchProgress } from './use-search-progress'
  * tekstu nie odróżnia tego od zawieszonej strony.
  */
 export function SearchProgress() {
+  const t = useT()
   const phase = useSearchProgress()
 
   return (
@@ -17,7 +19,7 @@ export function SearchProgress() {
         <p role="status" className="text-lg font-semibold">
           {phase}
         </p>
-        <p className="text-muted-foreground">To potrwa kilka sekund.</p>
+        <p className="text-muted-foreground">{t('progress.fewSeconds')}</p>
       </div>
     </div>
   )

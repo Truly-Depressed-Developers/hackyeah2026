@@ -79,19 +79,20 @@ export function probeVoiceSupport(): VoiceSupport {
   }
 }
 
-const ERROR_MESSAGES: Record<SpeechRecognitionErrorCode, string> = {
-  'aborted': 'Nagrywanie zostało przerwane.',
-  'audio-capture': 'Nie znaleziono mikrofonu. Sprawdź, czy urządzenie ma działający mikrofon.',
-  'language-not-supported': 'To urządzenie nie rozpoznaje języka polskiego. Wpisz problem na klawiaturze.',
-  'network': 'Brak połączenia z usługą rozpoznawania mowy. Sprawdź internet.',
-  'no-speech': 'Nie usłyszeliśmy nic. Naciśnij mikrofon i spróbuj jeszcze raz.',
-  'not-allowed': 'Brak zgody na mikrofon. Zezwól na dostęp w ustawieniach przeglądarki.',
-  'phrases-not-supported': 'To urządzenie nie obsługuje podpowiedzi słownych.',
-  'service-not-allowed': 'Przeglądarka zablokowała usługę rozpoznawania mowy.',
+/** Returns an i18n key (`voice.error.*`); the screen showing the error translates it. */
+export function describeSpeechError(code: SpeechRecognitionErrorCode): string {
+  return code in SPEECH_ERROR_CODES ? `voice.error.${code}` : 'voice.error.unknown'
 }
 
-export function describeSpeechError(code: SpeechRecognitionErrorCode): string {
-  return ERROR_MESSAGES[code] ?? 'Rozpoznawanie mowy nie zadziałało. Spróbuj ponownie lub wpisz problem.'
+const SPEECH_ERROR_CODES: Record<SpeechRecognitionErrorCode, true> = {
+  'aborted': true,
+  'audio-capture': true,
+  'language-not-supported': true,
+  'network': true,
+  'no-speech': true,
+  'not-allowed': true,
+  'phrases-not-supported': true,
+  'service-not-allowed': true,
 }
 
 /** Errors that will not fix themselves — never auto-restart after one of these. */

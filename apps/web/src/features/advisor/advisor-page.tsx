@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { IconArrowLeft, IconSparkles } from '@tabler/icons-react'
 import { cn } from 'cn'
+import { useT, type MessageKey } from '@/lib/i18n'
 import { APPLICANT_TYPES, AdvisorForm, WHOLE_REGION, powiatLabel, type AdvisorFormValues } from './advisor-form'
 import { AdvisorProgress } from './advisor-progress'
 import { AdvisorResult } from './advisor-result'
@@ -12,10 +13,10 @@ import { useAdvisor } from './use-advisor'
 
 type Phase = 'form' | 'run' | 'result'
 
-const LEAD: Record<Phase, string> = {
-  form: 'Opisz pomysł na projekt społeczny. Doradca sprawdzi go w raportach ROPS, dobierze przetestowaną innowację i oceni, czy pasuje do naboru.',
-  run: 'To potrwa około minuty. Doradca korzysta wyłącznie z dokumentów ROPS.',
-  result: 'Ocena, dopasowany nabór i szkic wniosku przygotowane na podstawie dokumentów ROPS.',
+const LEAD: Record<Phase, MessageKey> = {
+  form: 'advisor.lead.form',
+  run: 'advisor.lead.run',
+  result: 'advisor.lead.result',
 }
 
 const backButton =
@@ -28,6 +29,7 @@ function toInput(values: AdvisorFormValues): AdvisorInput {
 }
 
 export function AdvisorPage({ initialQuery }: { initialQuery?: string }) {
+  const t = useT()
   const [phase, setPhase] = useState<Phase>('form')
   const [values, setValues] = useState<AdvisorFormValues>({ query: initialQuery ?? '', powiat: WHOLE_REGION, applicantType: 'JST' })
   const [mailOpen, setMailOpen] = useState(false)
@@ -48,7 +50,8 @@ export function AdvisorPage({ initialQuery }: { initialQuery?: string }) {
     go('form')
   }
 
-  const context = `${powiatLabel(values.powiat)} · ${APPLICANT_TYPES.find((type) => type.value === values.applicantType)?.label}`
+  const applicant = APPLICANT_TYPES.find((type) => type.value === values.applicantType)
+  const context = `${powiatLabel(values.powiat, t)} · ${applicant ? t(applicant.label) : values.applicantType}`
 
   return (
     <>
@@ -58,24 +61,24 @@ export function AdvisorPage({ initialQuery }: { initialQuery?: string }) {
             {phase === 'form' ? (
               <Link to="/" search={{}} className={backButton}>
                 <IconArrowLeft aria-hidden="true" className="size-5" />
-                Wróć
+                {t('advisor.back')}
               </Link>
             ) : (
               <button type="button" onClick={backToForm} className={backButton}>
                 <IconArrowLeft aria-hidden="true" className="size-5" />
-                Zmień pomysł
+                {t('advisor.changeIdea')}
               </button>
             )}
             <span className={cn(aiBadge, 'bg-white shadow-[0_0_0_1px_#DCD3FF,0_4px_12px_-6px_rgb(63_45_156/0.25)]')}>
               <IconSparkles aria-hidden="true" />
-              Asystent AI · tylko dane ROPS
+              {t('advisor.badge')}
             </span>
           </div>
           <div className="flex flex-col gap-2.5">
             <h1 id="advisor-title" className="text-[2.25rem] leading-[2.75rem] font-[650] tracking-[-0.03em]">
-              {phase === 'result' ? 'Wynik analizy' : 'Doradca grantowy AI'}
+              {phase === 'result' ? t('advisor.resultTitle') : t('advisor.title')}
             </h1>
-            <p className="max-w-[47.5rem] text-lg leading-7 text-[#3B4757]">{LEAD[phase]}</p>
+            <p className="max-w-[47.5rem] text-lg leading-7 text-[#3B4757]">{t(LEAD[phase])}</p>
           </div>
         </div>
       </section>

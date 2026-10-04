@@ -3,6 +3,7 @@ import { IconMicrophone, IconX } from '@tabler/icons-react'
 import { Dialog, DialogClose, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { useVoiceQuery } from '@/hooks/use-voice-query'
 import { track } from '@/lib/analytics'
+import { useT } from '@/lib/i18n'
 
 const DIALOG_SELECTOR = '[data-slot="dialog-content"]'
 
@@ -16,6 +17,7 @@ const BARS = Array.from({ length: 28 }, (_, i) => ({
   heightPx: Math.round(56 * [0.55, 0.8, 1, 0.7, 0.9, 0.6][i % 6]!),
 }))
 
+/** The copy props take an i18n key or plain text. */
 interface VoiceDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -31,6 +33,7 @@ interface VoiceDialogProps {
 
 /** The listening overlay from the design: orb, equalizer, live transcript, cancel/confirm. */
 export function VoiceDialog({ open, onOpenChange, title, confirmLabel, idleHint, readyHint, onConfirm }: VoiceDialogProps) {
+  const t = useT()
   const voice = useVoiceQuery()
   const { start, reset } = voice
   // Statystyki: how often dictation fails on real devices.
@@ -75,7 +78,7 @@ export function VoiceDialog({ open, onOpenChange, title, confirmLabel, idleHint,
 
   const hint = useMemo(() => {
     if (voice.error !== null) return null
-    if (voice.isListening) return 'Słuchamy - mów swobodnie. Zatrzymamy się, gdy skończysz.'
+    if (voice.isListening) return 'voice.listening'
     if (voice.draft.length > 0) return readyHint
     return idleHint
   }, [voice.draft.length, voice.error, voice.isListening, idleHint, readyHint])
@@ -87,14 +90,14 @@ export function VoiceDialog({ open, onOpenChange, title, confirmLabel, idleHint,
         className="gap-7 rounded-[2rem] bg-[radial-gradient(120%_70%_at_50%_0%,#F1EDFF_0%,#FFFFFF_55%)] px-6 pt-11 pb-9 text-center shadow-[0_40px_80px_-24px_rgb(15_27_45/0.45),0_0_0_1px_rgb(255_255_255/0.6)_inset] ring-0 sm:max-w-[47.5rem] sm:px-10"
       >
         <DialogClose
-          aria-label="Zamknij"
+          aria-label={t('form.close')}
           className="absolute top-4 right-4 flex size-11 items-center justify-center rounded-full bg-secondary text-secondary-foreground hover:bg-border focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring"
         >
           <IconX aria-hidden="true" className="size-5" />
         </DialogClose>
 
         <DialogTitle tabIndex={-1} className="text-[2.125rem] leading-10 font-[650] tracking-[-0.03em] outline-none">
-          {title}
+          {t.dynamic(title, title)}
         </DialogTitle>
 
         <div aria-hidden="true" className="relative mx-auto flex size-50 items-center justify-center">
@@ -135,16 +138,16 @@ export function VoiceDialog({ open, onOpenChange, title, confirmLabel, idleHint,
 
         {voice.error !== null ? (
           <p role="alert" className="rounded-[1.25rem] border border-destructive/40 bg-destructive/5 p-5 text-left text-destructive">
-            {voice.error}
+            {t.dynamic(voice.error, voice.error)}
           </p>
         ) : (
           /* Not a live region: interim results land several times a second and would flood a screen reader. */
           <div className="flex w-full flex-col gap-2 rounded-[1.25rem] border bg-card p-5 text-left sm:px-6">
             <span className="text-[0.8125rem] leading-[1.125rem] font-semibold tracking-[0.04em] text-muted-foreground uppercase">
-              Rozpoznany tekst
+              {t('voice.recognized')}
             </span>
             <p className="min-h-8 text-[1.375rem] leading-8 font-medium">
-              {voice.displayText.length === 0 && <span className="text-muted-foreground">Czekamy na Twoje słowa…</span>}
+              {voice.displayText.length === 0 && <span className="text-muted-foreground">{t('voice.waiting')}</span>}
               {voice.isListening ? (
                 <>
                   {voice.finalText}
@@ -164,12 +167,12 @@ export function VoiceDialog({ open, onOpenChange, title, confirmLabel, idleHint,
         )}
 
         <p role="status" aria-live="polite" className="sr-only">
-          {hint}
+          {hint && t.dynamic(hint, hint)}
         </p>
 
         <div className="flex w-full flex-wrap justify-between gap-3">
           <DialogClose className="inline-flex h-14 items-center justify-center rounded-full bg-secondary px-7 text-base font-semibold text-secondary-foreground hover:bg-border focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring">
-            Anuluj
+            {t('form.cancel')}
           </DialogClose>
           <button
             type="button"
@@ -177,7 +180,7 @@ export function VoiceDialog({ open, onOpenChange, title, confirmLabel, idleHint,
             disabled={!voice.canSubmit}
             className="inline-flex h-14 items-center justify-center rounded-full bg-primary px-8 text-base font-semibold text-primary-foreground shadow-[0_6px_14px_-6px_rgb(34_99_173/0.55)] transition-colors hover:bg-primary-hover focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-50"
           >
-            {confirmLabel}
+            {t.dynamic(confirmLabel, confirmLabel)}
           </button>
         </div>
       </DialogContent>

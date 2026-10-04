@@ -2,7 +2,7 @@
 
 One place where residents of Małopolska describe a problem in their own words, by typing or by voice, on the web or at a kiosk, and find social innovations that can help. Every question without an answer becomes a signal for ROPS.
 
-[Presentation](https://hackyeah2026.hacktribe.co/hubmi-2/) · [Live demo](https://hackyeah2026.onrender.com) · [Kiosk mode](https://hackyeah2026.onrender.com/kiosk)
+[Presentation](https://hackyeah2026.hacktribe.co/hubmi-2/) · [Live demo](https://hackyeah2026.onrender.com) · [Grant advisor](https://hackyeah2026.onrender.com/doradca) · [Kiosk mode](https://hackyeah2026.onrender.com/kiosk)
 
 ## Motivation
 
@@ -16,9 +16,13 @@ One place where residents of Małopolska describe a problem in their own words, 
 - **Search in plain language** - describe a problem by text or voice and get matching innovations from the ROPS Library of Social Innovations (semantic search over the knowledge base)
 - **Knowledge base** - browse all innovations by category, each with its own page: what it is, who it helps, test results, video, materials and a QR code to take it to your phone
 - **Nothing found? Still a signal** - leave a contact or propose your own idea in a step-by-step form; every unanswered question is saved for ROPS
-- **Kiosk mode** - a touch-first version for a tablet in a public place
+- **AI grant advisor** - municipalities, social services and NGOs describe a project idea; the advisor checks it against 51 ROPS research reports and 114 tested innovations, scores it, matches a grant call and writes a draft application live, ready to copy or send as a PDF
+- **Become a tester** - residents sign up to try out ideas approved by ROPS before they launch
+- **Kiosk mode** - a touch-first version for a tablet in a public place, with read-aloud and results sent by SMS or QR code
 - **Admin panel** - ROPS staff review needs, ideas and the knowledge base
 - **Accessible** - built for WCAG 2.1 AA: text size switch, keyboard and screen reader support, reduced motion
+- **Polish and English** - the interface switches language in one tap; translations live in `apps/web/src/locales/pl.json` and `en.json`
+- **Installable** - a PWA that updates itself after every deploy
 
 ## Installation
 
@@ -48,7 +52,7 @@ Start the app
 pnpm dev
 ```
 
-Website will be available at [localhost:5173](http://localhost:5173), the kiosk at [localhost:5173/kiosk](http://localhost:5173/kiosk) and the admin panel at [localhost:5173/panel](http://localhost:5173/panel).
+Website will be available at [localhost:5173](http://localhost:5173), the grant advisor at [localhost:5173/doradca](http://localhost:5173/doradca), the kiosk at [localhost:5173/kiosk](http://localhost:5173/kiosk) and the admin panel at [localhost:5173/panel](http://localhost:5173/panel).
 
 Scripts, project layout, deployment and the AI service contract are described in the [development guide](docs/development.md).
 

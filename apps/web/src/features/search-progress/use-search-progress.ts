@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react'
+import { useT, type MessageKey, type Translate } from '@/lib/i18n'
 
 /**
  * Wyszukiwanie semantyczne potrafi trwać kilka sekund i bez słowa wyjaśnienia wygląda
  * jak zawieszenie. Zamiast jednego „Szukam…" mówimy, co się właściwie dzieje — te same
  * dwa kroki w kiosku i w wersji web, żeby mieszkaniec dostał tę samą obietnicę.
  */
-export const SEARCH_PHASES = [
-  'Analizuję Twoją historię…',
-  'Przeszukuję bazę sprawdzonych innowacji społecznych…',
-] as const
+export const SEARCH_PHASES: MessageKey[] = ['progress.reading', 'progress.searching']
 
 /**
  * Krócej niż typowa odpowiedź wyszukiwania (ok. 1,5–3 s), inaczej drugi komunikat
@@ -22,8 +20,11 @@ const PHASE_MS = 1100
  *
  * Bez przełącznika „aktywne": hook żyje tylko wtedy, gdy żyje komponent szukania,
  * więc odmontowanie samo cofa narrację do pierwszego kroku.
+ *
+ * `t` pozwala kioskowi zostać przy polskim niezależnie od języka wybranego w wersji web.
  */
-export function useSearchProgress() {
+export function useSearchProgress(t?: Translate) {
+  const current = useT()
   const [index, setIndex] = useState(0)
 
   useEffect(() => {
@@ -31,5 +32,5 @@ export function useSearchProgress() {
     return () => clearInterval(timer)
   }, [])
 
-  return SEARCH_PHASES[index]!
+  return (t ?? current)(SEARCH_PHASES[index]!)
 }

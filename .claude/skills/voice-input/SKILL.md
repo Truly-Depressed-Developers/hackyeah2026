@@ -75,8 +75,8 @@ const voice = useVoiceInput({
 `maxDurationMs`, `onResult` — the last one also carries `confidence` and
 `durationMs` if a screen ever needs to log them.
 
-`error` is already a resident-facing Polish sentence. Render it; don't translate
-error codes yourself.
+`error` is an i18n key (`voice.error.*` in `apps/web/src/locales/pl.json`/`en.json`).
+Render it with `t.dynamic(error, error)`; the kiosk passes `translator('pl')`.
 
 ## Traps that will bite you
 
