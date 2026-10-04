@@ -25,7 +25,7 @@ function LoginPage() {
 
   return (
     <main className="flex flex-1 flex-col items-center justify-center gap-6 bg-panel-hero p-6">
-      <p className="text-sm font-medium text-muted-foreground">HubMI · Małopolska</p>
+      <p className="text-sm font-medium text-secondary-foreground">HubMI · Małopolska</p>
       <LoginForm onSubmit={login.mutate} isPending={login.isPending} error={login.error?.message} />
     </main>
   )

@@ -36,7 +36,7 @@ function PanelLayout() {
       <SidebarInset className="min-w-0">
         <header className="sticky top-0 z-20 flex h-14 items-center gap-2 border-b bg-background/80 px-3 backdrop-blur-md sm:px-5">
           <SidebarTrigger className="size-9" />
-          <Separator orientation="vertical" className="mx-1 h-5!" />
+          <Separator orientation="vertical" className="mx-1 h-5! self-center" />
           <p className="truncate text-sm">
             <span className="text-muted-foreground">Panel administratora</span>
             {current && current.to !== '/panel' && (

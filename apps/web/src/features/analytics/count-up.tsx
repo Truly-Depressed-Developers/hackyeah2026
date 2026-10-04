@@ -1,5 +1,8 @@
 import { useEffect, useRef } from 'react'
-import { animate, useReducedMotion } from 'motion/react'
+import { useReducedMotion } from './use-reduced-motion'
+
+const DURATION_MS = 900
+const easeOut = (t: number) => 1 - (1 - t) ** 3
 
 /** A number that counts from its previous value to the new one; static when the OS asks for reduced motion. */
 export function CountUp({ value, format }: { value: number; format: (value: number) => string }) {
@@ -12,14 +15,19 @@ export function CountUp({ value, format }: { value: number; format: (value: numb
     const from = previous.current
     previous.current = value
     if (!node || reduced || from === value) return
-    const controls = animate(from, value, {
-      duration: 0.9,
-      ease: [0.22, 1, 0.36, 1],
-      onUpdate: (v) => {
-        node.textContent = format(Number.isInteger(value) ? Math.round(v) : v)
-      },
-    })
-    return () => controls.stop()
+    let frame = 0
+    const start = performance.now()
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / DURATION_MS)
+      const v = from + (value - from) * easeOut(t)
+      node.textContent = format(Number.isInteger(value) ? Math.round(v) : v)
+      if (t < 1) frame = requestAnimationFrame(tick)
+    }
+    frame = requestAnimationFrame(tick)
+    return () => {
+      cancelAnimationFrame(frame)
+      node.textContent = format(value)
+    }
   }, [value, format, reduced])
 
   return <span ref={ref}>{format(value)}</span>

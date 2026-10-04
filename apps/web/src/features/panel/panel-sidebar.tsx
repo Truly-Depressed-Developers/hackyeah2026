@@ -14,7 +14,7 @@ import {
   IconSun,
   type Icon,
 } from '@tabler/icons-react'
-import { motion } from 'motion/react'
+import * as m from 'motion/react-m'
 import { cn } from 'cn'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
@@ -130,7 +130,7 @@ export function PanelSidebar({ user }: { user: { name: string; email: string } }
                           render={<Link to={section.to} activeOptions={{ exact: section.to === '/panel' }} onClick={() => setOpenMobile(false)} />}
                         >
                           {active && (
-                            <motion.span
+                            <m.span
                               layoutId="panel-nav-active"
                               aria-hidden="true"
                               className="absolute inset-y-2 left-0 w-[3px] rounded-full bg-brand-gradient"
