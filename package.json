@@ -10,6 +10,7 @@
     "dev": "turbo dev",
     "build": "turbo build",
     "typecheck": "turbo typecheck",
+    "test": "pnpm --filter api test",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "db:push": "pnpm --filter api db:push",

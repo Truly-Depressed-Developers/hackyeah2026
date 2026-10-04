@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { VoiceButton } from '@/components/search/voice-button'
 import { VoiceDialog } from '@/components/search/voice-dialog'
+import { track } from '@/lib/analytics'
 import { probeVoiceSupport } from '@/lib/speech-recognition'
 
 interface VoiceSearchProps {
@@ -17,7 +18,10 @@ export function VoiceSearch({ onSearch }: VoiceSearchProps) {
   return (
     <>
       <VoiceButton
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          track({ type: 'voice_used', outcome: support.usable ? 'started' : 'unsupported' })
+          setOpen(true)
+        }}
         unavailable={!support.usable}
         unavailableHint={unavailableHint(support.secureContext)}
       />
@@ -28,7 +32,10 @@ export function VoiceSearch({ onSearch }: VoiceSearchProps) {
         confirmLabel="Szukaj"
         idleHint="Naciśnij mikrofon i powiedz, czego potrzebujesz."
         readyHint="Sprawdź, czy dobrze zrozumieliśmy, i naciśnij „Szukaj”."
-        onConfirm={onSearch}
+        onConfirm={(query) => {
+          track({ type: 'voice_used', outcome: 'recognized' })
+          onSearch(query)
+        }}
       />
     </>
   )

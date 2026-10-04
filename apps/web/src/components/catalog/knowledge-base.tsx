@@ -7,6 +7,7 @@ import { InnovationTile, TILE_GRID } from '@/components/innovation/innovation-ti
 import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 import { $ai, type CatalogItem } from '@/lib/ai/client'
+import { markFromCatalog, track } from '@/lib/analytics'
 import { ALL_CATEGORIES, CATEGORIES } from '@/lib/categories'
 
 const FIRST_PAGE = 12
@@ -23,6 +24,7 @@ export function KnowledgeBase() {
   const shown = items.slice(0, visible)
 
   function pick(slug: string) {
+    track({ type: 'catalog_filtered', category: slug })
     setFilter(slug)
     setVisible(FIRST_PAGE)
   }
@@ -109,6 +111,7 @@ function CatalogTile({ item }: { item: CatalogItem }) {
   return (
     <InnovationTile
       id={item.id}
+      onClick={markFromCatalog}
       title={item.title}
       subtitle={item.subtitle ?? item.summary}
       categorySlug={item.categorySlug}

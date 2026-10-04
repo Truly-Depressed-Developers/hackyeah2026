@@ -1,6 +1,7 @@
 import { IconSparkles } from '@tabler/icons-react'
 import { InnovationTile } from '@/components/innovation/innovation-tile'
 import type { Result, ResultKind } from '@/lib/ai/client'
+import { trackAction } from '@/lib/analytics'
 
 const KIND_LABEL: Record<ResultKind, string> = {
   innovation: 'Sprawdzone rozwiązanie',
@@ -18,6 +19,7 @@ export function ResultCard({ result }: { result: Result }) {
   return (
     <InnovationTile
       {...target}
+      onClick={() => trackAction(result.id, result.kind === 'innovation' ? 'innovation_page' : phone ? 'phone' : 'source')}
       title={result.title}
       subtitle={result.summary}
       categorySlug={result.categorySlug}

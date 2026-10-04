@@ -6,6 +6,7 @@ import { IconAlertCircle, IconCheck, IconMail, IconMessage } from '@tabler/icons
 import { cn } from 'cn'
 import { z } from 'zod'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
+import { currentSearchId } from '@/lib/analytics'
 import { isEmail, isPhone } from '@/lib/contact'
 import { trpc } from '@/lib/trpc'
 
@@ -72,7 +73,7 @@ export function ContactDialog({ open, onOpenChange, query, gapId, onFinish }: Pr
   }, [sentTo])
 
   async function onSubmit(values: FormValues) {
-    await send.mutateAsync({ query, gapId, shownResults: [], contact: values.contact, consentAt: consentGivenNow() })
+    await send.mutateAsync({ query, gapId, searchId: currentSearchId(), shownResults: [], contact: values.contact, consentAt: consentGivenNow() })
     setSentTo(values.contact)
   }
 

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo } from 'react'
 import { IconMicrophone, IconX } from '@tabler/icons-react'
 import { Dialog, DialogClose, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { useVoiceQuery } from '@/hooks/use-voice-query'
+import { track } from '@/lib/analytics'
 
 const DIALOG_SELECTOR = '[data-slot="dialog-content"]'
 
@@ -32,6 +33,10 @@ interface VoiceDialogProps {
 export function VoiceDialog({ open, onOpenChange, title, confirmLabel, idleHint, readyHint, onConfirm }: VoiceDialogProps) {
   const voice = useVoiceQuery()
   const { start, reset } = voice
+  // Statystyki: how often dictation fails on real devices.
+  useEffect(() => {
+    if (voice.error !== null) track({ type: 'voice_used', outcome: 'error' })
+  }, [voice.error])
 
   const changeOpen = useCallback(
     (next: boolean) => {

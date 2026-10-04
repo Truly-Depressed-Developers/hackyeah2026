@@ -9,6 +9,8 @@ import { VoiceSearch } from '@/components/search/voice-search'
 import { Button } from '@/components/ui/button'
 import { NoResult } from '@/features/no-result/no-result'
 import { $ai, SEARCH_COLLECTION } from '@/lib/ai/client'
+import { markVoiceInput } from '@/lib/analytics'
+import { useSearchTracking } from '@/lib/use-analytics'
 
 export const Route = createFileRoute('/')({
   validateSearch: (search: Record<string, unknown>): { q?: string } => {
@@ -36,6 +38,7 @@ function StartPage() {
     { body: { collection: SEARCH_COLLECTION, query: q ?? '' } },
     { enabled: Boolean(q), staleTime: Infinity, retry: false },
   )
+  useSearchTracking(q, search)
 
   // replace: no history entry, so a shared kiosk doesn't keep the previous resident's query.
   function runSearch(query: string) {
@@ -87,7 +90,12 @@ function StartPage() {
                   <span className="max-sm:sr-only">Szukaj</span>
                 </Button>
               </div>
-              <VoiceSearch onSearch={runSearch} />
+              <VoiceSearch
+                onSearch={(query) => {
+                  markVoiceInput()
+                  runSearch(query)
+                }}
+              />
             </form>
           </div>
         </section>

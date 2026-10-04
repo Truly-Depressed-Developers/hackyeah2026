@@ -5,7 +5,7 @@ import { db } from '../db/index.js'
 import { idea, need, type Idea } from '../db/schema.js'
 import { contactSchema, saveNeed, searchContext } from '../needs/router.js'
 import { contains, handlingStatusSchema, iso, pageInput, pageResult } from '../panel/list.js'
-import { panelProcedure, publicProcedure, router } from '../trpc.js'
+import { formProcedure, panelProcedure, router } from '../trpc.js'
 
 const ideaContent = {
   title: z.string().trim().min(1).max(300),
@@ -37,7 +37,7 @@ const nest = ({ needQuery, ...row }: Awaited<ReturnType<typeof withNeed>>[number
 
 /** Public: the resident app submits a Pomysł. The step-by-step form (S-03) sends it whole at the end. */
 export const ideasRouter = router({
-  submit: publicProcedure
+  submit: formProcedure
     .input(z.object({ ...ideaContent, search: z.object(searchContext).optional() }))
     .mutation(async ({ input }) => {
       // From a search: the Potrzeba becomes kind 'idea' and points here. Without one, the Pomysł stands alone.
@@ -49,6 +49,7 @@ export const ideasRouter = router({
             shownResults: input.search.shownResults,
             contact: null,
             consentAt: null,
+            searchId: input.search.searchId,
           })
         : null
       const [row] = await db
