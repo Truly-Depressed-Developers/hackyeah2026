@@ -22,7 +22,7 @@ One place where residents of Małopolska describe a problem in their own words, 
 - **Admin panel** - ROPS staff review needs, ideas and the knowledge base
 - **Accessible** - built for WCAG 2.1 AA: text size switch, keyboard and screen reader support, reduced motion
 - **Polish and English** - the interface switches language in one tap; translations live in `apps/web/src/locales/pl.json` and `en.json`
-- **Installable** - a PWA that updates itself after every deploy
+- **Installable** - a PWA that updates itself after every deploy; open `/kiosk` and install it to get a separate fullscreen kiosk app
 
 ## Installation
 
