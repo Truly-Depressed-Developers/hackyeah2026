@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { serve } from '@hono/node-server'
 import { serveStatic } from '@hono/node-server/serve-static'
@@ -50,6 +50,8 @@ app.all('/ai/*', (c) => c.json({ error: 'Not found' }, 404))
 
 const webDist = fileURLToPath(new URL('../../web/dist/', import.meta.url))
 if (existsSync(webDist)) {
+  const kioskHtml = readFileSync(`${webDist}index.html`, 'utf8').replace('/manifest.webmanifest', '/kiosk.webmanifest')
+  app.get('/kiosk', (c) => c.html(kioskHtml))
   app.use('*', serveStatic({ root: webDist }))
   app.get('*', serveStatic({ root: webDist, path: 'index.html' }))
 }

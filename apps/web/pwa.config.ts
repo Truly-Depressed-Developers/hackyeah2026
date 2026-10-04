@@ -3,7 +3,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 export const pwa = () =>
   VitePWA({
     registerType: 'autoUpdate',
-    includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
+    includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'kiosk.webmanifest'],
     manifest: {
       name: 'Pomost – pomoc w Małopolsce',
       short_name: 'Pomost',
@@ -15,6 +15,7 @@ export const pwa = () =>
       ],
     },
     workbox: {
-      navigateFallbackDenylist: [/^\/trpc/, /^\/ai/],
+      // /kiosk must come from the server, which swaps in kiosk.webmanifest.
+      navigateFallbackDenylist: [/^\/trpc/, /^\/ai/, /^\/kiosk/],
     },
   })
