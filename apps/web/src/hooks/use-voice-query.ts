@@ -19,7 +19,7 @@ export interface UseVoiceQuery {
   status: VoiceStatus
   support: VoiceSupport
   isListening: boolean
-  /** Null when nothing is wrong. Already a resident-facing Polish sentence. */
+  /** Null when nothing is wrong. An i18n key (`voice.error.*`): translate it where it is shown. */
   error: string | null
   /** Settled part of the live transcript. Pair with `interimText` to style the two apart. */
   finalText: string

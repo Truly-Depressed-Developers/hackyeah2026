@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { TILE_GRID } from '@/components/innovation/innovation-tile'
 import type { Result, SearchResponse } from '@/lib/ai/client'
 import { ResultCard } from './result-card'
-import type { Translate } from '@/lib/i18n'
+import { useT, type Translate } from '@/lib/i18n'
 
 export function summarize(data: SearchResponse, t: Translate) {
   if (data.noMatch) return t('search.noMatch')
@@ -14,6 +14,7 @@ export function summarize(data: SearchResponse, t: Translate) {
 }
 
 export function SearchResults({ data }: { data: SearchResponse }) {
+  const t = useT()
   const containerRef = useRef<HTMLDivElement>(null)
 
   // Remounts per finished search, so [] focuses the results once each time.
@@ -26,9 +27,9 @@ export function SearchResults({ data }: { data: SearchResponse }) {
       <div ref={containerRef}>
         <section aria-labelledby="no-match-heading" className="flex flex-col gap-2 rounded-xl border p-4">
           <h2 id="no-match-heading" tabIndex={-1} className="text-xl font-semibold outline-none">
-            Nie znaleźliśmy pasujących rozwiązań
+            {t('search.noMatchTitle')}
           </h2>
-          <p>Spróbuj opisać problem innymi słowami.</p>
+          <p>{t('search.noMatchHint')}</p>
         </section>
       </div>
     )
@@ -37,13 +38,13 @@ export function SearchResults({ data }: { data: SearchResponse }) {
   return (
     <div ref={containerRef} className="flex flex-col gap-8">
       {data.solutions.length > 0 && (
-        <Tier id="solutions" title="Rozwiązania" description="Najlepiej pasują do Twojego problemu." results={data.solutions} />
+        <Tier id="solutions" title={t('search.solutionsTitle')} description={t('search.solutionsHint')} results={data.solutions} />
       )}
       {data.related.length > 0 && (
         <Tier
           id="related"
-          title="Rozwiązania pokrewne"
-          description="Pasują częściowo - mogą się przydać."
+          title={t('search.relatedTitle')}
+          description={t('search.relatedHint')}
           results={data.related}
           muted
         />

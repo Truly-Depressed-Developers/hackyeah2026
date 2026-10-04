@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useReducer, useRef } from 'react'
-import { countLabel } from '@/lib/plural'
 import {
   AdvisorHttpError,
   STEP_IDS,
@@ -12,12 +11,15 @@ import {
   type StepId,
 } from './advisor-stream'
 
+/** AI thoughts arrive as Polish text; our own lines are kept structured so the UI language can render them. */
+export type LogEntry = { kind: 'ai'; text: string } | { kind: 'fragments'; count: number; report: string } | { kind: 'model'; name: string }
+
 export interface AdvisorState {
   status: 'idle' | 'running' | 'done' | 'error'
   error?: 'rate-limit' | 'failed'
   active?: StepId
   completed: StepId[]
-  log: string[]
+  log: LogEntry[]
   citations: Citation[]
   innovation?: string
   scorecard?: Scorecard
@@ -27,8 +29,6 @@ export interface AdvisorState {
   coFinancingPct?: number
   markdown: string
 }
-
-const FRAGMENT_FORMS = { one: 'pasujący fragment', few: 'pasujące fragmenty', many: 'pasujących fragmentów' }
 
 const INITIAL: AdvisorState = { status: 'idle', completed: [], log: [], citations: [], markdown: '' }
 
@@ -57,9 +57,9 @@ function apply(state: AdvisorState, event: AdvisorEvent): AdvisorState {
       return { ...state, active: event.stepId }
     case 'step_complete': {
       const completed = state.completed.includes(event.stepId) ? state.completed : [...state.completed, event.stepId]
-      const extra =
+      const extra: LogEntry | undefined =
         event.stepId === 'step_diagnosis' && state.citations[0]
-          ? `Znaleziono ${countLabel(state.citations.length, FRAGMENT_FORMS)} w raportach, m.in. „${state.citations[0].report_name}”.`
+          ? { kind: 'fragments', count: state.citations.length, report: state.citations[0].report_name }
           : undefined
       return {
         ...state,
@@ -69,14 +69,14 @@ function apply(state: AdvisorState, event: AdvisorEvent): AdvisorState {
       }
     }
     case 'thought':
-      return event.text ? { ...state, log: [...state.log, event.text] } : state
+      return event.text ? { ...state, log: [...state.log, { kind: 'ai', text: event.text }] } : state
     case 'source_citation':
       return { ...state, citations: [...state.citations, event.citation] }
     case 'tool_result':
       return {
         ...state,
         innovation: event.payload.top_match ?? state.innovation,
-        log: event.payload.top_match ? [...state.log, `Najbliższy model: „${event.payload.top_match}”.`] : state.log,
+        log: event.payload.top_match ? [...state.log, { kind: 'model', name: event.payload.top_match }] : state.log,
       }
     case 'rating_matrix':
       return { ...state, scorecard: event.scorecard, grantMatch: event.grantMatch ?? state.grantMatch }

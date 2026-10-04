@@ -2,9 +2,10 @@ import { memo } from 'react'
 import Markdown, { type Components } from 'react-markdown'
 import { IconSquare, IconSquareCheck } from '@tabler/icons-react'
 import remarkGfm from 'remark-gfm'
+import { translator, useLang, type Lang, type Translate } from '@/lib/i18n'
 
 // The page already has h1 (page) and h2 (panel), so the report's own headings start one level below.
-const components: Components = {
+const components = (t: Translate): Components => ({
   h1: ({ children }) => <h3>{children}</h3>,
   h2: ({ children }) => <h3>{children}</h3>,
   h3: ({ children }) => <h4>{children}</h4>,
@@ -13,12 +14,12 @@ const components: Components = {
   h6: ({ children }) => <h5>{children}</h5>,
   table: ({ children }) => (
     // Focusable so keyboard users can scroll wide tables sideways.
-    <div tabIndex={0} role="region" aria-label="Tabela" className="overflow-x-auto rounded-xl border">
+    <div tabIndex={0} role="region" aria-label={t('advisor.report.table')} className="overflow-x-auto rounded-xl border">
       <table>{children}</table>
     </div>
   ),
   pre: ({ children }) => (
-    <pre tabIndex={0} role="region" aria-label="Schemat" className="overflow-x-auto rounded-xl bg-muted p-3 text-sm leading-5">
+    <pre tabIndex={0} role="region" aria-label={t('advisor.report.diagram')} className="overflow-x-auto rounded-xl bg-muted p-3 text-sm leading-5">
       {children}
     </pre>
   ),
@@ -26,7 +27,7 @@ const components: Components = {
   input: ({ checked }) => (
     <>
       {checked ? <IconSquareCheck aria-hidden="true" className="mr-1.5 inline size-[1.125rem] align-[-3px]" /> : <IconSquare aria-hidden="true" className="mr-1.5 inline size-[1.125rem] align-[-3px]" />}
-      <span className="sr-only">{checked ? 'Zrobione: ' : 'Do zrobienia: '}</span>
+      <span className="sr-only">{checked ? t('advisor.report.done') : t('advisor.report.todo')}</span>
     </>
   ),
   a: ({ children, href }) => (
@@ -34,7 +35,10 @@ const components: Components = {
       {children}
     </a>
   ),
-}
+})
+
+// One per language, built once: Block is memoized and a fresh object every render would defeat it.
+const COMPONENTS: Record<Lang, Components> = { pl: components(translator('pl')), en: components(translator('en')) }
 
 /**
  * The AI writes GitHub-flavoured Markdown with a few habits that don't render as intended here:
@@ -74,20 +78,21 @@ function closePartial(block: string) {
   return (text.match(/\*\*/g)?.length ?? 0) % 2 === 1 ? `${text}**` : text
 }
 
-const Block = memo(function Block({ text }: { text: string }) {
+const Block = memo(function Block({ text, lang }: { text: string; lang: Lang }) {
   return (
-    <Markdown remarkPlugins={[remarkGfm]} components={components}>
+    <Markdown remarkPlugins={[remarkGfm]} components={COMPONENTS[lang]}>
       {text}
     </Markdown>
   )
 })
 
 export function AdvisorReport({ markdown, streaming = false }: { markdown: string; streaming?: boolean }) {
+  const lang = useLang()
   const blocks = toBlocks(cleanReport(markdown))
   return (
     <div className="flex flex-col gap-3.5 text-base leading-[1.625rem] break-words text-[#26303D] [&_blockquote]:rounded-[0.875rem] [&_blockquote]:bg-primary-soft [&_blockquote]:px-4 [&_blockquote]:py-3 [&_h3]:mt-2 [&_h3]:text-lg [&_h3]:leading-6 [&_h3]:font-[650] [&_h3]:text-foreground [&_h4]:mt-1 [&_h4]:font-[650] [&_h4]:text-foreground [&_h5]:font-semibold [&_h5]:text-foreground [&_hr]:border-border [&_li]:mt-1 [&_.task-list-item]:list-none [&_.contains-task-list]:pl-0 [&_ol]:list-decimal [&_ol]:pl-[1.375rem] [&_strong]:font-semibold [&_strong]:text-foreground [&_table]:w-full [&_table]:min-w-[36rem] [&_table]:text-sm [&_table]:leading-5 [&_td]:border-t [&_td]:px-3 [&_td]:py-2 [&_td]:align-top [&_th]:bg-muted [&_th]:px-3 [&_th]:py-2 [&_th]:text-left [&_th]:font-semibold [&_ul]:list-disc [&_ul]:pl-[1.375rem] [&_a]:text-primary [&_a]:underline">
       {blocks.map((block, i) => (
-        <Block key={i} text={streaming && i === blocks.length - 1 ? closePartial(block) : block} />
+        <Block key={i} lang={lang} text={streaming && i === blocks.length - 1 ? closePartial(block) : block} />
       ))}
     </div>
   )

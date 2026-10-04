@@ -28,6 +28,7 @@ export type TileContent = {
  * page, so the meta row only *signals* what is waiting there.
  */
 export function InnovationTile({ id, href, newTab, onClick, ...content }: TileContent & { id?: string; href?: string; newTab?: boolean; onClick?: () => void }) {
+  const t = useT()
   if (id) {
     return (
       <li>
@@ -43,7 +44,7 @@ export function InnovationTile({ id, href, newTab, onClick, ...content }: TileCo
       <li>
         <a href={href} onClick={onClick} className={TILE} {...(newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
           <TileBody {...content} />
-          {newTab && <span className="sr-only">(otwiera się w nowej karcie)</span>}
+          {newTab && <span className="sr-only">{t('search.newTab')}</span>}
         </a>
       </li>
     )

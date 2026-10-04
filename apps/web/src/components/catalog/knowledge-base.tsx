@@ -110,6 +110,7 @@ export function KnowledgeBase() {
 }
 
 function CatalogTile({ item }: { item: CatalogItem }) {
+  const t = useT()
   return (
     <InnovationTile
       id={item.id}
@@ -119,7 +120,7 @@ function CatalogTile({ item }: { item: CatalogItem }) {
       categorySlug={item.categorySlug}
       hasVideo={item.hasVideo}
       featured={item.featured}
-      sourceLabel="Biblioteka Innowacji ROPS"
+      sourceLabel={t('catalog.source')}
     />
   )
 }

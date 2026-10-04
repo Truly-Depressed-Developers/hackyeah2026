@@ -23,15 +23,15 @@ export const groupsOf = (idea: TestableIdea) => answerTo(idea, QUESTIONS.groups)
 export const categoryOf = (idea: TestableIdea) => firstCategoryIn(groupsOf(idea))
 
 export const testerSchema = z.object({
-  name: z.string().trim().min(1, 'Wpisz swoje imię.').max(100),
+  name: z.string().trim().min(1, 'tester.error.name').max(100),
   contact: z
     .string()
     .trim()
     .refine(
       (value) => isEmail(value) || isPhone(value),
-      'Wpisz poprawny e-mail (z @ i końcówką, np. .pl) albo 9-cyfrowy numer telefonu.',
+      'tester.error.contact',
     ),
-  consent: z.boolean().refine(Boolean, 'Zaznacz zgodę, abyśmy mogli się z Tobą skontaktować.'),
+  consent: z.boolean().refine(Boolean, 'tester.error.consent'),
 })
 
 export type TesterValues = z.infer<typeof testerSchema>

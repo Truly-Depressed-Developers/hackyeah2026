@@ -2,6 +2,7 @@ import { IconAlertTriangle, IconKeyboard, IconMicrophone, IconPlayerStop, IconRe
 import { cn } from 'cn'
 import type { useVoiceQuery } from '@/hooks/use-voice-query'
 import { CTA, CTA_OUTLINE, FOCUS } from '../kiosk-ui'
+import { translator } from '@/lib/i18n'
 
 /**
  * Deterministyczne słupki equalizera, jak w wersji web: Web Speech API nie udostępnia
@@ -153,7 +154,7 @@ function Unavailable({ error, onEdit }: { error: string | null; onEdit: () => vo
       <IconAlertTriangle aria-hidden="true" className="size-14 text-[var(--hub-bursztyn)]" />
       <h2 className="hub-tekst-l font-bold">Mikrofon jest teraz niedostępny</h2>
       <p className="hub-tekst-s text-muted-foreground">
-        {error ?? 'Opisz swoją sprawę na klawiaturze. Znajdę rozwiązanie tak samo dobrze.'}
+        {error ? translator('pl').dynamic(error, error) : 'Opisz swoją sprawę na klawiaturze. Znajdę rozwiązanie tak samo dobrze.'}
       </p>
       <button type="button" onClick={onEdit} className={cn(CTA, 'h-[72px] px-10 text-[24px]', FOCUS)}>
         <IconKeyboard aria-hidden="true" className="size-8" />

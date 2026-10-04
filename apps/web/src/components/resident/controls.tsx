@@ -1,5 +1,6 @@
 import { IconAlertCircle } from '@tabler/icons-react'
 import { cn } from '@/lib/utils'
+import { useT } from '@/lib/i18n'
 
 // Shared look of the Mieszkaniec-facing forms (Zgłoś pomysł, Zostaw kontakt, Zostań testerem).
 // Sizes are in rem on purpose: the A/A/A control scales the root font size, and px would not follow.
@@ -24,8 +25,9 @@ export const ghostButton = cn(pill, 'bg-muted text-[#1F2A3A] hover:bg-border')
 /** Structural, so both react-hook-form errors and hand-built ones fit. */
 export type FieldMessage = { message?: string } | undefined
 
-/** Field-level error. role="alert" so it is announced the moment validation fails. */
+/** Field-level error. role="alert" so it is announced the moment validation fails. The message may be an i18n key. */
 export function FieldErrorText({ id, error, className }: { id?: string; error: FieldMessage; className?: string }) {
+  const t = useT()
   if (!error?.message) return null
   return (
     <span
@@ -34,7 +36,7 @@ export function FieldErrorText({ id, error, className }: { id?: string; error: F
       className={cn('flex items-start gap-2 px-1.5 text-[0.9375rem] leading-[1.375rem] font-medium text-[#B42318]', className)}
     >
       <IconAlertCircle aria-hidden="true" className="mt-px size-5 shrink-0" />
-      {error.message}
+      {t.dynamic(error.message, error.message)}
     </span>
   )
 }

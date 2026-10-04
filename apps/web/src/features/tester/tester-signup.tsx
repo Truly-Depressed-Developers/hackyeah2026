@@ -5,11 +5,11 @@ import { useForm } from 'react-hook-form'
 import { CategoryBadge } from '@/components/category-badge'
 import { FieldErrorText, fieldClass, ghostButton, labelClass, primaryButton } from '@/components/resident/controls'
 import { consentGivenNow } from '@/lib/contact'
-import { testerCountLabel } from '@/lib/plural'
+import { groupLabel, storedStageLabel } from '@/features/idea/idea-form'
+import { useLang, useT } from '@/lib/i18n'
 import { trpc } from '@/lib/trpc'
 import { categoryOf, essenceOf, groupsOf, stageOf, testerSchema, type TestableIdea, type TesterValues } from './tester-form'
-
-const formatDate = (iso: string) => new Date(iso).toLocaleDateString('pl-PL', { day: 'numeric', month: 'long', year: 'numeric' })
+import { formatDate } from './tester-list'
 
 interface TesterSignupProps {
   idea: TestableIdea
@@ -18,6 +18,8 @@ interface TesterSignupProps {
 }
 
 export function TesterSignup({ idea, onSignedUp, onBack }: TesterSignupProps) {
+  const t = useT()
+  const lang = useLang()
   const signUp = useMutation(trpc.ideas.signUpForTest.mutationOptions())
   const form = useForm<TesterValues>({
     resolver: zodResolver(testerSchema),
@@ -57,10 +59,10 @@ export function TesterSignup({ idea, onSignedUp, onBack }: TesterSignupProps) {
         <p className="text-[1.0625rem] leading-[1.625rem] text-[#26303D]">{essenceOf(idea)}</p>
 
         <dl className="flex flex-col border-t">
-          <Fact icon={IconClipboardList} label="Komu ma pomóc" value={groups} />
-          <Fact icon={IconProgressCheck} label="Etap pomysłu" value={stage} />
-          <Fact icon={IconCalendar} label="Zgłoszono" value={formatDate(idea.createdAt)} />
-          <Fact icon={IconUsers} label="Chętni na testy" value={testerCountLabel(idea.signupCount)} />
+          <Fact icon={IconClipboardList} label={t('tester.fact.groups')} value={groups?.split(', ').map((group) => groupLabel(t, group)).join(', ')} />
+          <Fact icon={IconProgressCheck} label={t('tester.fact.stage')} value={stage && storedStageLabel(t, stage)} />
+          <Fact icon={IconCalendar} label={t('tester.fact.submitted')} value={formatDate(idea.createdAt, lang)} />
+          <Fact icon={IconUsers} label={t('tester.fact.testers')} value={t.count('tester.count', idea.signupCount)} />
         </dl>
       </section>
 
@@ -72,20 +74,20 @@ export function TesterSignup({ idea, onSignedUp, onBack }: TesterSignupProps) {
       >
         <div className="flex flex-col gap-1.5">
           <h2 id="tester-form-title" className="text-2xl leading-[1.9375rem] font-[650] tracking-[-0.02em]">
-            Twoje dane do kontaktu
+            {t('tester.form.title')}
           </h2>
-          <p className="text-base leading-6 text-[#3B4757]">Odezwiemy się z terminem i szczegółami testów.</p>
+          <p className="text-base leading-6 text-[#3B4757]">{t('tester.form.hint')}</p>
         </div>
 
         <div className="flex flex-col gap-2">
           <label htmlFor="tester-name" className={labelClass}>
-            Imię
+            {t('tester.form.name')}
           </label>
           <input
             id="tester-name"
             type="text"
             autoComplete="given-name"
-            placeholder="np. Anna"
+            placeholder={t('tester.form.namePlaceholder')}
             aria-invalid={errors.name ? true : undefined}
             aria-describedby={errors.name ? 'tester-name-error' : undefined}
             className={fieldClass}
@@ -96,14 +98,14 @@ export function TesterSignup({ idea, onSignedUp, onBack }: TesterSignupProps) {
 
         <div className="flex flex-col gap-2">
           <label htmlFor="tester-contact" className={labelClass}>
-            E-mail lub telefon
+            {t('tester.form.contact')}
           </label>
           <input
             id="tester-contact"
             type="text"
             inputMode="email"
             autoComplete="email"
-            placeholder="np. anna@poczta.pl albo 600 000 000"
+            placeholder={t('tester.form.contactPlaceholder')}
             aria-invalid={errors.contact ? true : undefined}
             aria-describedby={errors.contact ? 'tester-contact-error' : undefined}
             className={fieldClass}
@@ -122,24 +124,23 @@ export function TesterSignup({ idea, onSignedUp, onBack }: TesterSignupProps) {
               {...form.register('consent')}
             />
             <span>
-              Zgadzam się, aby ROPS w Krakowie użył mojego imienia i kontaktu tylko po to, żeby odezwać się w sprawie testów. Zgodę mogę
-              wycofać w każdej chwili.
+              {t('tester.form.consent')}
             </span>
           </label>
           <FieldErrorText id="tester-consent-error" error={errors.consent} className="-mt-3 pl-9" />
 
           {signUp.isError && (
             <p role="alert" className="font-medium text-[#B42318]">
-              Nie udało się zapisać. Spróbuj ponownie za chwilę.
+              {t('tester.form.error')}
             </p>
           )}
 
           <div className="mt-auto flex flex-wrap justify-between gap-3 pt-1">
             <button type="button" onClick={onBack} className={ghostButton}>
-              Wybierz inny pomysł
+              {t('tester.form.other')}
             </button>
             <button type="submit" disabled={form.formState.isSubmitting} className={primaryButton}>
-              {form.formState.isSubmitting ? 'Zapisujemy…' : 'Zapisz się na testy'}
+              {form.formState.isSubmitting ? t('tester.form.saving') : t('tester.form.submit')}
             </button>
           </div>
         </div>

@@ -1,18 +1,25 @@
 import { IconArrowRight, IconCheck, IconSparkles } from '@tabler/icons-react'
 import { cn } from 'cn'
 import { ghostButton, primaryButton } from '@/components/resident/controls'
+import { useT, type MessageKey, type Translate } from '@/lib/i18n'
 import { STEP_IDS, type StepId } from './advisor-stream'
 import { aiBadge, panel, panelTitle } from './advisor-ui'
 import { LiveDraft } from './live-draft'
-import type { AdvisorState } from './use-advisor'
+import type { AdvisorState, LogEntry } from './use-advisor'
 
 // The design's wording rather than the AI service's step titles, which read like log lines.
-const STEPS: Record<StepId, { title: string; hint: string }> = {
-  step_parse: { title: 'Założenia', hint: 'Rozumiem, czego dotyczy pomysł' },
-  step_diagnosis: { title: 'Raporty ROPS', hint: 'Szukam potrzeb w 51 badaniach regionalnych' },
-  step_innovation: { title: 'Baza innowacji', hint: 'Dobieram przetestowany model spośród 114' },
-  step_grant_check: { title: 'Nabór i finansowanie', hint: 'Sprawdzam, czy pomysł pasuje do naboru' },
-  step_synthesis: { title: 'Szkic wniosku', hint: 'Przygotowuję ocenę, budżet i dokument' },
+const STEPS: Record<StepId, { title: MessageKey; hint: MessageKey }> = {
+  step_parse: { title: 'advisor.progress.parse', hint: 'advisor.progress.parseHint' },
+  step_diagnosis: { title: 'advisor.progress.diagnosis', hint: 'advisor.progress.diagnosisHint' },
+  step_innovation: { title: 'advisor.progress.innovation', hint: 'advisor.progress.innovationHint' },
+  step_grant_check: { title: 'advisor.progress.grant', hint: 'advisor.progress.grantHint' },
+  step_synthesis: { title: 'advisor.progress.synthesis', hint: 'advisor.progress.synthesisHint' },
+}
+
+function logLine(entry: LogEntry, t: Translate) {
+  if (entry.kind === 'ai') return entry.text
+  if (entry.kind === 'model') return t('advisor.progress.logModel', { name: entry.name })
+  return t('advisor.progress.logFragments', { fragments: t.count('advisor.progress.fragments', entry.count), report: entry.report })
 }
 
 const LOG_SIZE = 4
@@ -29,7 +36,8 @@ interface AdvisorProgressProps {
 export function AdvisorProgress({ state, onShowResult, onCancel, onRetry }: AdvisorProgressProps) {
   const done = state.status === 'done'
   const activeIndex = state.active ? STEP_IDS.indexOf(state.active) : STEP_IDS.length - 1
-  const log = done ? [...state.log, 'Gotowe. Wynik analizy czeka na Ciebie.'] : state.log
+  const t = useT()
+  const log = [...state.log.map((entry) => logLine(entry, t)), ...(done ? [t('advisor.progress.logDone')] : [])]
 
   const showDraft = state.markdown !== '' || state.active === 'step_synthesis'
 
@@ -39,10 +47,10 @@ export function AdvisorProgress({ state, onShowResult, onCancel, onRetry }: Advi
         <section aria-labelledby="advisor-run-title" className={cn(panel, 'gap-[1.375rem]')}>
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 id="advisor-run-title" className={panelTitle}>
-              {done ? 'Analiza zakończona' : 'Analizuję Twój pomysł'}
+              {done ? t('advisor.progress.doneTitle') : t('advisor.progress.title')}
             </h2>
             <span role="status" className="text-[0.9375rem] font-semibold text-[#3B4757]">
-              {done ? '5 z 5 kroków' : `Krok ${activeIndex + 1} z 5`}
+              {done ? t('advisor.progress.allSteps', { total: STEP_IDS.length }) : t('advisor.progress.step', { step: activeIndex + 1, total: STEP_IDS.length })}
             </span>
           </div>
 
@@ -64,10 +72,10 @@ export function AdvisorProgress({ state, onShowResult, onCancel, onRetry }: Advi
                     {status === 'done' ? <IconCheck className="size-5" /> : i + 1}
                   </span>
                   <span className="flex min-w-0 flex-col">
-                    <span className="text-[1.0625rem] leading-6 font-[650] group-data-[status=wait]:text-muted-foreground">{STEPS[id].title}</span>
-                    <span className="text-sm leading-5 text-muted-foreground">{STEPS[id].hint}</span>
+                    <span className="text-[1.0625rem] leading-6 font-[650] group-data-[status=wait]:text-muted-foreground">{t(STEPS[id].title)}</span>
+                    <span className="text-sm leading-5 text-muted-foreground">{t(STEPS[id].hint)}</span>
                     <span className="mt-1 inline-flex h-6 w-fit items-center rounded-full bg-muted px-2.5 text-xs font-semibold text-muted-foreground group-data-[status=done]:bg-[#E2F4EC] group-data-[status=done]:text-[#0F6B4F] group-data-[status=on]:bg-primary-soft group-data-[status=on]:text-primary-strong">
-                      {status === 'done' ? 'Gotowe' : status === 'on' ? 'W toku…' : 'Czeka'}
+                      {status === 'done' ? t('advisor.progress.statusDone') : status === 'on' ? t('advisor.progress.statusOn') : t('advisor.progress.statusWait')}
                     </span>
                   </span>
                 </li>
@@ -78,14 +86,14 @@ export function AdvisorProgress({ state, onShowResult, onCancel, onRetry }: Advi
           {state.status === 'error' && (
             <div role="alert" className="flex flex-col items-start gap-3 rounded-[1.125rem] border border-destructive p-5">
               <p className="font-semibold text-destructive">
-                {state.error === 'rate-limit' ? 'Za dużo analiz w krótkim czasie. Spróbuj ponownie za kilka minut.' : 'Doradca przerwał analizę. Spróbuj jeszcze raz.'}
+                {state.error === 'rate-limit' ? t('advisor.progress.errorRateLimit') : t('advisor.progress.errorFailed')}
               </p>
               <div className="flex flex-wrap gap-3">
                 <button type="button" onClick={onRetry} className={primaryButton}>
-                  Spróbuj ponownie
+                  {t('common.retry')}
                 </button>
                 <button type="button" onClick={onCancel} className={ghostButton}>
-                  Zmień pomysł
+                  {t('advisor.changeIdea')}
                 </button>
               </div>
             </div>
@@ -94,23 +102,23 @@ export function AdvisorProgress({ state, onShowResult, onCancel, onRetry }: Advi
           {done && (
             <div className="flex flex-wrap items-center justify-between gap-x-5 gap-y-3 rounded-[1.125rem] bg-[#F2FAF6] px-5 py-[1.125rem] shadow-[inset_0_0_0_1px_#BFE3D2]">
               <span className="flex flex-col gap-0.5">
-                <span className="text-[1.0625rem] font-[650] text-[#0F5F45]">Analiza jest gotowa</span>
-                <span className="text-[0.9375rem] text-[#3B4757]">Zobacz ocenę, dopasowany nabór i szkic wniosku.</span>
+                <span className="text-[1.0625rem] font-[650] text-[#0F5F45]">{t('advisor.progress.readyTitle')}</span>
+                <span className="text-[0.9375rem] text-[#3B4757]">{t('advisor.progress.readyText')}</span>
               </span>
               {/* Focused on mount: the step list the user was watching has nothing left to do. */}
               <button type="button" ref={focusOnMount} onClick={onShowResult} className={primaryButton}>
-                Zobacz wynik analizy
+                {t('advisor.progress.showResult')}
                 <IconArrowRight aria-hidden="true" />
               </button>
             </div>
           )}
         </section>
 
-        <aside aria-label="Postęp analizy" className="flex flex-col gap-4">
+        <aside aria-label={t('advisor.progress.asideLabel')} className="flex flex-col gap-4">
           <div className={cn(panel, 'gap-3.5 px-6 py-[1.375rem]')}>
             <span className={aiBadge}>
               <IconSparkles aria-hidden="true" />
-              Co teraz robi doradca
+              {t('advisor.progress.now')}
             </span>
             <ul className="flex flex-col gap-2.5">
               {log.slice(-LOG_SIZE).map((line, i) => (
@@ -123,12 +131,12 @@ export function AdvisorProgress({ state, onShowResult, onCancel, onRetry }: Advi
           </div>
 
           <div className={cn(panel, 'gap-3.5 px-6 py-[1.375rem]')}>
-            <span className="text-base font-[650]">Przeszukiwane zasoby ROPS</span>
+            <span className="text-base font-[650]">{t('advisor.progress.resources')}</span>
             <dl className="grid grid-cols-3 gap-2.5">
               {[
-                ['51', 'raportów badawczych'],
-                ['114', 'innowacji'],
-                ['31', 'regulaminów naborów'],
+                ['51', t('advisor.progress.reports')],
+                ['114', t('advisor.progress.innovations')],
+                ['31', t('advisor.progress.calls')],
               ].map(([value, label]) => (
                 <div key={label} className="flex flex-col-reverse gap-0.5 rounded-[0.875rem] bg-muted px-3 py-3">
                   <dt className="text-[0.8125rem] leading-[1.125rem] break-words text-muted-foreground">{label}</dt>
@@ -140,7 +148,7 @@ export function AdvisorProgress({ state, onShowResult, onCancel, onRetry }: Advi
 
           {state.status === 'running' && (
             <button type="button" onClick={onCancel} className={cn(ghostButton, 'self-start')}>
-              Przerwij
+              {t('advisor.progress.cancel')}
             </button>
           )}
         </aside>

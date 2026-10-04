@@ -1,12 +1,13 @@
 import { SearchingGlass } from '@/features/search-progress/searching-glass'
 import { useSearchProgress } from '@/features/search-progress/use-search-progress'
+import { translator } from '@/lib/i18n'
 
 /**
  * Kilka sekund ciszy na kiosku wygląda jak zawieszony ekran, a mieszkaniec stoi
  * i czeka. Narracja mówi, co się dzieje, zamiast udawać pasek postępu.
  */
 export function LoadingScreen({ query }: { query: string }) {
-  const phase = useSearchProgress()
+  const phase = useSearchProgress(translator('pl'))
 
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-8 text-center">
