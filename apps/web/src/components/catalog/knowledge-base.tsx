@@ -120,7 +120,8 @@ function CatalogTile({ item }: { item: CatalogItem }) {
 }
 
 // The AI service returns records grouped by category; mix them so "Wszystkie" doesn't open with one category.
-function interleaveByCategory(items: CatalogItem[]) {
+// Exported for the kiosk catalog, which needs the same mixing.
+export function interleaveByCategory(items: CatalogItem[]) {
   const groups = new Map<string, CatalogItem[]>()
   for (const item of items) {
     const key = item.categorySlug ?? ''

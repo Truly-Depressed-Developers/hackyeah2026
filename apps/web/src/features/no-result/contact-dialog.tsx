@@ -1,49 +1,12 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation } from '@tanstack/react-query'
 import { IconAlertCircle, IconCheck, IconMail, IconMessage } from '@tabler/icons-react'
 import { cn } from 'cn'
-import { z } from 'zod'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
-import { isEmail, isPhone } from '@/lib/contact'
-import { trpc } from '@/lib/trpc'
+import { CONTACT_MODES as MODES, useContactRequest, webContactSchema, type WebContactValues } from './contact-form'
 
-const MODES = {
-  email: {
-    label: 'Adres e-mail',
-    type: 'email',
-    inputMode: 'email',
-    autoComplete: 'email',
-    placeholder: 'np. jan.kowalski@poczta.pl',
-    error: 'To nie wygląda na poprawny adres e-mail. Sprawdź, czy zawiera znak @ i końcówkę, np. .pl lub .com.',
-    valid: isEmail,
-  },
-  phone: {
-    label: 'Numer telefonu',
-    type: 'tel',
-    inputMode: 'tel',
-    autoComplete: 'tel',
-    placeholder: 'np. 600 123 456',
-    error: 'Numer telefonu powinien mieć 9 cyfr, np. 600 123 456.',
-    valid: isPhone,
-  },
-} as const
-
-const schema = z
-  .object({
-    mode: z.enum(['email', 'phone']),
-    contact: z.string().trim(),
-    consent: z.boolean().refine(Boolean, 'Zaznacz zgodę, abyśmy mogli się z Tobą skontaktować.'),
-  })
-  .superRefine((values, ctx) => {
-    if (!MODES[values.mode].valid(values.contact)) ctx.addIssue({ code: 'custom', path: ['contact'], message: MODES[values.mode].error })
-  })
-
-type FormValues = z.infer<typeof schema>
-
-// Consent is given at the moment the resident sends the form.
-const consentGivenNow = () => new Date()
+type FormValues = WebContactValues
 
 type Props = {
   open: boolean
@@ -55,10 +18,9 @@ type Props = {
 
 export function ContactDialog({ open, onOpenChange, query, gapId, onFinish }: Props) {
   const titleRef = useRef<HTMLHeadingElement>(null)
-  const [sentTo, setSentTo] = useState<string | null>(null)
-  const send = useMutation(trpc.needs.requestContact.mutationOptions())
+  const { send, sentTo, submit } = useContactRequest({ query, gapId })
   const form = useForm<FormValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(webContactSchema),
     defaultValues: { mode: 'email', contact: '', consent: false },
     reValidateMode: 'onChange',
   })
@@ -72,8 +34,7 @@ export function ContactDialog({ open, onOpenChange, query, gapId, onFinish }: Pr
   }, [sentTo])
 
   async function onSubmit(values: FormValues) {
-    await send.mutateAsync({ query, gapId, shownResults: [], contact: values.contact, consentAt: consentGivenNow() })
-    setSentTo(values.contact)
+    await submit(values.contact)
   }
 
   function pickMode(next: FormValues['mode']) {
