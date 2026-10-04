@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DoradcaRouteImport } from './routes/doradca'
 import { Route as KioskRouteImport } from './routes/kiosk'
 import { Route as PanelRouteImport } from './routes/panel'
 import { Route as PomyslRouteImport } from './routes/pomysl'
@@ -29,6 +30,11 @@ import { Route as PanelAuthedInnovationsNewRouteImport } from './routes/panel/_a
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DoradcaRoute = DoradcaRouteImport.update({
+  id: '/doradca',
+  path: '/doradca',
   getParentRoute: () => rootRouteImport,
 } as any)
 const KioskRoute = KioskRouteImport.update({
@@ -111,6 +117,7 @@ const PanelAuthedInnovationsNewRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/doradca': typeof DoradcaRoute
   '/kiosk': typeof KioskRoute
   '/panel': typeof PanelRouteWithChildren
   '/pomysl': typeof PomyslRoute
@@ -128,6 +135,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/doradca': typeof DoradcaRoute
   '/kiosk': typeof KioskRoute
   '/panel': typeof PanelAuthedIndexRoute
   '/pomysl': typeof PomyslRoute
@@ -145,6 +153,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/doradca': typeof DoradcaRoute
   '/kiosk': typeof KioskRoute
   '/panel': typeof PanelRouteWithChildren
   '/pomysl': typeof PomyslRoute
@@ -165,6 +174,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/doradca'
     | '/kiosk'
     | '/panel'
     | '/pomysl'
@@ -182,6 +192,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/doradca'
     | '/kiosk'
     | '/panel'
     | '/pomysl'
@@ -198,6 +209,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/doradca'
     | '/kiosk'
     | '/panel'
     | '/pomysl'
@@ -217,6 +229,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DoradcaRoute: typeof DoradcaRoute
   KioskRoute: typeof KioskRoute
   PanelRoute: typeof PanelRouteWithChildren
   PomyslRoute: typeof PomyslRoute
@@ -231,6 +244,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/doradca': {
+      id: '/doradca'
+      path: '/doradca'
+      fullPath: '/doradca'
+      preLoaderRoute: typeof DoradcaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/kiosk': {
@@ -382,6 +402,7 @@ const PanelRouteWithChildren = PanelRoute._addFileChildren(PanelRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DoradcaRoute: DoradcaRoute,
   KioskRoute: KioskRoute,
   PanelRoute: PanelRouteWithChildren,
   PomyslRoute: PomyslRoute,

@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Link, createFileRoute } from '@tanstack/react-router'
-import { IconArrowLeft, IconSearch } from '@tabler/icons-react'
+import { IconArrowLeft, IconArrowRight, IconSearch, IconSparkles } from '@tabler/icons-react'
 import { KnowledgeBase } from '@/components/catalog/knowledge-base'
 import { ActionDock } from '@/components/layout/action-dock'
 import { SiteFooter } from '@/components/layout/site-footer'
@@ -99,6 +99,20 @@ function StartPage() {
                 }}
               />
             </form>
+
+            <p className="mt-7 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-base leading-[1.375rem] text-muted-foreground">
+              <span>
+                <b className="font-semibold text-[#3B4757]">Reprezentujesz gminę, OPS lub organizację?</b> Sprawdź, z jakiego naboru sfinansujesz swój projekt.
+              </span>
+              <Link
+                to="/doradca"
+                className="inline-flex items-center gap-1.5 rounded-md px-0.5 py-1 font-[650] text-primary underline decoration-transparent decoration-2 underline-offset-4 transition-colors hover:text-primary-strong hover:decoration-current focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              >
+                <IconSparkles aria-hidden="true" className="size-[1.125rem]" />
+                Doradca grantowy AI
+                <IconArrowRight aria-hidden="true" className="size-[1.125rem]" />
+              </Link>
+            </p>
           </div>
         </section>
 

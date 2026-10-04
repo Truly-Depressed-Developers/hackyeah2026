@@ -2,7 +2,9 @@ import { useEffect, useRef, type ReactNode } from 'react'
 import { Link } from '@tanstack/react-router'
 import {
   IconArrowLeft,
+  IconArrowRight,
   IconCircleCheck,
+  IconCoins,
   IconDeviceMobile,
   IconDownload,
   IconExternalLink,
@@ -168,6 +170,28 @@ function InnovationView({ item }: { item: Innovation }) {
               </div>
             )}
           </ContentSection>
+
+          <section
+            aria-labelledby="grant-cta-title"
+            className="mt-3 flex flex-wrap items-center gap-x-[1.375rem] gap-y-[1.125rem] rounded-3xl border border-[#CFDDF0] bg-[linear-gradient(135deg,#EAF1FA,#F7FAFE_60%)] px-6 py-6"
+          >
+            <span aria-hidden="true" className="flex size-[3.25rem] shrink-0 items-center justify-center rounded-2xl bg-white text-primary shadow-[0_0_0_1px_#CFDDF0]">
+              <IconCoins className="size-6" />
+            </span>
+            <div className="flex min-w-0 flex-[1_1_20rem] flex-col gap-1.5">
+              <span className="text-[0.8125rem] font-bold tracking-[0.06em] text-primary uppercase">Dla gmin, OPS i organizacji</span>
+              <h2 id="grant-cta-title" className="text-[1.375rem] leading-[1.8125rem] font-[650] tracking-[-0.015em]">
+                Chcesz wdrożyć to rozwiązanie u siebie?
+              </h2>
+              <p className="text-base leading-6 text-[#3B4757]">
+                Doradca grantowy AI sprawdzi, z jakiego naboru możesz je sfinansować, i przygotuje szkic wniosku.
+              </p>
+            </div>
+            <Link to="/doradca" search={{ q: [item.title, item.subtitle].filter(Boolean).join(' - ') }} className={cn(primaryButton, 'shrink-0')}>
+              Sprawdź finansowanie
+              <IconArrowRight aria-hidden="true" />
+            </Link>
+          </section>
         </article>
 
         <aside aria-label="Materiały i udostępnianie" className="flex max-w-[23.75rem] min-w-0 flex-[1_1_20rem] flex-col gap-4">

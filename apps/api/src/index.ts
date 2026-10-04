@@ -8,6 +8,8 @@ import { parseBatch } from './analytics/events.js'
 import { ingest, MAX_BATCH_BYTES } from './analytics/ingest.js'
 import { eventsLimiter, ipFromContext } from './analytics/rate-limit.js'
 import { auth } from './auth.js'
+import { mockAdvisorEmail, mockAdvisorStream } from './ai/advisor-mock.js'
+import { realAdvisorEmail, realAdvisorStream } from './ai/advisor.js'
 import { mockCatalog, mockInnovation, realCatalog, realInnovation } from './ai/catalog.js'
 import { mockSearch } from './ai/mock.js'
 import { realSearch } from './ai/search.js'
@@ -38,10 +40,12 @@ app.post('/api/events', async (c) => {
   return c.body(null, 204)
 })
 
-// Only search is exposed: the AI service also has admin endpoints (collections, documents) the browser must never reach.
+// Only these are exposed: the AI service also has admin endpoints (collections, documents) the browser must never reach.
 app.post('/ai/search', (c) => (env.AI_URL ? realSearch(c) : mockSearch(c)))
 app.get('/ai/catalog', (c) => (env.AI_URL ? realCatalog(c) : mockCatalog(c)))
 app.get('/ai/catalog/:id', (c) => (env.AI_URL ? realInnovation(c) : mockInnovation(c)))
+app.post('/ai/advisor', (c) => (env.AI_URL ? realAdvisorStream(c) : mockAdvisorStream(c)))
+app.post('/ai/advisor/email', (c) => (env.AI_URL ? realAdvisorEmail(c) : mockAdvisorEmail(c)))
 app.all('/ai/*', (c) => c.json({ error: 'Not found' }, 404))
 
 const webDist = fileURLToPath(new URL('../../web/dist/', import.meta.url))
