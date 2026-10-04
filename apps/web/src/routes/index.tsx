@@ -2,12 +2,14 @@ import { useState, type FormEvent } from 'react'
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { IconArrowLeft, IconSearch } from '@tabler/icons-react'
 import { KnowledgeBase } from '@/components/catalog/knowledge-base'
+import { ActionDock } from '@/components/layout/action-dock'
 import { SiteFooter } from '@/components/layout/site-footer'
 import { SiteHeader } from '@/components/layout/site-header'
 import { SearchResults, summarize } from '@/components/search/search-results'
 import { VoiceSearch } from '@/components/search/voice-search'
 import { Button } from '@/components/ui/button'
 import { NoResult } from '@/features/no-result/no-result'
+import { SearchProgress } from '@/features/search-progress/search-progress'
 import { $ai, SEARCH_COLLECTION } from '@/lib/ai/client'
 import { markVoiceInput } from '@/lib/analytics'
 import { useSearchTracking } from '@/lib/use-analytics'
@@ -109,9 +111,14 @@ function StartPage() {
               Wróć do bazy wiedzy
             </Link>
 
-            <p role="status" className="min-h-6 text-muted-foreground">
-              {status}
-            </p>
+            {/* Podczas szukania narrację prowadzi SearchProgress, więc nie dublujemy komunikatu. */}
+            {!search.isFetching && (
+              <p role="status" className="min-h-6 text-muted-foreground">
+                {status}
+              </p>
+            )}
+
+            {search.isFetching && <SearchProgress />}
 
             {search.isError && !search.isFetching && (
               <div role="alert" className="flex flex-col items-start gap-3 rounded-xl border border-destructive p-4">
@@ -127,6 +134,8 @@ function StartPage() {
         ) : (
           <KnowledgeBase />
         )}
+
+        <ActionDock />
       </main>
       <SiteFooter />
     </div>

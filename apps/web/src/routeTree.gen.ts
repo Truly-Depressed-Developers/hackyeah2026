@@ -10,8 +10,10 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as KioskRouteImport } from './routes/kiosk'
 import { Route as PanelRouteImport } from './routes/panel'
 import { Route as PomyslRouteImport } from './routes/pomysl'
+import { Route as TestyRouteImport } from './routes/testy'
 import { Route as InnowacjaIdRouteImport } from './routes/innowacja.$id'
 import { Route as PanelAuthedRouteImport } from './routes/panel/_authed'
 import { Route as PanelLoginRouteImport } from './routes/panel/login'
@@ -29,6 +31,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const KioskRoute = KioskRouteImport.update({
+  id: '/kiosk',
+  path: '/kiosk',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PanelRoute = PanelRouteImport.update({
   id: '/panel',
   path: '/panel',
@@ -37,6 +44,11 @@ const PanelRoute = PanelRouteImport.update({
 const PomyslRoute = PomyslRouteImport.update({
   id: '/pomysl',
   path: '/pomysl',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TestyRoute = TestyRouteImport.update({
+  id: '/testy',
+  path: '/testy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InnowacjaIdRoute = InnowacjaIdRouteImport.update({
@@ -99,8 +111,10 @@ const PanelAuthedInnovationsNewRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/kiosk': typeof KioskRoute
   '/panel': typeof PanelRouteWithChildren
   '/pomysl': typeof PomyslRoute
+  '/testy': typeof TestyRoute
   '/innowacja/$id': typeof InnowacjaIdRoute
   '/panel/login': typeof PanelLoginRoute
   '/panel/analytics': typeof PanelAuthedAnalyticsRoute
@@ -114,8 +128,10 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/kiosk': typeof KioskRoute
   '/panel': typeof PanelAuthedIndexRoute
   '/pomysl': typeof PomyslRoute
+  '/testy': typeof TestyRoute
   '/innowacja/$id': typeof InnowacjaIdRoute
   '/panel/login': typeof PanelLoginRoute
   '/panel/analytics': typeof PanelAuthedAnalyticsRoute
@@ -129,8 +145,10 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/kiosk': typeof KioskRoute
   '/panel': typeof PanelRouteWithChildren
   '/pomysl': typeof PomyslRoute
+  '/testy': typeof TestyRoute
   '/innowacja/$id': typeof InnowacjaIdRoute
   '/panel/_authed': typeof PanelAuthedRouteWithChildren
   '/panel/login': typeof PanelLoginRoute
@@ -147,8 +165,10 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/kiosk'
     | '/panel'
     | '/pomysl'
+    | '/testy'
     | '/innowacja/$id'
     | '/panel/login'
     | '/panel/analytics'
@@ -162,8 +182,10 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/kiosk'
     | '/panel'
     | '/pomysl'
+    | '/testy'
     | '/innowacja/$id'
     | '/panel/login'
     | '/panel/analytics'
@@ -176,8 +198,10 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/kiosk'
     | '/panel'
     | '/pomysl'
+    | '/testy'
     | '/innowacja/$id'
     | '/panel/_authed'
     | '/panel/login'
@@ -193,8 +217,10 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  KioskRoute: typeof KioskRoute
   PanelRoute: typeof PanelRouteWithChildren
   PomyslRoute: typeof PomyslRoute
+  TestyRoute: typeof TestyRoute
   InnowacjaIdRoute: typeof InnowacjaIdRoute
 }
 
@@ -205,6 +231,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kiosk': {
+      id: '/kiosk'
+      path: '/kiosk'
+      fullPath: '/kiosk'
+      preLoaderRoute: typeof KioskRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/panel': {
@@ -219,6 +252,13 @@ declare module '@tanstack/react-router' {
       path: '/pomysl'
       fullPath: '/pomysl'
       preLoaderRoute: typeof PomyslRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/testy': {
+      id: '/testy'
+      path: '/testy'
+      fullPath: '/testy'
+      preLoaderRoute: typeof TestyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/innowacja/$id': {
@@ -342,8 +382,10 @@ const PanelRouteWithChildren = PanelRoute._addFileChildren(PanelRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  KioskRoute: KioskRoute,
   PanelRoute: PanelRouteWithChildren,
   PomyslRoute: PomyslRoute,
+  TestyRoute: TestyRoute,
   InnowacjaIdRoute: InnowacjaIdRoute,
 }
 export const routeTree = rootRouteImport

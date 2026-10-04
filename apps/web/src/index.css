@@ -2,6 +2,7 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
+@import "./styles/kiosk.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -240,4 +241,12 @@
 /* The brand mark and active markers in the panel. */
 @utility bg-brand-gradient {
   background: linear-gradient(135deg, #3F86E0 0%, #2263AD 45%, #7454C4 100%);
+}
+
+/* Lupa wodząca po kartce podczas szukania — wspólna dla wersji web i kiosku. */
+@keyframes search-glass {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(150%, 60%); }
+  50% { transform: translate(40%, 170%); }
+  75% { transform: translate(220%, 120%); }
 }

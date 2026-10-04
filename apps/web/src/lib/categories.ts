@@ -47,3 +47,18 @@ const bySlug = new Map(CATEGORIES.map((category) => [category.slug, category]))
 export function categoryFor(slug: string | undefined) {
   return slug ? bySlug.get(slug) : undefined
 }
+
+/**
+ * First Kategoria named in a free-text list of labels, as the Pomysł form stores them (joined with
+ * ", "). Labels may themselves contain a comma — "Dzieci, młodzież i rodzina" — so this searches for
+ * the labels rather than splitting the text apart.
+ */
+export function firstCategoryIn(text: string | undefined) {
+  if (!text) return undefined
+  let best: { category: Category; at: number } | undefined
+  for (const category of CATEGORIES) {
+    const at = text.indexOf(category.label)
+    if (at >= 0 && (!best || at < best.at)) best = { category, at }
+  }
+  return best?.category
+}
