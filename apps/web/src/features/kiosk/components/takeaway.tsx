@@ -112,20 +112,23 @@ function Print({ done, onDone, onBack }: { done: boolean; onDone: () => void; on
 
 function Sms({ id, state, setState, onQr }: { id: string; state: Extract<Takeaway, { kind: 'sms' }>; setState: (next: Takeaway) => void; onQr: () => void }) {
   const inputRef = useRef<HTMLInputElement>(null)
+  const outcomeRef = useRef<HTMLParagraphElement>(null)
   const valid = isPhone(state.number)
   const send = useMutation(trpc.kiosk.sendResultSms.mutationOptions())
 
   // Panel zastąpił kafelek, który go otworzył, więc fokus musi za nim pójść —
   // inaczej czytnik ekranu zostałby na elemencie, którego już nie ma.
+  // Tak samo po wysyłce: przycisk znika, więc fokus idzie na komunikat o wyniku.
   useEffect(() => {
     if (state.phase === 'form') inputRef.current?.focus()
+    if (state.phase === 'sent' || state.phase === 'failed') outcomeRef.current?.focus()
   }, [state.phase])
 
   if (state.phase === 'sent') {
     return (
       <div className="flex flex-col items-center gap-4 rounded-[28px] border border-border bg-card p-8 text-center">
         <IconCheck aria-hidden="true" className="size-14 text-[var(--hub-niebieski-ciemny)]" />
-        <p role="status" className="text-[calc(26px*var(--hub-skala))] font-bold">
+        <p ref={outcomeRef} tabIndex={-1} role="status" className="text-[calc(26px*var(--hub-skala))] font-bold outline-none">
           Wysłano SMS
         </p>
         <p className="hub-tekst-s text-[var(--hub-tekst-2)]">Link do opisu i adresu jest w drodze na numer kończący się na {state.number}.</p>
@@ -136,7 +139,7 @@ function Sms({ id, state, setState, onQr }: { id: string; state: Extract<Takeawa
   if (state.phase === 'failed') {
     return (
       <div className="flex flex-col items-center gap-4 rounded-[28px] border border-border bg-card p-8 text-center">
-        <p role="alert" className="text-[calc(26px*var(--hub-skala))] font-bold">
+        <p ref={outcomeRef} tabIndex={-1} role="alert" className="text-[calc(26px*var(--hub-skala))] font-bold outline-none">
           Nie udało się wysłać SMS-a
         </p>
         <p className="hub-tekst-s text-[var(--hub-tekst-2)]">Sprawdź numer albo zeskanuj kod QR telefonem.</p>
