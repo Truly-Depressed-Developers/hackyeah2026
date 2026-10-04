@@ -1,0 +1,115 @@
+/*
+ * Motyw kiosku (tablet 834×1194, dotyk + głos).
+ *
+ * Wszystko siedzi w `.kiosk` — nigdy w `:root` i nigdy na <html>/<body>. `:root`
+ * dopasowuje się do <html>, `.kiosk` do diva powłoki, więc dziedziczenie custom
+ * properties zawsze wybiera bliższą deklarację i kolejność źródeł nie ma znaczenia.
+ * Położenie klasy na <html> zrobiłoby z tego remis specyficzności.
+ */
+.kiosk {
+  --primary: #2263ad;
+  --primary-foreground: #ffffff;
+  --foreground: #0f1b2d;
+  --card: #ffffff;
+  --card-foreground: #0f1b2d;
+  --muted: #eef2f7;
+  --muted-foreground: #5b6573;
+  --border: #e3e8ef;
+  --input: #cfd7e3;
+  --ring: #0f1b2d;
+
+  /* Tokeny wyłącznie kioskowe — nie mają odpowiednika w wersji web. */
+  --hub-tekst-2: #3b4757;
+  --hub-tlo: #f7f9fd;
+  --hub-niebieski-ciemny: #1a4f8c;
+  --hub-niebieski-jasny: #eaf1fa;
+  --hub-bursztyn: #794300;
+  --hub-bursztyn-jasny: #fff3d6;
+
+  /* Mnożnik treści sterowany przyciskami A/A/A. Nagłówki zostają stałe. */
+  --hub-skala: 1;
+
+  color: var(--foreground);
+  background: var(--hub-tlo);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/*
+ * Rampa typograficzna jako klasy potomne, nie `@utility` — `@utility` rejestruje
+ * utility dostępne globalnie, a selektor potomny daje twardą gwarancję, że stray
+ * `class="hub-tekst"` w wersji web jest bezczynny.
+ */
+.kiosk .hub-tekst-l { font-size: calc(30px * var(--hub-skala)); line-height: 1.4; }
+.kiosk .hub-tekst-m { font-size: calc(24px * var(--hub-skala)); line-height: 1.45; }
+.kiosk .hub-tekst-s { font-size: calc(22px * var(--hub-skala)); line-height: 1.5; }
+.kiosk .hub-tekst-xs { font-size: calc(20px * var(--hub-skala)); line-height: 1.5; }
+
+/* Panel treści: scroll bez widocznego paska i bez łańcuchowania na tło. */
+.kiosk .hub-przewijanie {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+.kiosk .hub-przewijanie::-webkit-scrollbar { display: none; }
+
+/* Odczucie dotyku: wciśnięcie zamiast hovera, którego na kiosku nie ma. */
+.kiosk .hub-dotyk {
+  transition: transform 120ms ease-out, box-shadow 120ms ease-out, background-color 120ms ease-out;
+}
+.kiosk .hub-dotyk:active { transform: scale(0.98); }
+
+.kiosk textarea::placeholder,
+.kiosk input::placeholder {
+  color: var(--muted-foreground);
+  opacity: 1;
+}
+
+/*
+ * Keyframes są w CSS globalne, więc wszystkie prefiksujemy `kiosk-`, żeby nie
+ * zderzyły się z `voice-*` / `mic-*` / `toast-timer` z index.css.
+ */
+@keyframes kiosk-ring {
+  0% { transform: scale(0.85); opacity: 0.6; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+
+@keyframes kiosk-orb {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+
+@keyframes kiosk-fala {
+  0%, 100% { transform: scaleY(0.22); }
+  50% { transform: scaleY(1); }
+}
+
+@keyframes kiosk-kursor {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+@keyframes kiosk-wejscie {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes kiosk-wydruk {
+  from { transform: translateY(-84%); }
+  to { transform: none; }
+}
+
+/*
+ * Poniżej zaprojektowanej szerokości absolutny header/main rozjechałby się i dał
+ * poziomy scroll. Zamieniamy go na zwykłą kolumnę — punkt audytu „320 px bez
+ * poziomego przewijania" z AGENTS.md.
+ */
+@media (max-width: 833px) {
+  .kiosk .hub-powloka { display: flex; flex-direction: column; }
+  .kiosk .hub-pasek,
+  .kiosk .hub-panel {
+    position: static;
+    inset: auto;
+  }
+  .kiosk .hub-panel { flex: 1; min-height: 0; }
+}

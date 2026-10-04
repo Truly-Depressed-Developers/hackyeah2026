@@ -1,0 +1,92 @@
+import { useReducer } from 'react'
+
+export type KioskMode = 'napisz' | 'powiedz'
+
+/**
+ * `GET /catalog/{id}` zwraca `Innovation`, które nie ma `why` ani `whyGenerated` —
+ * uzasadnienie dopasowania żyje tylko na `Result`. Dlatego jedzie razem z kliknięciem
+ * w kartę, zamiast być dociągane na ekranie szczegółu.
+ */
+export type CarriedResult = { id: string; title: string; why: string; whyGenerated: boolean }
+
+/**
+ * To, do czego mieszkaniec się zobowiązał. Ekrany `results` / `noResult` / `error` /
+ * `loading` są POCHODNE od zapytania React Query, nie dispatchowane — inaczej refetch
+ * mógłby się udać, a maszyna zostałaby na `error`.
+ */
+export type KioskStage =
+  | { name: 'entry' }
+  | { name: 'search'; query: string }
+  | { name: 'detail'; query: string; result: CarriedResult }
+
+export interface KioskSession {
+  stage: KioskStage
+  /** null dopóki mieszkaniec nie wybierze kafelka — to steruje kafelki-vs-przełącznik. */
+  mode: KioskMode | null
+  /** Przeżywa entry → wyniki → entry, żeby „Wróć i opisz inaczej" wracało wypełnione. */
+  draft: string
+  /** Mnożnik treści zapisywany na powłoce jako `--hub-skala`. */
+  skala: number
+}
+
+export const SKALE = [1, 1.25, 1.5] as const
+
+export type KioskAction =
+  | { type: 'chooseMode'; mode: KioskMode }
+  | { type: 'setDraft'; text: string }
+  | { type: 'submit'; query: string }
+  | { type: 'openDetail'; result: CarriedResult }
+  | { type: 'back' }
+  | { type: 'setSkala'; skala: number }
+  | { type: 'end' }
+
+const INITIAL: KioskSession = { stage: { name: 'entry' }, mode: null, draft: '', skala: 1 }
+
+function reducer(state: KioskSession, action: KioskAction): KioskSession {
+  switch (action.type) {
+    case 'chooseMode':
+      return { ...state, mode: action.mode }
+
+    case 'setDraft':
+      return { ...state, draft: action.text }
+
+    case 'submit': {
+      const query = action.query.trim()
+      if (query.length === 0) return state
+      return { ...state, stage: { name: 'search', query }, draft: query }
+    }
+
+    case 'openDetail':
+      if (state.stage.name !== 'search') return state
+      return { ...state, stage: { name: 'detail', query: state.stage.query, result: action.result } }
+
+    case 'back':
+      switch (state.stage.name) {
+        case 'detail':
+          return { ...state, stage: { name: 'search', query: state.stage.query } }
+        case 'search':
+          return { ...state, stage: { name: 'entry' } }
+        case 'entry':
+          return state
+      }
+      break
+
+    case 'setSkala':
+      return { ...state, skala: action.skala }
+
+    /*
+     * „Zakończ": pełny wipe. To jedyne miejsce, w które wejdzie później czyszczenie
+     * sesji (queryClient.clear() + usunięcie `hubmi:gaps`), gdy dojdzie ekran
+     * bezczynności — stan komponentów to za mało, bo cache i sessionStorage trzymają
+     * tekst poprzedniego mieszkańca do zamknięcia karty.
+     */
+    case 'end':
+      return INITIAL
+  }
+
+  return state
+}
+
+export function useKioskSession() {
+  return useReducer(reducer, INITIAL)
+}
