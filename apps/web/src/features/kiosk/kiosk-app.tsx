@@ -24,12 +24,16 @@ export function KioskApp() {
    * wyniku i błędu są POCHODNE od tego zapytania, nie dispatchowane — inaczej udany
    * refetch zostawiłby maszynę na ekranie błędu. `staleTime: Infinity` sprawia, że
    * powrót i ponowne wysłanie tego samego opisu trafia w cache.
+   *
+   * Warunkiem jest obecność zapytania, a nie etap: do szczegółu można wejść prosto
+   * z katalogu na ekranie startowym i wtedy nie ma czego szukać.
    */
+  const activeQuery = stage.name === 'entry' ? '' : (stage.query ?? '')
   const search = $ai.useQuery(
     'post',
     '/search',
-    { body: { collection: SEARCH_COLLECTION, query: stage.name === 'entry' ? '' : stage.query } },
-    { enabled: stage.name !== 'entry', staleTime: Infinity, retry: false },
+    { body: { collection: SEARCH_COLLECTION, query: activeQuery } },
+    { enabled: activeQuery.length > 0, staleTime: Infinity, retry: false },
   )
 
   return (
@@ -62,13 +66,21 @@ export function KioskApp() {
           onMode={(mode) => dispatch({ type: 'chooseMode', mode })}
           onDraft={(text) => dispatch({ type: 'setDraft', text })}
           onSubmit={(query) => dispatch({ type: 'submit', query })}
+          onOpen={(result) => dispatch({ type: 'openDetail', result })}
         />
       )
     }
 
     // Szczegół ma własne źródło danych (/catalog/{id}), więc nie czeka na wyszukiwanie.
     if (stage.name === 'detail') {
-      return <DetailScreen key={`detail-${stage.result.id}`} result={stage.result} onBack={() => dispatch({ type: 'back' })} />
+      return (
+        <DetailScreen
+          key={`detail-${stage.result.id}`}
+          result={stage.result}
+          backLabel={stage.query ? 'Wróć do wyników' : 'Wróć do rozwiązań'}
+          onBack={() => dispatch({ type: 'back' })}
+        />
+      )
     }
 
     if (search.isPending || search.isFetching) return <LoadingScreen key="loading" />

@@ -6,8 +6,11 @@ export type KioskMode = 'napisz' | 'powiedz'
  * `GET /catalog/{id}` zwraca `Innovation`, które nie ma `why` ani `whyGenerated` —
  * uzasadnienie dopasowania żyje tylko na `Result`. Dlatego jedzie razem z kliknięciem
  * w kartę, zamiast być dociągane na ekranie szczegółu.
+ *
+ * `why` jest opcjonalne, bo do szczegółu można też wejść z katalogu na ekranie
+ * startowym — tam nie ma żadnego zapytania, więc nie ma czego uzasadniać.
  */
-export type CarriedResult = { id: string; title: string; why: string; whyGenerated: boolean }
+export type CarriedResult = { id: string; title: string; why?: string; whyGenerated?: boolean }
 
 /**
  * To, do czego mieszkaniec się zobowiązał. Ekrany `results` / `noResult` / `error` /
@@ -17,7 +20,8 @@ export type CarriedResult = { id: string; title: string; why: string; whyGenerat
 export type KioskStage =
   | { name: 'entry' }
   | { name: 'search'; query: string }
-  | { name: 'detail'; query: string; result: CarriedResult }
+  /** `query` puste = weszliśmy z katalogu, więc powrót prowadzi na ekran startowy. */
+  | { name: 'detail'; query?: string; result: CarriedResult }
 
 export interface KioskSession {
   stage: KioskStage
@@ -56,14 +60,23 @@ function reducer(state: KioskSession, action: KioskAction): KioskSession {
       return { ...state, stage: { name: 'search', query }, draft: query }
     }
 
+    // Wejście w szczegół z wyników niesie zapytanie, wejście z katalogu nie —
+    // to ono decyduje, dokąd wróci „wstecz".
     case 'openDetail':
-      if (state.stage.name !== 'search') return state
-      return { ...state, stage: { name: 'detail', query: state.stage.query, result: action.result } }
+      if (state.stage.name === 'detail') return state
+      return {
+        ...state,
+        stage: {
+          name: 'detail',
+          query: state.stage.name === 'search' ? state.stage.query : undefined,
+          result: action.result,
+        },
+      }
 
     case 'back':
       switch (state.stage.name) {
         case 'detail':
-          return { ...state, stage: { name: 'search', query: state.stage.query } }
+          return { ...state, stage: state.stage.query ? { name: 'search', query: state.stage.query } : { name: 'entry' } }
         case 'search':
           return { ...state, stage: { name: 'entry' } }
         case 'entry':

@@ -20,10 +20,12 @@ import type { CarriedResult } from '../use-kiosk-session'
 
 interface DetailScreenProps {
   result: CarriedResult
+  /** Etykieta powrotu zależy od tego, skąd przyszliśmy: z wyników czy z katalogu. */
+  backLabel: string
   onBack: () => void
 }
 
-export function DetailScreen({ result, onBack }: DetailScreenProps) {
+export function DetailScreen({ result, backLabel, onBack }: DetailScreenProps) {
   const query = $ai.useQuery(
     'get',
     '/catalog/{id}',
@@ -53,17 +55,17 @@ export function DetailScreen({ result, onBack }: DetailScreenProps) {
           </button>
           <button type="button" onClick={onBack} className={CTA_MUTED}>
             <IconArrowLeft aria-hidden="true" className="size-6" />
-            Wróć do wyników
+            {backLabel}
           </button>
         </div>
       </div>
     )
   }
 
-  return <DetailView item={query.data} result={result} onBack={onBack} />
+  return <DetailView item={query.data} result={result} backLabel={backLabel} onBack={onBack} />
 }
 
-function DetailView({ item, result, onBack }: { item: Innovation; result: CarriedResult; onBack: () => void }) {
+function DetailView({ item, result, backLabel, onBack }: { item: Innovation; result: CarriedResult; backLabel: string; onBack: () => void }) {
   const speech = useSpeech(readAloudText(item))
 
   /* Oba pola są opcjonalne w kontrakcie, więc sekcje renderujemy warunkowo. */
@@ -77,7 +79,7 @@ function DetailView({ item, result, onBack }: { item: Innovation; result: Carrie
       <div className="flex flex-wrap items-center justify-between gap-4">
         <button type="button" onClick={onBack} className={cn(PILL, 'pr-7 pl-5')}>
           <IconArrowLeft aria-hidden="true" className="size-6" />
-          Wróć do wyników
+          {backLabel}
         </button>
 
         {speech.supported && !speech.speaking && (
@@ -117,16 +119,19 @@ function DetailView({ item, result, onBack }: { item: Innovation; result: Carrie
         </section>
       ))}
 
-      <div className="hub-tekst-xs flex flex-col gap-2 rounded-2xl bg-muted/60 px-5 py-4 text-[var(--hub-tekst-2)]">
-        <span>
-          <span className="font-bold text-foreground">Dlaczego to pasuje: </span>
-          {result.why}
-        </span>
-        <span className="inline-flex items-center gap-2 text-muted-foreground">
-          {result.whyGenerated && <IconSparkles aria-hidden="true" className="size-5" />}
-          {result.whyGenerated ? 'Uzasadnienie wygenerowane przez AI' : 'Uzasadnienie dopasowania'}
-        </span>
-      </div>
+      {/* Brak `why` = weszliśmy z katalogu, gdzie nie było zapytania do uzasadnienia. */}
+      {result.why && (
+        <div className="hub-tekst-xs flex flex-col gap-2 rounded-2xl bg-muted/60 px-5 py-4 text-[var(--hub-tekst-2)]">
+          <span>
+            <span className="font-bold text-foreground">Dlaczego to pasuje: </span>
+            {result.why}
+          </span>
+          <span className="inline-flex items-center gap-2 text-muted-foreground">
+            {result.whyGenerated && <IconSparkles aria-hidden="true" className="size-5" />}
+            {result.whyGenerated ? 'Uzasadnienie wygenerowane przez AI' : 'Uzasadnienie dopasowania'}
+          </span>
+        </div>
+      )}
 
       <p className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[calc(18px*var(--hub-skala))] text-muted-foreground">
         {item.links?.video && (
