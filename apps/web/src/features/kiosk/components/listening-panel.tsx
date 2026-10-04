@@ -39,14 +39,19 @@ export function ListeningPanel({ voice, text, onStart, onEdit }: ListeningPanelP
   return <Idle onStart={onStart} />
 }
 
+/**
+ * Osiągalne tylko po zatrzymaniu nagrania bez rozpoznanego tekstu — wybór „Powiedz"
+ * uruchamia mikrofon od razu, więc to nie jest pierwszy krok, tylko ponowienie.
+ */
 function Idle({ onStart }: { onStart: () => void }) {
   return (
     <div className="flex flex-col items-center gap-5 rounded-[28px] border border-border bg-card p-10 text-center">
-      <p className="hub-tekst-m font-bold">Naciśnij i powiedz, z czym masz kłopot</p>
+      <p className="hub-tekst-m font-bold">Nie usłyszałem nic wyraźnego</p>
+      <p className="hub-tekst-s text-muted-foreground">Spróbuj jeszcze raz — mów spokojnie, swoimi słowami.</p>
       {/* start() wprost w handlerze kliknięcia — Safari wymaga gestu użytkownika. */}
       <button type="button" onClick={onStart} className={cn(CTA, 'h-20 px-12')}>
         <IconMicrophone aria-hidden="true" className="size-9" />
-        Zacznij mówić
+        Powiedz jeszcze raz
       </button>
     </div>
   )

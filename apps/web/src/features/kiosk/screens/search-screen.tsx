@@ -36,6 +36,18 @@ export function SearchScreen({ mode, draft, onMode, onDraft, onSubmit, onOpen }:
   // W trakcie mówienia przycisk szukania tylko rozpraszałby — najpierw „Zatrzymaj”.
   const showSubmit = mode !== null && !voice.isListening
 
+  /**
+   * „Powiedz" od razu słucha — osobny przycisk „Zacznij mówić" byłby drugim
+   * kliknięciem po tym, jak mieszkaniec już zadeklarował, że chce mówić.
+   *
+   * `start()` leci wprost z handlera kliknięcia, bo Safari uruchamia mikrofon
+   * tylko w obrębie gestu użytkownika — wywołanie z efektu zostałoby odrzucone.
+   */
+  function chooseMode(next: KioskMode) {
+    onMode(next)
+    if (next === 'powiedz' && !voice.isListening) voice.start()
+  }
+
   return (
     <div className="flex flex-col gap-10 pt-4">
       <form
@@ -52,7 +64,7 @@ export function SearchScreen({ mode, draft, onMode, onDraft, onSubmit, onOpen }:
           </p>
         </div>
 
-        <ModeTiles mode={mode} onChoose={onMode} />
+        <ModeTiles mode={mode} onChoose={chooseMode} />
 
         {mode === 'napisz' && (
           <div className="flex flex-col gap-3">
