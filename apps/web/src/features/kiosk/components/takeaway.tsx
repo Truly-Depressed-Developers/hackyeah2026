@@ -16,15 +16,21 @@ import { CTA, CTA_MUTED, CTA_OUTLINE, FIELD, TILE } from '../kiosk-ui'
 const DEMO = import.meta.env.DEV || import.meta.env.VITE_KIOSK_DEMO === 'true'
 
 /**
- * Origin kiosku bywa localhost albo adresem w LAN-ie, którego telefon nie otworzy,
- * więc adres w kodzie QR da się nadpisać przez VITE_PUBLIC_URL.
- *
+ * Wdrożona aplikacja. To ona, a nie origin przeglądarki, jest domyślną bazą kodu QR:
+ * kiosk chodzi pod adresem lokalnym albo w LAN-ie, a telefon mieszkańca takiego adresu
+ * nie otworzy — `localhost` na telefonie to sam telefon.
+ */
+const DEFAULT_PUBLIC_URL = 'https://hackyeah2026.onrender.com'
+
+/**
  * `||`, nie `??`: w .env zmienna bywa zadeklarowana pusta (`VITE_PUBLIC_URL=`), a to
  * jest pusty string, nie undefined. Przy `??` pusty string przechodził dalej i kod QR
  * zawierał goły path bez schematu i hosta — czyli nie link, tylko tekst, z którym
- * skaner telefonu robił co chciał.
+ * skaner telefonu robił co chciał (łącznie z podsuwaniem sklepu z aplikacjami).
+ *
+ * Ucinamy końcowe ukośniki, żeby `.../` nie dawało podwójnego slasha w adresie.
  */
-const PUBLIC_URL = import.meta.env.VITE_PUBLIC_URL?.trim() || window.location.origin
+const PUBLIC_URL = (import.meta.env.VITE_PUBLIC_URL?.trim() || DEFAULT_PUBLIC_URL).replace(/\/+$/, '')
 
 /** Kod QR prowadzący na localhost otworzy się na telefonie jako „brak połączenia". */
 const UNREACHABLE_FROM_PHONE = /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(:|$)/i.test(PUBLIC_URL)
