@@ -46,6 +46,23 @@ export type KioskAction =
 
 const INITIAL: KioskSession = { stage: { name: 'entry' }, mode: null, draft: '', skala: 1 }
 
+/**
+ * Czy po mieszkańcu został jakikolwiek ślad do wyczyszczenia. Steruje dostępnością
+ * „Zakończ": na świeżym ekranie startowym ten przycisk nie miałby co zrobić.
+ *
+ * Porównujemy z całym stanem wyjściowym, a nie z listą wybranych pól — dzięki temu
+ * nowe pole w sesji samo wejdzie do warunku, zamiast cicho go ominąć. Powiększony
+ * tekst też liczy się jako ślad: następna osoba ma zacząć od ustawień domyślnych.
+ */
+export function hasSomethingToClear(session: KioskSession) {
+  return (
+    session.stage.name !== INITIAL.stage.name ||
+    session.mode !== INITIAL.mode ||
+    session.draft !== INITIAL.draft ||
+    session.skala !== INITIAL.skala
+  )
+}
+
 function reducer(state: KioskSession, action: KioskAction): KioskSession {
   switch (action.type) {
     case 'chooseMode':

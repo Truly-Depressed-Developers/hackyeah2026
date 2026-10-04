@@ -9,11 +9,13 @@ const LABEL = ['Tekst normalny', 'Tekst większy', 'Tekst największy']
 
 interface KioskHeaderProps {
   skala: number
+  /** Fałsz na świeżym ekranie startowym — nie ma wtedy czego czyścić. */
+  canEnd: boolean
   onSkala: (skala: number) => void
   onEnd: () => void
 }
 
-export function KioskHeader({ skala, onSkala, onEnd }: KioskHeaderProps) {
+export function KioskHeader({ skala, canEnd, onSkala, onEnd }: KioskHeaderProps) {
   return (
     <header className="hub-pasek absolute inset-x-8 top-6 z-10 flex h-22 items-center justify-between gap-4">
       <span className="text-[30px] font-bold tracking-[-0.02em]">HubMI</span>
@@ -42,8 +44,23 @@ export function KioskHeader({ skala, onSkala, onEnd }: KioskHeaderProps) {
           ))}
         </div>
 
-        {/* Samo „Zakończ" nie mówi, co się stanie — nazwa dostępna to dopowiada. */}
-        <button type="button" aria-label="Zakończ i wyczyść ekran" onClick={onEnd} className={cn(PILL, 'pr-7 pl-5')}>
+        {/*
+          Przycisk zostaje na miejscu także wtedy, gdy nie ma czego czyścić — tylko
+          wyszarzony. Znikający element przesuwałby cały pasek i mieszkaniec musiałby
+          za nim wodzić wzrokiem; na ekranie dotykowym stałe położenie jest ważniejsze
+          niż oszczędność miejsca.
+
+          Samo „Zakończ" nie mówi, co się stanie — nazwa dostępna to dopowiada.
+        */}
+        <button
+          type="button"
+          aria-label="Zakończ i wyczyść ekran"
+          disabled={!canEnd}
+          onClick={onEnd}
+          // Wyszarzenie przez kolory, nie `opacity`: półprzezroczysty tekst schodził
+          // do ~2,5:1 i był po prostu nieczytelny z odległości wyciągniętej ręki.
+          className={cn(PILL, 'pr-7 pl-5 disabled:border-input disabled:bg-muted disabled:text-muted-foreground')}
+        >
           <IconX aria-hidden="true" className="size-6" />
           Zakończ
         </button>

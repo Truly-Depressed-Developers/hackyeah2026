@@ -9,7 +9,7 @@ import { LoadingScreen } from './screens/loading-screen'
 import { NoResultScreen } from './screens/no-result-screen'
 import { ResultsScreen } from './screens/results-screen'
 import { SearchScreen } from './screens/search-screen'
-import { useKioskSession, type KioskAction } from './use-kiosk-session'
+import { hasSomethingToClear, useKioskSession, type KioskAction } from './use-kiosk-session'
 
 export function KioskApp() {
   const [session, dispatch] = useKioskSession()
@@ -42,6 +42,7 @@ export function KioskApp() {
     >
       <KioskHeader
         skala={session.skala}
+        canEnd={hasSomethingToClear(session)}
         onSkala={(skala) => dispatch({ type: 'setSkala', skala })}
         // „Zakończ" czyści sesję i zostawia mieszkańca na ekranie startowym kiosku.
         // Celowo NIE wychodzi na `/`: urządzenie stoi w punkcie publicznym i nie ma

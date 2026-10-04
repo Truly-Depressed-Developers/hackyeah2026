@@ -15,8 +15,19 @@ import { CTA, CTA_MUTED, CTA_OUTLINE, FIELD, TILE } from '../kiosk-ui'
  */
 const DEMO = import.meta.env.DEV || import.meta.env.VITE_KIOSK_DEMO === 'true'
 
-/** Origin kiosku bywa localhost albo adresem w LAN-ie, którego telefon nie otworzy. */
-const PUBLIC_URL = import.meta.env.VITE_PUBLIC_URL ?? window.location.origin
+/**
+ * Origin kiosku bywa localhost albo adresem w LAN-ie, którego telefon nie otworzy,
+ * więc adres w kodzie QR da się nadpisać przez VITE_PUBLIC_URL.
+ *
+ * `||`, nie `??`: w .env zmienna bywa zadeklarowana pusta (`VITE_PUBLIC_URL=`), a to
+ * jest pusty string, nie undefined. Przy `??` pusty string przechodził dalej i kod QR
+ * zawierał goły path bez schematu i hosta — czyli nie link, tylko tekst, z którym
+ * skaner telefonu robił co chciał.
+ */
+const PUBLIC_URL = import.meta.env.VITE_PUBLIC_URL?.trim() || window.location.origin
+
+/** Kod QR prowadzący na localhost otworzy się na telefonie jako „brak połączenia". */
+const UNREACHABLE_FROM_PHONE = /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(:|$)/i.test(PUBLIC_URL)
 
 const SIMULATED_MS = 2200
 
@@ -183,6 +194,17 @@ function Qr({ id, onBack }: { id: string; onBack: () => void }) {
       <p className="hub-tekst-s text-[var(--hub-tekst-2)]">
         Otworzysz opis i adres na swoim telefonie. Kod nie zawiera Twoich danych.
       </p>
+
+      {/*
+        Cichy kod QR prowadzący donikąd jest gorszy niż brak kodu: mieszkaniec skanuje,
+        nic się nie otwiera i nie wie dlaczego. Ostrzegamy obsługę zawczasu.
+      */}
+      {UNREACHABLE_FROM_PHONE && (
+        <p className="hub-tekst-xs rounded-2xl bg-[var(--hub-bursztyn-jasny)] px-4 py-2 text-[var(--hub-bursztyn)]">
+          Kod prowadzi na <code>{PUBLIC_URL}</code>, czyli adres lokalny kiosku — telefon go nie otworzy.
+          Ustaw <code>VITE_PUBLIC_URL</code> na publiczny adres aplikacji.
+        </p>
+      )}
       <button type="button" onClick={onBack} className={CTA_MUTED}>
         Wybierz inny sposób
       </button>
