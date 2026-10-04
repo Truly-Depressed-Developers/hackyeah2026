@@ -2,12 +2,14 @@ import { panelAnalyticsRouter } from './analytics/router.js'
 import { ideasRouter, panelIdeasRouter } from './ideas/router.js'
 import { panelInnovationsRouter } from './innovations/router.js'
 import { needsRouter, panelNeedsRouter } from './needs/router.js'
+import { kioskRouter } from './sms/router.js'
 import { panelProcedure, router } from './trpc.js'
 
 export const appRouter = router({
   // Public procedures the resident app calls.
   needs: needsRouter,
   ideas: ideasRouter,
+  kiosk: kioskRouter,
 
   // Panel administratora. Every procedure under here is on panelProcedure.
   panel: router({

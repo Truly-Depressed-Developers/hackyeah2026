@@ -5,7 +5,7 @@ import { z } from 'zod'
 export const MAX_BATCH_EVENTS = 50
 const CLOCK_SKEW_MS = 5 * 60_000
 
-export const ACTIONS = ['read_more', 'video', 'pdf', 'download', 'phone', 'source', 'innovation_page'] as const
+export const ACTIONS = ['read_more', 'video', 'pdf', 'download', 'phone', 'source', 'innovation_page', 'sms'] as const
 export const VISIT_MODES = ['web', 'kiosk'] as const
 export const SCREENS = ['mobile', 'tablet', 'desktop'] as const
 export const ENTRIES = ['search', 'catalog', 'innovation', 'idea', 'other'] as const
