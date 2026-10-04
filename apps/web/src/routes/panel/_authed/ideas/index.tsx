@@ -5,7 +5,9 @@ import { ListPagination } from '@/components/list-pagination'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Skeleton } from '@/components/ui/skeleton'
 import { IdeasList } from '@/features/ideas/ideas-list'
-import { DEFAULT_PAGE_SIZE, StatusFilter, TextSearch, listQuery, parseListSearch, type ListSearch } from '@/features/panel/list-controls'
+import { DEFAULT_PAGE_SIZE, FilterBar, StatusFilter, TextSearch, listQuery, parseListSearch, type ListSearch } from '@/features/panel/list-controls'
+import { PageHeader } from '@/features/panel/page-header'
+import { PANEL_SECTIONS } from '@/features/panel/panel-sidebar'
 import { trpc } from '@/lib/trpc'
 
 export const Route = createFileRoute('/panel/_authed/ideas/')({
@@ -35,15 +37,16 @@ function IdeasPage() {
 
   return (
     <>
-      <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-[650] tracking-[-0.02em]">Pomysły mieszkańców</h1>
-        <p className="text-muted-foreground">Rozwiązania zaproponowane przez mieszkańców, zwykle tam, gdzie wyszukiwarka nie pomogła.</p>
-      </div>
+      <PageHeader
+        section={PANEL_SECTIONS.ideas}
+        title="Pomysły mieszkańców"
+        description="Rozwiązania zaproponowane przez mieszkańców, zwykle tam, gdzie wyszukiwarka nie pomogła."
+      />
 
-      <section aria-label="Filtry" className="flex flex-col gap-4 rounded-xl border bg-muted/40 p-4 sm:flex-row sm:flex-wrap sm:items-end">
+      <FilterBar>
         <TextSearch label="Szukaj w tytułach" value={search.q} onSearch={(q) => update({ q })} />
         <StatusFilter value={search.status} onChange={(status) => update({ status })} />
-      </section>
+      </FilterBar>
 
       <section aria-labelledby="list-heading" className="flex flex-col gap-4">
         <h2 id="list-heading" ref={headingRef} tabIndex={-1} className="sr-only outline-none">

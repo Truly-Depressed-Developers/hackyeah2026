@@ -1,12 +1,18 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
+import { IconClockHour4, IconGauge, IconHeartHandshake, IconMoodCheck, IconSearch, IconSearchOff, IconUsers } from '@tabler/icons-react'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { ActionsBreakdown, CategoriesBreakdown, ChannelsBreakdown, HourHeatmap } from '@/features/analytics/breakdowns'
 import { RANGES, fmtDuration, fmtInt, fmtLatency, fmtPct, type RangeDays } from '@/features/analytics/format'
 import { SearchFunnel } from '@/features/analytics/funnel'
+import { Insights } from '@/features/analytics/insights'
 import { KpiCard } from '@/features/analytics/kpi-card'
 import { TopGaps, TopInnovations, TopQueries } from '@/features/analytics/rankings'
 import { SearchesOverTime } from '@/features/analytics/searches-over-time'
+import { PageHeader } from '@/features/panel/page-header'
+import { PANEL_SECTIONS } from '@/features/panel/panel-sidebar'
+import { Reveal } from '@/features/panel/reveal'
+import { Tag } from '@/features/panel/tags'
 import { trpc } from '@/lib/trpc'
 
 const DEFAULT_RANGE: RangeDays = 30
@@ -47,30 +53,40 @@ function AnalyticsPage() {
 
   return (
     <>
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-[650] tracking-[-0.02em]">Statystyki</h1>
-          <p className="text-muted-foreground">
-            Czego szukają mieszkańcy, co im pomaga i gdzie brakuje rozwiązań.
-            {overview.data && <> Dane z {updatedFormat.format(new Date(overview.data.refreshedAt))}.</>}
-          </p>
-        </div>
-        <ToggleGroup
-          value={[String(range)]}
-          onValueChange={(next) => {
-            const days = Number(next[0]) as RangeDays
-            if (RANGES.includes(days)) navigate({ search: days === DEFAULT_RANGE ? {} : { range: days }, replace: true })
-          }}
-          variant="outline"
-          aria-label="Okres statystyk"
-        >
-          {RANGES.map((days) => (
-            <ToggleGroupItem key={days} value={String(days)} className="px-3">
-              {days} dni
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
-      </div>
+      <PageHeader
+        section={PANEL_SECTIONS.analytics}
+        title="Statystyki"
+        description="Czego szukają mieszkańcy, co im pomaga i gdzie brakuje rozwiązań. Każdy wykres ma podsumowanie i dane w tabeli."
+        meta={
+          overview.data && (
+            <Tag tone="slate" icon={IconClockHour4}>
+              Dane z {updatedFormat.format(new Date(overview.data.refreshedAt))}
+            </Tag>
+          )
+        }
+        actions={
+          <ToggleGroup
+            value={[String(range)]}
+            onValueChange={(next) => {
+              const days = Number(next[0]) as RangeDays
+              if (RANGES.includes(days)) navigate({ search: days === DEFAULT_RANGE ? {} : { range: days }, replace: true })
+            }}
+            variant="outline"
+            aria-label="Okres statystyk"
+            className="rounded-xl bg-background/70 p-1 shadow-sm backdrop-blur"
+          >
+            {RANGES.map((days) => (
+              <ToggleGroupItem
+                key={days}
+                value={String(days)}
+                className="h-9 rounded-lg! border-0 px-3.5 data-pressed:bg-primary data-pressed:text-primary-foreground"
+              >
+                {days} dni
+              </ToggleGroupItem>
+            ))}
+          </ToggleGroup>
+        }
+      />
 
       <p role="status" className="sr-only">
         {fetching ? 'Wczytywanie statystyk…' : `Statystyki z ostatnich ${range} dni.`}
@@ -81,15 +97,35 @@ function AnalyticsPage() {
         </p>
       )}
 
+      <Reveal order={1}>
+        <Insights
+          loading={overview.isPending}
+          overview={overview.data}
+          gaps={gaps.data}
+          heatmap={heatmap.data}
+          channels={channels.data}
+          innovations={innovations.data}
+        />
+      </Reveal>
+
       <section aria-label="Najważniejsze liczby" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <KpiCard label="Wyszukiwania" kpi={kpis?.searches} format={fmtInt} color="var(--chart-1)" />
-        <KpiCard label="Znaleziona pomoc" kpi={kpis?.helpfulPct} format={fmtPct} color="var(--success)" hint="Wyszukiwania z Użyciem Akcji, bez Potrzeby" />
-        <KpiCard label="Brak odpowiedzi" kpi={kpis?.noMatchPct} format={fmtPct} lowerIsBetter color="var(--chart-4)" />
-        <KpiCard label="Potrzeby z wyszukiwań" kpi={kpis?.needs} format={fmtInt} color="var(--chart-3)" />
-        <KpiCard label="Wizyty" kpi={kpis?.visits} format={fmtInt} color="var(--chart-5)" />
-        <KpiCard label="Średni czas Wizyty" kpi={kpis?.avgVisitMs} format={fmtDuration} color="var(--chart-2)" />
+        <KpiCard label="Wyszukiwania" icon={IconSearch} kpi={kpis?.searches} format={fmtInt} color="var(--chart-1)" />
+        <KpiCard
+          label="Znaleziona pomoc"
+          icon={IconMoodCheck}
+          kpi={kpis?.helpfulPct}
+          format={fmtPct}
+          color="var(--success)"
+          hint="Wyszukiwania z Użyciem Akcji, bez Potrzeby"
+        />
+        <KpiCard label="Brak odpowiedzi" icon={IconSearchOff} kpi={kpis?.noMatchPct} format={fmtPct} lowerIsBetter color="var(--chart-4)" />
+        <KpiCard label="Potrzeby z wyszukiwań" icon={IconHeartHandshake} kpi={kpis?.needs} format={fmtInt} color="var(--chart-3)" />
+        <KpiCard label="Wizyty" icon={IconUsers} kpi={kpis?.visits} format={fmtInt} color="var(--chart-5)" />
+        <KpiCard label="Średni czas Wizyty" icon={IconClockHour4} kpi={kpis?.avgVisitMs} format={fmtDuration} color="var(--chart-2)" />
         <KpiCard
           label="Czas odpowiedzi wyszukiwarki"
+          icon={IconGauge}
+          className="sm:col-span-2"
           kpi={kpis?.medianLatencyMs}
           format={fmtLatency}
           lowerIsBetter

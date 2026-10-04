@@ -11,7 +11,9 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { DeleteInnovationDialog } from '@/features/innovations/delete-innovation-dialog'
 import { InnovationsList } from '@/features/innovations/innovations-list'
 import type { InnovationRow } from '@/features/innovations/labels'
-import { DEFAULT_PAGE_SIZE, TextSearch, listQuery, parseListSearch, type ListSearch } from '@/features/panel/list-controls'
+import { DEFAULT_PAGE_SIZE, FilterBar, TextSearch, listQuery, parseListSearch, type ListSearch } from '@/features/panel/list-controls'
+import { PageHeader } from '@/features/panel/page-header'
+import { PANEL_SECTIONS } from '@/features/panel/panel-sidebar'
 import { trpc } from '@/lib/trpc'
 
 interface InnovationsSearch extends Omit<ListSearch, 'status'> {
@@ -54,18 +56,19 @@ function InnovationsPage() {
 
   return (
     <>
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-[650] tracking-[-0.02em]">Baza wiedzy: innowacje</h1>
-          <p className="text-muted-foreground">To, co wyszukiwarka podpowiada mieszkańcom. Zmiany widać od razu w wyszukiwarce i katalogu.</p>
-        </div>
-        <Link to="/panel/innovations/new" className={buttonVariants()}>
-          <IconPlus aria-hidden="true" data-icon="inline-start" />
-          Dodaj innowację
-        </Link>
-      </div>
+      <PageHeader
+        section={PANEL_SECTIONS.innovations}
+        title="Baza wiedzy: innowacje"
+        description="To, co wyszukiwarka podpowiada mieszkańcom. Zmiany widać od razu w wyszukiwarce i katalogu."
+        actions={
+          <Link to="/panel/innovations/new" className={buttonVariants({ className: 'h-10 px-4 shadow-md shadow-primary/20' })}>
+            <IconPlus aria-hidden="true" data-icon="inline-start" />
+            Dodaj innowację
+          </Link>
+        }
+      />
 
-      <section aria-label="Filtry" className="flex flex-col gap-4 rounded-xl border bg-muted/40 p-4 sm:flex-row sm:flex-wrap sm:items-end">
+      <FilterBar>
         <TextSearch label="Szukaj w tytułach" value={search.q} onSearch={(next) => update({ q: next })} />
         <Field className="sm:w-72">
           <FieldLabel htmlFor="filter-category">Kategoria</FieldLabel>
@@ -83,7 +86,7 @@ function InnovationsPage() {
             ))}
           </NativeSelect>
         </Field>
-      </section>
+      </FilterBar>
 
       <section aria-labelledby="list-heading" className="flex flex-col gap-4">
         <h2 id="list-heading" ref={headingRef} tabIndex={-1} className="sr-only outline-none">
