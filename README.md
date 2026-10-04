@@ -75,3 +75,8 @@ Scripts, project layout, deployment and the AI service contract are described in
 - [@MSiorr](https://github.com/MSiorr)
 - [@tobi303x](https://github.com/tobi303x)
 - [@BPajda](https://github.com/BPajda)
+- [xwikuss](https://www.behance.net/xwikuss) (design)
+
+## License
+
+This project is licensed under [MIT](./LICENSE) license.
