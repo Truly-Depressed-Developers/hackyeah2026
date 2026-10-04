@@ -6,7 +6,7 @@ import { IconAlertCircle, IconCheck, IconMail, IconMessage } from '@tabler/icons
 import { cn } from 'cn'
 import { z } from 'zod'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
-import { isEmail, isPhone } from '@/lib/contact'
+import { consentGivenNow, isEmail, isPhone } from '@/lib/contact'
 import { trpc } from '@/lib/trpc'
 
 const MODES = {
@@ -41,9 +41,6 @@ const schema = z
   })
 
 type FormValues = z.infer<typeof schema>
-
-// Consent is given at the moment the resident sends the form.
-const consentGivenNow = () => new Date()
 
 type Props = {
   open: boolean

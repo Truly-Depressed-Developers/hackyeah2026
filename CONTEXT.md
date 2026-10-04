@@ -33,8 +33,16 @@ A Potrzeba where the Mieszkaniec has no idea of their own and leaves their conta
 _Avoid_: callback, lead
 
 **Pomysł** (Idea):
-A solution a Mieszkaniec proposes, filled in step by step, together with their contact. It usually comes from a Potrzeba, but can also be proposed without a search. Pracownicy ROPS manage Pomysły separately from Potrzeby.
+A solution a Mieszkaniec proposes, filled in step by step, together with their contact. It usually comes from a Potrzeba, but can also be proposed without a search. Pracownicy ROPS manage Pomysły separately from Potrzeby. A Pracownik ROPS can open a Pomysł for testing; only then is it visible to Mieszkańcy, and only the answers cleared for that are shown — never the author's contact or name.
 _Avoid_: proposal, propozycja rozwiązania
+
+**Zapis na testy** (Test signup):
+A Mieszkaniec leaves their name and contact to try out a Pomysł that is open for testing. Nothing is sent automatically: a Pracownik ROPS reads the Zapisy in the Panel administratora and reaches out by hand when the tests start.
+_Avoid_: rejestracja, zgłoszenie (that's a Potrzeba), aplikacja
+
+**Tester**:
+A Mieszkaniec who left a Zapis na testy. Still has no account — the Zapis is the whole relationship.
+_Avoid_: wolontariusz, uczestnik, użytkownik testowy
 
 **Etap pomysłu** (Idea stage):
 How far the Mieszkaniec has taken their Pomysł, chosen from four: *To dopiero pomysł* (nothing done yet), *Mam plan* (knows how and with whom), *Pierwsze próby* (tested at small scale), *To już działa* (running and helping people). Every stage is a valid Pomysł.
@@ -84,6 +92,7 @@ _Avoid_: button, CTA
 ## Relationships
 
 - A **Potrzeba** leads to at most one **Pomysł**; a **Pomysł** comes from at most one **Potrzeba**.
+- A **Pomysł** that is open for testing has zero or more **Zapisy na testy**; one Tester has at most one Zapis per Pomysł.
 - One **Zapytanie** produces zero or more **Rozwiązania** and zero or more **Rozwiązania pokrewne**, or **Brak odpowiedzi**.
 - Every returned **Wynik** has exactly one **Rodzaj**, one **Poziom dopasowania** and one **Uzasadnienie dopasowania**.
 

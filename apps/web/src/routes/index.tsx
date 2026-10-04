@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { IconArrowLeft, IconSearch } from '@tabler/icons-react'
 import { KnowledgeBase } from '@/components/catalog/knowledge-base'
+import { ActionDock } from '@/components/layout/action-dock'
 import { SiteFooter } from '@/components/layout/site-footer'
 import { SiteHeader } from '@/components/layout/site-header'
 import { SearchResults, summarize } from '@/components/search/search-results'
@@ -119,6 +120,8 @@ function StartPage() {
         ) : (
           <KnowledgeBase />
         )}
+
+        <ActionDock />
       </main>
       <SiteFooter />
     </div>

@@ -4,6 +4,7 @@ import { DataTable, type DataTableFeatures } from '@/components/data-table'
 import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
 import { formatDate, statusBadge, statusLabel } from '@/features/panel/handling'
+import { testerCountLabel } from '@/lib/plural'
 import type { IdeaRow } from './labels'
 
 const columnHelper = createColumnHelper<DataTableFeatures, IdeaRow>()
@@ -31,6 +32,16 @@ const columns = columnHelper.columns([
       ),
   }),
   columnHelper.accessor('contact', { header: 'Kontakt' }),
+  columnHelper.display({
+    id: 'testers',
+    header: 'Testy',
+    cell: ({ row }) =>
+      row.original.openForTesting ? (
+        <span className="whitespace-nowrap">{testerCountLabel(row.original.testerCount)}</span>
+      ) : (
+        <span className="text-muted-foreground">zamknięty</span>
+      ),
+  }),
   columnHelper.accessor('status', {
     header: 'Stan',
     cell: ({ row }) => <Badge variant={statusBadge[row.original.status]}>{statusLabel[row.original.status]}</Badge>,
@@ -56,6 +67,7 @@ export function IdeasList({ items, caption }: { items: IdeaRow[]; caption: strin
             <p className="font-medium break-words">{row.title}</p>
             <p className="text-sm break-words text-muted-foreground">
               {formatDate(row.createdAt)} · {row.contact}
+              {row.openForTesting && ` · ${testerCountLabel(row.testerCount)}`}
             </p>
             <Link
               to="/panel/ideas/$ideaId"

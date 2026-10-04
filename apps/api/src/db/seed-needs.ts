@@ -29,28 +29,33 @@ const shown: ShownResult[] = [
   { id: 'dla-seniorow__bawita', title: 'BaWita', tier: 'related' },
 ]
 
+// Question texts mirror QUESTIONS in apps/web/src/features/idea/idea-form.ts — the seed has to read
+// like the real form, because /testy picks answers out by question text.
 const ideas: { title: string; answers: IdeaAnswer[] }[] = [
   {
     title: 'Sąsiedzka zmiana opieki',
     answers: [
-      { question: 'Jaki problem rozwiązuje Twój pomysł?', answer: 'Opiekunowie osób starszych nie mają chwili wytchnienia.' },
-      { question: 'Na czym polega rozwiązanie?', answer: 'Sąsiedzi z bloku zapisują się na dyżury po 2 godziny tygodniowo.' },
-      { question: 'Kto mógłby pomóc we wdrożeniu?', answer: 'Spółdzielnia mieszkaniowa i parafia.' },
+      { question: 'Na czym polega Twój pomysł?', answer: 'Sąsiedzi z bloku zapisują się na dyżury po 2 godziny tygodniowo, żeby opiekun osoby starszej miał chwilę wytchnienia.' },
+      { question: 'Komu ma pomóc Twój pomysł?', answer: 'Seniorzy' },
+      { question: 'Na jakim etapie jest Twój pomysł?', answer: 'Pierwsze próby' },
+      // Personal data: the Panel shows it, the public /testy list must not.
+      { question: 'Imię', answer: 'Halina' },
     ],
   },
   {
     title: 'Bus do przychodni raz w tygodniu',
     answers: [
-      { question: 'Jaki problem rozwiązuje Twój pomysł?', answer: 'Starsi mieszkańcy wsi nie mają jak dojechać do lekarza.' },
-      { question: 'Na czym polega rozwiązanie?', answer: 'Gminny bus kursuje we wtorki rano między sołectwami a przychodnią.' },
+      { question: 'Na czym polega Twój pomysł?', answer: 'Gminny bus kursuje we wtorki rano między sołectwami a przychodnią, bo starsi mieszkańcy wsi nie mają jak dojechać do lekarza.' },
+      { question: 'Komu ma pomóc Twój pomysł?', answer: 'Seniorzy, Ograniczona mobilność' },
+      { question: 'Na jakim etapie jest Twój pomysł?', answer: 'Mam plan' },
     ],
   },
   {
     title: 'Świetlica w szkole do 18:00',
     answers: [
-      { question: 'Jaki problem rozwiązuje Twój pomysł?', answer: 'Rodzice pracujący na zmiany nie mają z kim zostawić dzieci.' },
-      { question: 'Na czym polega rozwiązanie?', answer: 'Dłuższe godziny świetlicy prowadzone przez wolontariuszy i studentów.' },
-      { question: 'Kto mógłby pomóc we wdrożeniu?', answer: 'Rada rodziców i lokalny uniwersytet.' },
+      { question: 'Na czym polega Twój pomysł?', answer: 'Dłuższe godziny świetlicy prowadzone przez wolontariuszy i studentów, dla rodziców pracujących na zmiany.' },
+      { question: 'Komu ma pomóc Twój pomysł?', answer: 'Dzieci, młodzież i rodzina' },
+      { question: 'Na jakim etapie jest Twój pomysł?', answer: 'To dopiero pomysł' },
     ],
   },
 ]
@@ -93,12 +98,14 @@ export async function seedNeeds(total = 60) {
     .filter((row) => row.kind === 'idea')
     .map((row, i) => ({ needId: row.id as string | null, createdAt: row.createdAt, i }))
   const standalone = [0, 1, 2].map((i) => ({ needId: null, createdAt: new Date(now - (i * 5 + 2) * 60 * 60 * 1000), i: i + 100 }))
-  const ideaRows = [...fromNeeds, ...standalone].map(({ needId, createdAt, i }) => ({
+  const ideaRows = [...fromNeeds, ...standalone].map(({ needId, createdAt, i }, row) => ({
     needId,
     status: statuses[i % statuses.length]!,
     ...ideas[i % ideas.length]!,
     contact: contactFor(i + 1),
     consentAt: createdAt,
+    // A handful already open for testers, so /testy has something to show on a fresh database.
+    openForTesting: row < 4,
     createdAt,
     updatedAt: createdAt,
   }))
