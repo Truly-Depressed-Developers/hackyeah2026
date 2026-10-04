@@ -4,15 +4,21 @@ import type { Result, SearchResponse } from '@/lib/ai/client'
 import { countLabel } from '@/lib/plural'
 import { ResultCard } from './result-card'
 
-export function summarize(data: SearchResponse) {
-  if (data.noMatch) return 'Nie znaleźliśmy pasujących rozwiązań.'
+export function summarize(data: SearchResponse, t: (pl: string, en: string) => string = (pl) => pl) {
+  if (data.noMatch) return t('Nie znaleźliśmy pasujących rozwiązań.', 'We found no matching solutions.')
   const parts = [
     data.solutions.length > 0 &&
-      countLabel(data.solutions.length, { one: 'rozwiązanie', few: 'rozwiązania', many: 'rozwiązań' }),
+      t(
+        countLabel(data.solutions.length, { one: 'rozwiązanie', few: 'rozwiązania', many: 'rozwiązań' }),
+        `${data.solutions.length} ${data.solutions.length === 1 ? 'solution' : 'solutions'}`,
+      ),
     data.related.length > 0 &&
-      countLabel(data.related.length, { one: 'rozwiązanie pokrewne', few: 'rozwiązania pokrewne', many: 'rozwiązań pokrewnych' }),
+      t(
+        countLabel(data.related.length, { one: 'rozwiązanie pokrewne', few: 'rozwiązania pokrewne', many: 'rozwiązań pokrewnych' }),
+        `${data.related.length} related ${data.related.length === 1 ? 'solution' : 'solutions'}`,
+      ),
   ].filter(Boolean)
-  return `Znaleźliśmy ${parts.join(' i ')}.`
+  return t(`Znaleźliśmy ${parts.join(' i ')}.`, `We found ${parts.join(' and ')}.`)
 }
 
 export function SearchResults({ data }: { data: SearchResponse }) {

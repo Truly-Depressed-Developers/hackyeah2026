@@ -6,6 +6,7 @@ import { registerSW } from 'virtual:pwa-register'
 import { queryClient } from '@/lib/trpc'
 import { applyStoredTextSize } from '@/components/layout/text-size'
 import { startAnalytics } from '@/lib/analytics'
+import { applyStoredLang } from '@/lib/i18n'
 import { routeTree } from './routeTree.gen'
 import './index.css'
 
@@ -23,6 +24,7 @@ declare module '@tanstack/react-router' {
 }
 
 applyStoredTextSize()
+applyStoredLang()
 startAnalytics()
 // With registerType 'autoUpdate' this reloads the page once a new deploy's service worker takes over;
 // without it the first visit after a deploy keeps running the previous build until a manual refresh.

@@ -1,5 +1,6 @@
 import { cn } from 'cn'
 import type { Category } from '@/lib/categories'
+import { useT } from '@/lib/i18n'
 
 export function CategoryIcon({ category, size = 'md' }: { category: Category; size?: 'sm' | 'md' }) {
   const Icon = category.icon
@@ -21,10 +22,11 @@ export function CategoryIcon({ category, size = 'md' }: { category: Category; si
 }
 
 export function CategoryBadge({ category }: { category: Category }) {
+  const t = useT()
   return (
     <span className="inline-flex h-8 w-fit items-center gap-2 rounded-full bg-muted py-0 pr-3 pl-1 text-[0.8125rem] font-medium">
       <CategoryIcon category={category} size="sm" />
-      {category.label}
+      {t(category.label, category.labelEn)}
     </span>
   )
 }

@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { IconClipboardCheck, IconPlus } from '@tabler/icons-react'
 import { cn } from '@/lib/utils'
+import { useT } from '@/lib/i18n'
 
 /**
  * The two standing offers on the start screen: test someone's Pomysł, or add your own.
@@ -8,6 +9,7 @@ import { cn } from '@/lib/utils'
  * covering it — the whole page still works when it scrolls past.
  */
 export function ActionDock() {
+  const t = useT()
   return (
     <div className="pointer-events-none sticky bottom-0 z-40 -mt-12 flex justify-end px-4 pt-6 pb-6 sm:px-6">
       <div className="pointer-events-auto flex flex-col items-stretch gap-3">
@@ -15,14 +17,14 @@ export function ActionDock() {
           <span aria-hidden="true" className={cn(fabIcon, 'bg-primary-soft text-primary shadow-[inset_0_0_0_1px_#CFDDF0]')}>
             <IconClipboardCheck className="size-[1.375rem]" stroke={2.25} />
           </span>
-          Zostań testerem
+          {t('Zostań testerem', 'Become a tester')}
         </Link>
 
         <Link to="/pomysl" search={{ krok: 1 }} className={fab}>
           <span aria-hidden="true" className={cn(fabIcon, 'bg-primary text-white')}>
             <IconPlus className="size-[1.375rem]" stroke={2.5} />
           </span>
-          Zgłoś pomysł
+          {t('Zgłoś pomysł', 'Suggest an idea')}
         </Link>
       </div>
     </div>

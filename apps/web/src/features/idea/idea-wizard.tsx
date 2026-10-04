@@ -19,7 +19,7 @@ import { probeVoiceSupport } from '@/lib/speech-recognition'
 import { trpc } from '@/lib/trpc'
 import { ideaSchema, OTHER_GROUP, QUESTIONS, STAGES, STEP_FIELDS, TOTAL_STEPS, stageTitle, toAnswers, type IdeaValues } from './idea-form'
 
-const OTHER_CATEGORY: Category = { slug: 'other', label: OTHER_GROUP, icon: IconDots, gradient: ['#E2E8F0', '#A8B5C7'], onGradient: '#0F1B2D', tint: '' }
+const OTHER_CATEGORY: Category = { slug: 'other', label: OTHER_GROUP, labelEn: 'Other', icon: IconDots, gradient: ['#E2E8F0', '#A8B5C7'], onGradient: '#0F1B2D', tint: '' }
 
 const voiceSupport = probeVoiceSupport()
 

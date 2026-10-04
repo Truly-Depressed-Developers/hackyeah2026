@@ -3,6 +3,7 @@ import { IconMovie, IconPhone, IconRosetteDiscountCheck } from '@tabler/icons-re
 import { Link } from '@tanstack/react-router'
 import { CategoryBadge } from '@/components/category-badge'
 import { categoryFor } from '@/lib/categories'
+import { useT } from '@/lib/i18n'
 
 const TILE =
   'flex h-full min-h-[12.25rem] flex-col gap-2 rounded-[1.125rem] border border-tile-border bg-tile px-5 py-[1.125rem] text-card-foreground shadow-[0_1px_2px_0_rgb(15_27_45/0.05),0_4px_12px_-6px_rgb(15_27_45/0.08)] transition-[box-shadow,border-color] hover:border-[#C9D3DF] hover:shadow-[0_10px_24px_-12px_rgb(15_27_45/0.18)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring'
@@ -58,6 +59,7 @@ export function InnovationTile({ id, href, newTab, onClick, ...content }: TileCo
 }
 
 function TileBody({ title, subtitle, categorySlug, kindLabel, hasVideo, featured, phone, sourceLabel, note }: TileContent) {
+  const t = useT()
   const category = categoryFor(categorySlug)
 
   return (
@@ -79,13 +81,13 @@ function TileBody({ title, subtitle, categorySlug, kindLabel, hasVideo, featured
         {hasVideo && (
           <span className="inline-flex items-center gap-1.5">
             <IconMovie aria-hidden="true" className="size-4" />
-            Film
+            {t('Film', 'Video')}
           </span>
         )}
         {featured && (
           <span className="inline-flex items-center gap-1.5 text-[#7A4300]">
             <IconRosetteDiscountCheck aria-hidden="true" className="size-4" />
-            Polecana
+            {t('Polecana', 'Featured')}
           </span>
         )}
         {phone && (

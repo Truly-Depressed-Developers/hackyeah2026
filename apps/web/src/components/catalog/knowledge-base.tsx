@@ -9,11 +9,13 @@ import { Spinner } from '@/components/ui/spinner'
 import { $ai, type CatalogItem } from '@/lib/ai/client'
 import { markFromCatalog, track } from '@/lib/analytics'
 import { ALL_CATEGORIES, CATEGORIES } from '@/lib/categories'
+import { useT } from '@/lib/i18n'
 
 const FIRST_PAGE = 12
 const NEXT_PAGE = 9
 
 export function KnowledgeBase() {
+  const t = useT()
   const catalog = $ai.useQuery('get', '/catalog', {}, { staleTime: 10 * 60_000, retry: false })
   const [filter, setFilter] = useState(ALL_CATEGORIES.slug)
   const [visible, setVisible] = useState(FIRST_PAGE)
@@ -38,12 +40,12 @@ export function KnowledgeBase() {
   return (
     <section aria-labelledby="kb-title" className="mx-auto flex w-full max-w-[73.75rem] flex-col gap-7 px-4 pt-12 pb-18 sm:px-6">
       <h2 id="kb-title" className="text-[1.875rem] leading-[2.375rem] font-[650] tracking-[-0.03em]">
-        Baza wiedzy
+        {t('Baza wiedzy', 'Knowledge base')}
       </h2>
 
       <div
         role="group"
-        aria-label="Filtruj według kategorii"
+        aria-label={t('Filtruj według kategorii', 'Filter by category')}
         className="-m-1 flex gap-2 overflow-x-auto p-1 pr-12 [scrollbar-width:none] [mask-image:linear-gradient(to_right,#000_calc(100%-4rem),transparent)]"
       >
         {[ALL_CATEGORIES, ...CATEGORIES].map((category) => (
@@ -60,16 +62,16 @@ export function KnowledgeBase() {
             )}
           >
             <CategoryIcon category={category} />
-            {category.label}
+            {t(category.label, category.labelEn)}
           </button>
         ))}
       </div>
 
       {catalog.isError ? (
         <div role="alert" className="flex flex-col items-start gap-3 rounded-xl border border-destructive p-4">
-          <p className="font-semibold text-destructive">Nie udało się wczytać bazy wiedzy.</p>
+          <p className="font-semibold text-destructive">{t('Nie udało się wczytać bazy wiedzy.', 'Could not load the knowledge base.')}</p>
           <Button variant="outline" className="h-11 px-4" onClick={() => catalog.refetch()}>
-            Spróbuj ponownie
+            {t('Spróbuj ponownie', 'Try again')}
           </Button>
         </div>
       ) : (
@@ -84,7 +86,7 @@ export function KnowledgeBase() {
         {catalog.isPending && (
           <p role="status" className="flex items-center gap-2 text-sm text-muted-foreground">
             <Spinner />
-            Wczytujemy innowacje…
+            {t('Wczytujemy innowacje…', 'Loading innovations…')}
           </p>
         )}
         {catalog.isSuccess && shown.length < items.length && (
@@ -94,12 +96,12 @@ export function KnowledgeBase() {
             className="inline-flex min-h-11 items-center gap-2 rounded-full px-4 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring"
           >
             <IconChevronDown aria-hidden="true" className="size-4" />
-            Pokaż kolejne innowacje ({shown.length} z {items.length})
+            {t('Pokaż kolejne innowacje', 'Show more innovations')} ({shown.length} {t('z', 'of')} {items.length})
           </button>
         )}
         {catalog.isSuccess && shown.length >= items.length && (
           <p role="status" className="text-center text-sm text-muted-foreground">
-            To wszystkie innowacje w tej kategorii ({items.length}).
+            {t('To wszystkie innowacje w tej kategorii', 'That is every innovation in this category')} ({items.length}).
           </p>
         )}
       </div>
