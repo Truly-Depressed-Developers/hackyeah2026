@@ -21,7 +21,9 @@ import { VideoDialog, youtubeId } from '@/components/search/video-dialog'
 import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 import { $ai, type Innovation } from '@/lib/ai/client'
+import { trackAction } from '@/lib/analytics'
 import { categoryFor } from '@/lib/categories'
+import { useInnovationTracking } from '@/lib/use-analytics'
 import { useSpeech } from '@/lib/use-speech'
 import { QrCode } from './qr-code'
 
@@ -67,6 +69,7 @@ function InnovationView({ item }: { item: Innovation }) {
   const videoId = item.links?.video ? youtubeId(item.links.video) : null
   const speech = useSpeech(readAloudText(item))
   const shareUrl = `${window.location.origin}/innowacja/${encodeURIComponent(item.id)}`
+  useInnovationTracking(item.id)
 
   useEffect(() => {
     document.title = `${item.title} – HubMI`
@@ -122,7 +125,7 @@ function InnovationView({ item }: { item: Innovation }) {
               Zabierz na telefon
             </a>
             {item.links?.download && (
-              <a href={item.links.download} className={lightButton} download>
+              <a href={item.links.download} onClick={() => trackAction(item.id, 'download')} className={lightButton} download>
                 <IconDownload aria-hidden="true" />
                 Pobierz materiały
               </a>
@@ -173,6 +176,7 @@ function InnovationView({ item }: { item: Innovation }) {
               <VideoDialog
                 videoId={videoId}
                 title={item.title}
+                onOpen={() => trackAction(item.id, 'video')}
                 trigger={
                   <button
                     type="button"
@@ -220,10 +224,27 @@ function InnovationView({ item }: { item: Innovation }) {
             <h2 className="text-[1.0625rem] leading-6 font-[650]">Materiały</h2>
             <ul className="flex flex-col">
               {item.links?.download && (
-                <MaterialRow href={item.links.download} icon={<IconFileZip />} title="Paczka materiałów" hint="Archiwum ZIP" download />
+                <MaterialRow
+                  href={item.links.download}
+                  icon={<IconFileZip />}
+                  title="Paczka materiałów"
+                  hint="Archiwum ZIP"
+                  download
+                  onClick={() => trackAction(item.id, 'download')}
+                />
               )}
-              {item.links?.pdf && <MaterialRow href={item.links.pdf} icon={<IconFileTypePdf />} title="Folder informacyjny" hint="Dokument PDF" />}
-              {item.source.url && <MaterialRow href={item.source.url} icon={<IconExternalLink />} title="Strona innowacji" hint="rops.krakow.pl" />}
+              {item.links?.pdf && (
+                <MaterialRow href={item.links.pdf} icon={<IconFileTypePdf />} title="Folder informacyjny" hint="Dokument PDF" onClick={() => trackAction(item.id, 'pdf')} />
+              )}
+              {item.source.url && (
+                <MaterialRow
+                  href={item.source.url}
+                  icon={<IconExternalLink />}
+                  title="Strona innowacji"
+                  hint="rops.krakow.pl"
+                  onClick={() => trackAction(item.id, 'source')}
+                />
+              )}
             </ul>
           </div>
 
@@ -255,11 +276,14 @@ function ContentSection({ title, children }: { title: string; children: ReactNod
   )
 }
 
-function MaterialRow({ href, icon, title, hint, download }: { href: string; icon: ReactNode; title: string; hint: string; download?: boolean }) {
+type MaterialRowProps = { href: string; icon: ReactNode; title: string; hint: string; download?: boolean; onClick?: () => void }
+
+function MaterialRow({ href, icon, title, hint, download, onClick }: MaterialRowProps) {
   return (
     <li>
       <a
         href={href}
+        onClick={onClick}
         {...(download ? { download: true } : { target: '_blank', rel: 'noopener noreferrer' })}
         className="-mx-3 flex min-h-13 items-center gap-3 rounded-[0.875rem] px-3 py-2 text-foreground hover:bg-[#F6F8FB] focus-visible:outline-3 focus-visible:outline-offset-[3px] focus-visible:outline-ring"
       >

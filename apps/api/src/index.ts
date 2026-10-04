@@ -4,6 +4,9 @@ import { serve } from '@hono/node-server'
 import { serveStatic } from '@hono/node-server/serve-static'
 import { trpcServer } from '@hono/trpc-server'
 import { Hono } from 'hono'
+import { parseBatch } from './analytics/events.js'
+import { ingest, MAX_BATCH_BYTES } from './analytics/ingest.js'
+import { eventsLimiter, ipFromContext } from './analytics/rate-limit.js'
 import { auth } from './auth.js'
 import { mockCatalog, mockInnovation, realCatalog, realInnovation } from './ai/catalog.js'
 import { mockSearch } from './ai/mock.js'
@@ -17,6 +20,23 @@ const app = new Hono()
 app.get('/health', (c) => c.json({ ok: true }))
 app.on(['GET', 'POST'], '/api/auth/*', (c) => auth.handler(c.req.raw))
 app.use('/trpc/*', trpcServer({ router: appRouter, createContext }))
+
+// Analytics batches from the resident app. Plain Hono, not tRPC: navigator.sendBeacon posts text/plain without custom headers.
+app.post('/api/events', async (c) => {
+  if (!eventsLimiter(ipFromContext(c))) return c.body(null, 429)
+  const text = await c.req.text()
+  if (Buffer.byteLength(text) > MAX_BATCH_BYTES) return c.body(null, 413)
+  let body: unknown
+  try {
+    body = JSON.parse(text)
+  } catch {
+    return c.json({ error: 'Invalid JSON' }, 400)
+  }
+  const batch = parseBatch(body)
+  if (!batch.success) return c.json({ error: 'Invalid event batch' }, 400)
+  await ingest(batch.data)
+  return c.body(null, 204)
+})
 
 // Only search is exposed: the AI service also has admin endpoints (collections, documents) the browser must never reach.
 app.post('/ai/search', (c) => (env.AI_URL ? realSearch(c) : mockSearch(c)))

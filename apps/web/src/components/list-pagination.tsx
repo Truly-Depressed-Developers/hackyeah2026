@@ -11,8 +11,7 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination'
 
-export const PAGE_SIZES = [10, 20, 50] as const
-export type PageSize = (typeof PAGE_SIZES)[number]
+import { PAGE_SIZES, type PageSize } from '@/features/panel/list-search'
 
 // Server-side paging for the Panel administratora lists.
 interface ListPaginationProps {

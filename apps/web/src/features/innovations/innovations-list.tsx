@@ -1,9 +1,9 @@
 import { useMemo } from 'react'
 import { Link } from '@tanstack/react-router'
 import { createColumnHelper } from '@tanstack/react-table'
-import { IconDotsVertical } from '@tabler/icons-react'
+import { IconDotsVertical, IconFileTypePdf, IconFileZip, IconMovie, IconSparkles, IconUserEdit } from '@tabler/icons-react'
+import { CategoryIcon } from '@/components/category-badge'
 import { DataTable, type DataTableFeatures } from '@/components/data-table'
-import { Badge } from '@/components/ui/badge'
 import { Button, buttonVariants } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -13,6 +13,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { Tag } from '@/features/panel/tags'
+import { categoryFor } from '@/lib/categories'
 import type { InnovationRow } from './labels'
 
 const columnHelper = createColumnHelper<DataTableFeatures, InnovationRow>()
@@ -22,17 +24,50 @@ const titleLink =
 
 /** Which Akcje a resident gets on this Innowacja, so missing media stand out. */
 function Media({ links }: { links: InnovationRow['links'] }) {
-  const present = [links.video && 'Film', links.pdf && 'PDF', links.zip && 'ZIP'].filter(Boolean)
+  const present = [
+    links.video && { label: 'Film', icon: IconMovie },
+    links.pdf && { label: 'PDF', icon: IconFileTypePdf },
+    links.zip && { label: 'ZIP', icon: IconFileZip },
+  ].filter((item) => item !== false)
   return present.length ? (
     <span className="flex flex-wrap gap-1">
-      {present.map((label) => (
-        <Badge key={label as string} variant="secondary">
+      {present.map(({ label, icon }) => (
+        <Tag key={label} tone="slate" icon={icon}>
           {label}
-        </Badge>
+        </Tag>
       ))}
     </span>
   ) : (
-    <span className="text-muted-foreground">brak</span>
+    <span className="text-sm text-muted-foreground">brak</span>
+  )
+}
+
+/** Kategoria with the same gradient icon residents see in the catalog. */
+function Category({ row }: { row: Pick<InnovationRow, 'categoryName' | 'categorySlug'> }) {
+  const category = categoryFor(row.categorySlug ?? undefined)
+  return (
+    <span className="flex items-center gap-2 whitespace-normal">
+      {category && <CategoryIcon category={category} size="sm" />}
+      {row.categoryName}
+    </span>
+  )
+}
+
+function Flags({ row }: { row: Pick<InnovationRow, 'featured' | 'addedInPanel'> }) {
+  if (!row.featured && !row.addedInPanel) return null
+  return (
+    <span className="flex flex-wrap gap-1">
+      {row.featured && (
+        <Tag tone="amber" icon={IconSparkles}>
+          Wyróżniona
+        </Tag>
+      )}
+      {row.addedInPanel && (
+        <Tag tone="brand" icon={IconUserEdit}>
+          Dodana w panelu
+        </Tag>
+      )}
+    </span>
   )
 }
 
@@ -45,14 +80,11 @@ function columns(onDelete: (row: InnovationRow) => void) {
           <Link to="/panel/innovations/$innovationId" params={{ innovationId: row.original.id }} className={titleLink}>
             {row.original.title}
           </Link>
-          <span className="flex flex-wrap gap-1">
-            {row.original.featured && <Badge>Wyróżniona</Badge>}
-            {row.original.addedInPanel && <Badge variant="outline">Dodana w panelu</Badge>}
-          </span>
+          <Flags row={row.original} />
         </span>
       ),
     }),
-    columnHelper.accessor('categoryName', { header: 'Kategoria', cell: ({ row }) => <span className="whitespace-normal">{row.original.categoryName}</span> }),
+    columnHelper.accessor('categoryName', { header: 'Kategoria', cell: ({ row }) => <Category row={row.original} /> }),
     columnHelper.display({ id: 'media', header: 'Materiały', cell: ({ row }) => <Media links={row.original.links} /> }),
     columnHelper.display({
       id: 'actions',
@@ -102,9 +134,12 @@ export function InnovationsList({ items, caption, onDelete }: InnovationsListPro
 
       <ul aria-label={caption} className="flex flex-col gap-3 md:hidden">
         {items.map((row) => (
-          <li key={row.id} className="flex flex-col gap-2 rounded-xl border p-4">
+          <li key={row.id} className="flex flex-col gap-2 rounded-2xl border bg-card p-4 shadow-xs">
             <p className="font-medium break-words">{row.title}</p>
-            <p className="text-sm text-muted-foreground">{row.categoryName}</p>
+            <Flags row={row} />
+            <span className="text-sm text-muted-foreground">
+              <Category row={row} />
+            </span>
             <Media links={row.links} />
             <div className="flex flex-wrap gap-2">
               <Link

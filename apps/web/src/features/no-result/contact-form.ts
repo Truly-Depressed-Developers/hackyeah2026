@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { z } from 'zod'
 import { consentGivenNow, isEmail, isPhone } from '@/lib/contact'
+import { currentSearchId } from '@/lib/analytics'
 import { trpc } from '@/lib/trpc'
 
 /**
@@ -83,6 +84,7 @@ export function useContactRequest({ query, gapId, shownResults = [] }: UseContac
     await send.mutateAsync({
       query,
       gapId,
+      searchId: currentSearchId(),
       shownResults,
       contact,
       consentAt: consentGivenNow(),

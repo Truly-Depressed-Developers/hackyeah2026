@@ -1,9 +1,9 @@
 import { Link } from '@tanstack/react-router'
 import { createColumnHelper } from '@tanstack/react-table'
 import { DataTable, type DataTableFeatures } from '@/components/data-table'
-import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
-import { formatDate, statusBadge, statusLabel } from '@/features/panel/handling'
+import { formatDate } from '@/features/panel/handling'
+import { StatusTag } from '@/features/panel/tags'
 import { testerCountLabel } from '@/lib/plural'
 import type { IdeaRow } from './labels'
 
@@ -44,7 +44,7 @@ const columns = columnHelper.columns([
   }),
   columnHelper.accessor('status', {
     header: 'Stan',
-    cell: ({ row }) => <Badge variant={statusBadge[row.original.status]}>{statusLabel[row.original.status]}</Badge>,
+    cell: ({ row }) => <StatusTag status={row.original.status} />,
   }),
   columnHelper.accessor('createdAt', {
     header: 'Data',
@@ -62,8 +62,8 @@ export function IdeasList({ items, caption }: { items: IdeaRow[]; caption: strin
 
       <ul aria-label={caption} className="flex flex-col gap-3 md:hidden">
         {items.map((row) => (
-          <li key={row.id} className="flex flex-col gap-2 rounded-xl border p-4">
-            <Badge variant={statusBadge[row.status]}>{statusLabel[row.status]}</Badge>
+          <li key={row.id} className="flex flex-col gap-2 rounded-2xl border bg-card p-4 shadow-xs">
+            <StatusTag status={row.status} />
             <p className="font-medium break-words">{row.title}</p>
             <p className="text-sm break-words text-muted-foreground">
               {formatDate(row.createdAt)} · {row.contact}

@@ -26,11 +26,11 @@ export type TileContent = {
  * search results. The whole tile is a single link: every action lives on the detail
  * page, so the meta row only *signals* what is waiting there.
  */
-export function InnovationTile({ id, href, newTab, ...content }: TileContent & { id?: string; href?: string; newTab?: boolean }) {
+export function InnovationTile({ id, href, newTab, onClick, ...content }: TileContent & { id?: string; href?: string; newTab?: boolean; onClick?: () => void }) {
   if (id) {
     return (
       <li>
-        <Link to="/innowacja/$id" params={{ id }} className={TILE}>
+        <Link to="/innowacja/$id" params={{ id }} onClick={onClick} className={TILE}>
           <TileBody {...content} />
         </Link>
       </li>
@@ -40,7 +40,7 @@ export function InnovationTile({ id, href, newTab, ...content }: TileContent & {
   if (href) {
     return (
       <li>
-        <a href={href} className={TILE} {...(newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
+        <a href={href} onClick={onClick} className={TILE} {...(newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
           <TileBody {...content} />
           {newTab && <span className="sr-only">(otwiera się w nowej karcie)</span>}
         </a>

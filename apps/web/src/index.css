@@ -22,6 +22,7 @@
     --color-chart-3: var(--chart-3);
     --color-chart-2: var(--chart-2);
     --color-chart-1: var(--chart-1);
+    --color-chart-muted: var(--chart-muted);
     --color-ring: var(--ring);
     --color-input: var(--input);
     --color-border: var(--border);
@@ -83,11 +84,13 @@
     --hero: #EEF3F9;
     --tile: #FFFFFF;
     --tile-border: #E3E8EF;
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
+    /* Chart palette built on the brand blue; each hue keeps at least 3:1 against white. */
+    --chart-1: #2263AD;
+    --chart-2: #0F8F7E;
+    --chart-3: #C27410;
+    --chart-4: #D1435F;
+    --chart-5: #7454C4;
+    --chart-muted: #7A8699;
     --radius: 0.625rem;
     --sidebar: #F6F8FB;
     --sidebar-foreground: #0F1B2D;
@@ -99,39 +102,49 @@
     --sidebar-ring: #2263AD;
 }
 
+/* Dark theme, used only in the Panel administratora (features/panel/theme.ts). Navy built on the brand blue;
+   every text/background pair keeps WCAG AA (4.5:1), charts and control borders at least 3:1. */
 .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --success: oklch(0.72 0.16 150);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.556 0 0);
+    color-scheme: dark;
+    --background: #0B1220;
+    --foreground: #E6ECF5;
+    --card: #111A2B;
+    --card-foreground: #E6ECF5;
+    --popover: #141F33;
+    --popover-foreground: #E6ECF5;
+    --primary: #6AA6EE;
+    --primary-hover: #86B7F1;
+    --primary-foreground: #08111F;
+    --primary-soft: #16263F;
+    --primary-strong: #A9CBF5;
+    --secondary: #1A2538;
+    --secondary-foreground: #CDD6E3;
+    --muted: #1A2538;
+    --muted-foreground: #9AA8BC;
+    --accent: #1B2B45;
+    --accent-foreground: #C3D9F7;
+    --destructive: #F47A88;
+    --success: #3FCB83;
+    --border: #233049;
+    --input: #3A4A66;
+    --ring: #6AA6EE;
+    --hero: #0F1828;
+    --tile: #111A2B;
+    --tile-border: #233049;
+    --chart-1: #6AA6EE;
+    --chart-2: #33C6B0;
+    --chart-3: #F0A443;
+    --chart-4: #F4768E;
+    --chart-5: #A98EF2;
+    --chart-muted: #7F8CA3;
+    --sidebar: #0D1526;
+    --sidebar-foreground: #E6ECF5;
+    --sidebar-primary: #6AA6EE;
+    --sidebar-primary-foreground: #08111F;
+    --sidebar-accent: #17243A;
+    --sidebar-accent-foreground: #E6ECF5;
+    --sidebar-border: #1E2A40;
+    --sidebar-ring: #6AA6EE;
 }
 
 @layer base {
@@ -207,6 +220,27 @@
 @keyframes voice-caret {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.2; }
+}
+
+/* Panel administratora: page headers and the dashboard greeting reuse the homepage hero light. */
+@utility bg-panel-hero {
+  background:
+    radial-gradient(60% 120% at 0% 0%, rgb(150 170 240 / 0.45), transparent 70%),
+    radial-gradient(45% 110% at 100% 0%, rgb(253 222 192 / 0.7), transparent 70%),
+    radial-gradient(40% 90% at 70% 120%, rgb(140 200 245 / 0.35), transparent 70%),
+    linear-gradient(180deg, #F4F7FD, #FFFFFF);
+  &:is(.dark *) {
+    background:
+      radial-gradient(60% 120% at 0% 0%, rgb(70 100 200 / 0.35), transparent 70%),
+      radial-gradient(45% 110% at 100% 0%, rgb(200 120 80 / 0.22), transparent 70%),
+      radial-gradient(40% 90% at 70% 120%, rgb(40 160 200 / 0.18), transparent 70%),
+      linear-gradient(180deg, #121D31, #0F1828);
+  }
+}
+
+/* The brand mark and active markers in the panel. */
+@utility bg-brand-gradient {
+  background: linear-gradient(135deg, #3F86E0 0%, #2263AD 45%, #7454C4 100%);
 }
 
 /* Lupa wodząca po kartce podczas szukania — wspólna dla wersji web i kiosku. */

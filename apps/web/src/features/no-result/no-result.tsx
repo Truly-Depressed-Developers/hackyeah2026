@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Link } from '@tanstack/react-router'
 import { IconBell, IconBulb, IconLayoutGrid } from '@tabler/icons-react'
+import { trackNoResultOption } from '@/lib/analytics'
 import { ContactDialog } from './contact-dialog'
 import { useGap } from './use-gap'
 
@@ -30,7 +31,10 @@ export function NoResult({ query, onBrowse }: Props) {
         >
           <button
             type="button"
-            onClick={() => setContactOpen(true)}
+            onClick={() => {
+              trackNoResultOption('contact')
+              setContactOpen(true)
+            }}
             className="mt-auto inline-flex h-14 w-fit items-center rounded-full bg-white px-7 text-base font-semibold text-[#1F2A3A] shadow-[0_0_0_1px_var(--border)] hover:bg-[#F6F8FB] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring"
           >
             Zostaw kontakt
@@ -45,6 +49,7 @@ export function NoResult({ query, onBrowse }: Props) {
           <Link
             to="/pomysl"
             search={{ q: query, krok: 1 }}
+            onClick={() => trackNoResultOption('idea')}
             className="mt-auto inline-flex h-14 w-fit items-center rounded-full bg-primary px-7 text-base font-semibold text-primary-foreground shadow-[0_6px_14px_-6px_rgb(34_99_173/0.55)] hover:bg-primary-hover focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring"
           >
             Zgłoś pomysł
@@ -54,7 +59,10 @@ export function NoResult({ query, onBrowse }: Props) {
 
       <button
         type="button"
-        onClick={onBrowse}
+        onClick={() => {
+          trackNoResultOption('retry')
+          onBrowse()
+        }}
         className="inline-flex h-11 items-center gap-2 rounded-full bg-muted px-[1.125rem] text-[0.9375rem] font-semibold text-[#1F2A3A] hover:bg-border focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring"
       >
         <IconLayoutGrid aria-hidden="true" className="size-[1.125rem]" />

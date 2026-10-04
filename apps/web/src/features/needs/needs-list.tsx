@@ -1,10 +1,10 @@
 import { useMemo } from 'react'
 import { DataTable } from '@/components/data-table'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { formatDate, type HandlingStatus } from '@/features/panel/handling'
 import { NeedStatus, needColumns } from './columns'
-import { kindLabel, type NeedRow } from './labels'
+import { KindTag } from '@/features/panel/tags'
+import type { NeedRow } from './labels'
 
 interface NeedsListProps {
   items: NeedRow[]
@@ -25,9 +25,9 @@ export function NeedsList({ items, caption, onOpen, onSetStatus }: NeedsListProp
 
       <ul aria-label={caption} className="flex flex-col gap-3 md:hidden">
         {items.map((row) => (
-          <li key={row.id} className="flex flex-col gap-2 rounded-xl border p-4">
+          <li key={row.id} className="flex flex-col gap-2 rounded-2xl border bg-card p-4 shadow-xs">
             <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="outline">{kindLabel[row.kind]}</Badge>
+              <KindTag kind={row.kind} />
               <NeedStatus need={row} />
             </div>
             <p className="font-medium break-words">{row.query}</p>

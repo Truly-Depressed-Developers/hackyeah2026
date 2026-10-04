@@ -9,6 +9,8 @@ import { DeleteInnovationDialog } from '@/features/innovations/delete-innovation
 import { InnovationForm } from '@/features/innovations/innovation-form'
 import type { InnovationDetail } from '@/features/innovations/labels'
 import { notifyError, notifySuccess } from '@/features/panel/notify'
+import { PageHeader } from '@/features/panel/page-header'
+import { PANEL_SECTIONS } from '@/features/panel/panel-sidebar'
 import { trpc } from '@/lib/trpc'
 
 export const Route = createFileRoute('/panel/_authed/innovations/$innovationId')({
@@ -38,20 +40,21 @@ function EditInnovationPage() {
 
   return (
     <>
-      <Link to="/panel/innovations" className={buttonVariants({ variant: 'ghost', className: 'self-start' })}>
+      <Link to="/panel/innovations" className={buttonVariants({ variant: 'ghost', size: 'sm', className: '-mb-2 self-start text-muted-foreground' })}>
         <IconArrowLeft aria-hidden="true" data-icon="inline-start" />
         Wszystkie innowacje
       </Link>
 
       {ready && (
         <>
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div className="flex flex-col gap-1">
-              <h1 className="text-2xl font-[650] tracking-[-0.02em] break-words">{innovation.data.title}</h1>
-              <p className="text-muted-foreground">Edycja innowacji. Po zapisaniu wyszukiwarka i katalog od razu pokazują zmiany.</p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <a href={`/innowacja/${encodeURIComponent(innovationId)}`} target="_blank" rel="noreferrer" className={buttonVariants({ variant: 'outline' })}>
+          <PageHeader
+            section={PANEL_SECTIONS.innovations}
+            documentTitle={'Edycja: ' + innovation.data.title}
+            title={<span className="break-words">{innovation.data.title}</span>}
+            description="Edycja innowacji. Po zapisaniu wyszukiwarka i katalog od razu pokazują zmiany."
+            actions={
+              <>
+              <a href={`/innowacja/${encodeURIComponent(innovationId)}`} target="_blank" rel="noreferrer" className={buttonVariants({ variant: 'outline', className: 'bg-background/70' })}>
                 <IconExternalLink aria-hidden="true" data-icon="inline-start" />
                 Zobacz jak mieszkaniec
                 <span className="sr-only"> (otwiera się w nowej karcie)</span>
@@ -60,8 +63,9 @@ function EditInnovationPage() {
                 <IconTrash aria-hidden="true" data-icon="inline-start" />
                 Usuń
               </Button>
-            </div>
-          </div>
+              </>
+            }
+          />
 
           <InnovationForm
             initial={toInput(innovation.data)}
@@ -92,6 +96,6 @@ function EditInnovationPage() {
 }
 
 function toInput(detail: InnovationDetail) {
-  const { id: _id, categoryName: _name, featured: _featured, addedInPanel: _panel, categoryId, ...fields } = detail
+  const { id: _id, categoryName: _name, categorySlug: _slug, featured: _featured, addedInPanel: _panel, categoryId, ...fields } = detail
   return { ...fields, categoryId: categoryId ?? 0 }
 }

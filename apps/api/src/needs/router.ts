@@ -4,7 +4,8 @@ import { z } from 'zod'
 import { db } from '../db/index.js'
 import { idea, need, type Idea, type Need } from '../db/schema.js'
 import { contains, handlingStatusSchema, iso, isoOrNull, pageInput, pageResult } from '../panel/list.js'
-import { panelProcedure, publicProcedure, router } from '../trpc.js'
+import { maskPii } from '../analytics/mask.js'
+import { formProcedure, panelProcedure, router } from '../trpc.js'
 
 export const shownResultSchema = z.object({
   id: z.string().min(1).max(500),
@@ -18,6 +19,8 @@ export const searchContext = {
   shownResults: z.array(shownResultSchema).max(50).default([]),
   // Upgrades this Luka instead of creating a second Potrzeba for the same Zapytanie.
   gapId: z.uuid().optional(),
+  // The Wyszukiwanie this Potrzeba ends (analytics).
+  searchId: z.uuid().optional(),
 }
 
 export const contactSchema = {
@@ -25,10 +28,11 @@ export const contactSchema = {
   consentAt: z.coerce.date(),
 }
 
-type NeedValues = Pick<typeof need.$inferInsert, 'kind' | 'query' | 'noMatch' | 'shownResults' | 'contact' | 'consentAt'>
+type NeedValues = Pick<typeof need.$inferInsert, 'kind' | 'query' | 'noMatch' | 'shownResults' | 'contact' | 'consentAt' | 'searchId'>
 
 /** Turns the Luka `gapId` into this Potrzeba, or creates a new one. Returns its id. */
-export async function saveNeed(gapId: string | undefined, values: NeedValues) {
+export async function saveNeed(gapId: string | undefined, input: NeedValues) {
+  const values = { ...input, query: maskPii(input.query) }
   if (gapId) {
     const [upgraded] = await db
       .update(need)
@@ -64,12 +68,17 @@ const nest = ({ ideaId, ideaTitle, ideaStatus, ...row }: Awaited<ReturnType<type
 /** Public: the resident app records Potrzeby. S-03 builds the screens on top of these. */
 export const needsRouter = router({
   // A Luka is a Brak odpowiedzi by definition, so there are no shown Wyniki to keep.
-  recordGap: publicProcedure.input(z.object({ query: searchContext.query })).mutation(async ({ input }) => {
-    const [row] = await db.insert(need).values({ kind: 'gap', query: input.query, noMatch: true }).returning({ id: need.id })
-    return row!
-  }),
+  recordGap: formProcedure
+    .input(z.object({ query: searchContext.query, searchId: searchContext.searchId }))
+    .mutation(async ({ input }) => {
+      const [row] = await db
+        .insert(need)
+        .values({ kind: 'gap', query: maskPii(input.query), noMatch: true, searchId: input.searchId })
+        .returning({ id: need.id })
+      return row!
+    }),
 
-  requestContact: publicProcedure
+  requestContact: formProcedure
     .input(z.object({ ...searchContext, ...contactSchema }))
     .mutation(async ({ input }) => {
       const id = await saveNeed(input.gapId, {
@@ -79,6 +88,7 @@ export const needsRouter = router({
         shownResults: input.shownResults,
         contact: input.contact,
         consentAt: input.consentAt,
+        searchId: input.searchId,
       })
       return { id }
     }),
