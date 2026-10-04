@@ -98,7 +98,7 @@ function DetailView({ item, result, backLabel, onBack }: { item: Innovation; res
       </div>
 
       {/*
-        Odbiór na samej górze: po to mieszkaniec tu przyszedł — żeby zabrać adres
+        Odbiór na samej górze: po to mieszkaniec tu przyszedł - żeby zabrać adres
         na telefon. Opisy innowacji mają po kilka akapitów i spychały kafelki poza
         ekran, więc akcja idzie przed treścią, a nie po niej.
       */}
@@ -179,7 +179,7 @@ function ReadAloudControls({ speech }: { speech: ReturnType<typeof useSpeech> })
   )
 }
 
-/** Ten sam układ, którego używa strona innowacji — nagłówek pytania przed treścią. */
+/** Ten sam układ, którego używa strona innowacji - nagłówek pytania przed treścią. */
 function readAloudText(item: Innovation) {
   return [
     item.title,

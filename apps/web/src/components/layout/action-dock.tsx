@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils'
 /**
  * The two standing offers on the start screen: test someone's Pomysł, or add your own.
  * Sticky rather than fixed, so the dock rides above the content and stops at the footer instead of
- * covering it — the whole page still works when it scrolls past.
+ * covering it - the whole page still works when it scrolls past.
  */
 export function ActionDock() {
   return (

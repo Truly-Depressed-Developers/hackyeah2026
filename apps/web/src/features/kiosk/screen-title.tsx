@@ -7,7 +7,7 @@ import { cn } from 'cn'
  * widoku w `kiosk-app.tsx`, więc efekt odpala się przy każdym przejściu.
  *
  * Celowo NIE używamy tego przy zmianach podstanów wewnątrz ekranu (kafelki →
- * przełącznik, słuchanie → potwierdzenie) — tam informują live regions, a
+ * przełącznik, słuchanie → potwierdzenie) - tam informują live regions, a
  * kradzież fokusu w trakcie dyktowania dezorientuje.
  *
  * Ten sam wzorzec co `no-result.tsx` i `innovation-page.tsx` w wersji web.

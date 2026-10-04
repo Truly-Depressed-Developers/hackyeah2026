@@ -10,7 +10,7 @@ const MODES = [
 
 /**
  * Wybór sposobu opisania sprawy. Dopóki mieszkaniec nic nie wybrał, obie opcje są
- * równorzędnymi kafelkami 216 px — na kiosku głos nie jest dodatkiem do pisania,
+ * równorzędnymi kafelkami 216 px - na kiosku głos nie jest dodatkiem do pisania,
  * tylko drugą pełnoprawną drogą. Po wyborze zwijają się w przełącznik, żeby oddać
  * miejsce polu opisu.
  */

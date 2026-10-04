@@ -1,11 +1,11 @@
 import { IconSearch } from '@tabler/icons-react'
 import { cn } from 'cn'
 
-/** Szerokości „linijek tekstu" — stałe, żeby animacja wyglądała tak samo przy każdym szukaniu. */
+/** Szerokości „linijek tekstu" - stałe, żeby animacja wyglądała tak samo przy każdym szukaniu. */
 const LINES = [82, 64, 74, 52, 68]
 
 /**
- * Lupa wodząca po kartce z opisem — metafora przeszukiwania bazy. Czysto dekoracyjna
+ * Lupa wodząca po kartce z opisem - metafora przeszukiwania bazy. Czysto dekoracyjna
  * (`aria-hidden`), bo stan komunikuje tekst obok; czytnik ekranu nie ma tu czego oglądać.
  *
  * Rozmiar bierze z `className`, więc kiosk i wersja web składają własny layout zamiast

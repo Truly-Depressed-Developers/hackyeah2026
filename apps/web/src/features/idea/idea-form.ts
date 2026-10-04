@@ -22,7 +22,7 @@ export const QUESTIONS = {
 
 export const ideaSchema = z.object({
   title: z.string().trim().min(1, 'Napisz choć jedno zdanie o swoim pomyśle.').max(300),
-  essence: z.string().trim().min(1, 'Opisz, na czym polega pomysł — wystarczy kilka zdań.').max(1500),
+  essence: z.string().trim().min(1, 'Opisz, na czym polega pomysł - wystarczy kilka zdań.').max(1500),
   groups: z.array(z.string()).min(1, 'Wybierz przynajmniej jedną grupę.'),
   stage: z.string().refine((value) => STAGES.some((stage) => stage.id === value), 'Wybierz jeden etap.'),
   name: z.string().trim().max(100),

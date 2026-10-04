@@ -29,10 +29,10 @@ export function LanguageSwitch() {
       <button
         type="button"
         lang="en"
-        aria-label="English — wkrótce"
+        aria-label="English - wkrótce"
         aria-pressed="false"
         aria-disabled="true"
-        title="Wersja angielska — wkrótce"
+        title="Wersja angielska - wkrótce"
         className={segmentButton}
       >
         <Flag>

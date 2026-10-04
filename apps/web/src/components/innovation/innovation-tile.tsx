@@ -17,7 +17,7 @@ export type TileContent = {
   featured?: boolean
   phone?: string
   sourceLabel?: string
-  /** Extra block above the meta row — the search uses it for the match rationale. */
+  /** Extra block above the meta row - the search uses it for the match rationale. */
   note?: ReactNode
 }
 

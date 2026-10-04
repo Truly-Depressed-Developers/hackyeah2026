@@ -16,7 +16,7 @@ const FIRST_PAGE = 6
 const NEXT_PAGE = 6
 
 /**
- * Katalog na ekranie startowym — żeby kiosk nie witał mieszkańca pustą przestrzenią
+ * Katalog na ekranie startowym - żeby kiosk nie witał mieszkańca pustą przestrzenią
  * i żeby dało się czegoś dotknąć bez wymyślania słów. Te same dane co „Baza wiedzy"
  * w wersji web, tylko w układzie pod palec.
  *
@@ -52,7 +52,7 @@ export function KioskCatalog({ onOpen }: { onOpen: (result: CarriedResult) => vo
         <h2 id="hub-katalog" className="text-[calc(26px*var(--hub-skala))] font-bold">
           Sprawdzone rozwiązania z Małopolski
         </h2>
-        <p className="hub-tekst-xs text-[var(--hub-tekst-2)]">Dotknij, żeby zobaczyć szczegóły — albo opisz swoją sprawę wyżej.</p>
+        <p className="hub-tekst-xs text-[var(--hub-tekst-2)]">Dotknij, żeby zobaczyć szczegóły - albo opisz swoją sprawę wyżej.</p>
       </div>
 
       <div
@@ -115,7 +115,7 @@ export function KioskCatalog({ onOpen }: { onOpen: (result: CarriedResult) => vo
 function CatalogRow({ item, onOpen }: { item: CatalogItem; onOpen: () => void }) {
   return (
     <li>
-      {/* Cała karta to jeden przycisk — bez zagnieżdżonych akcji, jak na wynikach. */}
+      {/* Cała karta to jeden przycisk - bez zagnieżdżonych akcji, jak na wynikach. */}
       <button type="button" onClick={onOpen} className={cn(CARD, 'min-h-[128px] gap-2 rounded-3xl p-5')}>
         <span className="flex w-full items-start justify-between gap-4">
           <CategoryPill slug={item.categorySlug} label={item.category} />

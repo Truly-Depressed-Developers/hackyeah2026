@@ -21,7 +21,7 @@ export function ResultsScreen({ data, query, onOpen, onBack }: ResultsScreenProp
         <p className="hub-tekst-s text-[var(--hub-tekst-2)]">
           <span className="font-semibold text-foreground">Szukałem dla: </span>„{query}”
         </p>
-        {/* Liczba wyników po polsku — ta sama funkcja, której używa wersja web. */}
+        {/* Liczba wyników po polsku - ta sama funkcja, której używa wersja web. */}
         <p role="status" className="sr-only">
           {summarize(data)}
         </p>
@@ -79,7 +79,7 @@ function Tier(props: {
             result={result}
             tier={props.tier}
             // `why` nie istnieje na `Innovation` z /catalog/{id}, więc uzasadnienie
-            // musi pojechać razem z kliknięciem — inaczej ekran szczegółu by je zgubił.
+            // musi pojechać razem z kliknięciem - inaczej ekran szczegółu by je zgubił.
             onOpen={() =>
               props.onOpen({
                 id: result.id,

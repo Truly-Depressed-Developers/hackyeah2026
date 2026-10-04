@@ -5,7 +5,7 @@ import { consentGivenNow, isEmail, isPhone } from '@/lib/contact'
 import { trpc } from '@/lib/trpc'
 
 /**
- * Jeden sposób kontaktu, przełączany segmentem — nie dwa pola naraz. Komunikaty
+ * Jeden sposób kontaktu, przełączany segmentem - nie dwa pola naraz. Komunikaty
  * błędów są współdzielone przez wersję web i kiosk, żeby mieszkaniec dostał to samo
  * zdanie niezależnie od tego, gdzie trafił.
  */
@@ -47,7 +47,7 @@ function withContactCheck<T extends z.ZodRawShape>(shape: T) {
 
 /**
  * Kiosk: brak checkboxa zgody. W designie aktem afirmatywnym jest samo naciśnięcie
- * „Zapisz kontakt" pod zdaniem o tym, do czego użyjemy numeru — a `consentAt` i tak
+ * „Zapisz kontakt" pod zdaniem o tym, do czego użyjemy numeru - a `consentAt` i tak
  * trafia do API w obu wariantach.
  *
  * TODO (RODO): zespół ma potwierdzić, czy przycisk wystarcza jako zgoda przy kiosku,
@@ -72,7 +72,7 @@ interface UseContactRequestOptions {
 }
 
 /**
- * Wysyłka prośby o kontakt. Headless — markup należy do powierzchni (dialog w web,
+ * Wysyłka prośby o kontakt. Headless - markup należy do powierzchni (dialog w web,
  * panel inline w kiosku), bo layouty nie mają ze sobą nic wspólnego.
  */
 export function useContactRequest({ query, gapId, shownResults = [] }: UseContactRequestOptions) {

@@ -40,7 +40,7 @@ export function NoResult({ query, onBrowse }: Props) {
           icon={<IconBulb />}
           iconClassName="bg-[#FFF3D6] text-[#7A4300]"
           title="Zgłoś pomysł na rozwiązanie"
-          text="Wiesz, co mogłoby pomóc? Opisz pomysł albo powiedz go głosem — może stać się nową innowacją."
+          text="Wiesz, co mogłoby pomóc? Opisz pomysł albo powiedz go głosem - może stać się nową innowacją."
         >
           <Link
             to="/pomysl"

@@ -9,7 +9,7 @@ const LABEL = ['Tekst normalny', 'Tekst większy', 'Tekst największy']
 
 interface KioskHeaderProps {
   skala: number
-  /** Fałsz na świeżym ekranie startowym — nie ma wtedy czego czyścić. */
+  /** Fałsz na świeżym ekranie startowym - nie ma wtedy czego czyścić. */
   canEnd: boolean
   onSkala: (skala: number) => void
   onEnd: () => void
@@ -45,12 +45,12 @@ export function KioskHeader({ skala, canEnd, onSkala, onEnd }: KioskHeaderProps)
         </div>
 
         {/*
-          Przycisk zostaje na miejscu także wtedy, gdy nie ma czego czyścić — tylko
+          Przycisk zostaje na miejscu także wtedy, gdy nie ma czego czyścić - tylko
           wyszarzony. Znikający element przesuwałby cały pasek i mieszkaniec musiałby
           za nim wodzić wzrokiem; na ekranie dotykowym stałe położenie jest ważniejsze
           niż oszczędność miejsca.
 
-          Samo „Zakończ" nie mówi, co się stanie — nazwa dostępna to dopowiada.
+          Samo „Zakończ" nie mówi, co się stanie - nazwa dostępna to dopowiada.
         */}
         <button
           type="button"

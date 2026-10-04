@@ -36,6 +36,6 @@ export function VoiceSearch({ onSearch }: VoiceSearchProps) {
 
 export function unavailableHint(secureContext: boolean) {
   return secureContext
-    ? 'Ta przeglądarka nie rozpoznaje mowy — wpisz tekst na klawiaturze.'
+    ? 'Ta przeglądarka nie rozpoznaje mowy - wpisz tekst na klawiaturze.'
     : 'Rozpoznawanie mowy wymaga połączenia HTTPS.'
 }

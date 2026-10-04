@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 
 /**
  * Wyszukiwanie semantyczne potrafi trwać kilka sekund i bez słowa wyjaśnienia wygląda
- * jak zawieszenie. Zamiast jednego „Szukam…" mówimy, co się właściwie dzieje — te same
+ * jak zawieszenie. Zamiast jednego „Szukam…" mówimy, co się właściwie dzieje - te same
  * dwa kroki w kiosku i w wersji web, żeby mieszkaniec dostał tę samą obietnicę.
  */
 export const SEARCH_PHASES = [
@@ -17,7 +17,7 @@ export const SEARCH_PHASES = [
 const PHASE_MS = 1100
 
 /**
- * Kolejny komunikat co `PHASE_MS`, zatrzymany na ostatnim — to narracja, a nie pasek
+ * Kolejny komunikat co `PHASE_MS`, zatrzymany na ostatnim - to narracja, a nie pasek
  * postępu, więc nie udajemy, że znamy procent ukończenia.
  *
  * Bez przełącznika „aktywne": hook żyje tylko wtedy, gdy żyje komponent szukania,

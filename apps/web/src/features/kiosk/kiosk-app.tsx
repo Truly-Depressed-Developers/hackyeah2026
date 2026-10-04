@@ -20,7 +20,7 @@ export function KioskApp() {
 
   /*
    * Reducer trzyma intencję, React Query trzyma stan serwera. Ekrany wyników, braku
-   * wyniku i błędu są POCHODNE od tego zapytania, nie dispatchowane — inaczej udany
+   * wyniku i błędu są POCHODNE od tego zapytania, nie dispatchowane - inaczej udany
    * refetch zostawiłby maszynę na ekranie błędu. `staleTime: Infinity` sprawia, że
    * powrót i ponowne wysłanie tego samego opisu trafia w cache.
    *
@@ -115,7 +115,7 @@ export function KioskApp() {
 
 /**
  * `applyStoredTextSize()` w main.tsx ustawia fontSize na <html> (87,5 / 100 / 125 %).
- * Nagłówki kiosku są w px, więc są bezpieczne — ale każdy utility Tailwinda tutaj
+ * Nagłówki kiosku są w px, więc są bezpieczne - ale każdy utility Tailwinda tutaj
  * (p-6, gap-4, size-14) jest w rem, więc zostawione 125 % z poprzedniej wizyty
  * w wersji web rozsadziłoby kolumnę 834 px. Przywracamy przy odmontowaniu, żeby
  * powrót na `/` zachował preferencję mieszkańca.
@@ -133,16 +133,16 @@ function useRootFontSizeReset() {
 /**
  * Kiosk jest zamknięty: cofanie nigdy z niego nie wyprowadza, tylko przesuwa o jeden
  * ekran wstecz, a na ekranie startowym nie robi nic. Żeby opuścić `/kiosk`, trzeba znać
- * adres innej trasy — urządzenie stoi w punkcie publicznym i przypadkowe wyjście do
+ * adres innej trasy - urządzenie stoi w punkcie publicznym i przypadkowe wyjście do
  * reszty aplikacji byłoby błędem, nie udogodnieniem.
  *
  * Przez `useBlocker` routera, a nie własne `history.pushState`: surowe wpisy rozjeżdżają
  * wewnętrzny indeks historii TanStacka i późniejsze `navigate()` przestaje działać
- * (sprawdzone — „Zakończ" przestawał reagować).
+ * (sprawdzone - „Zakończ" przestawał reagować).
  *
  * Zasięg: łapiemy cofanie w obrębie dokumentu, czyli wejście na kiosk z linku w SPA.
  * Jeśli `/kiosk` wczytano bezpośrednio, Back jest wyjściem z dokumentu i zatrzymałby go
- * wyłącznie natywny monit `beforeunload` — na kiosku byłby szkodliwy (wyskakiwałby też
+ * wyłącznie natywny monit `beforeunload` - na kiosku byłby szkodliwy (wyskakiwałby też
  * przy odświeżeniu), a na iPadOS jest zawodny. Na docelowym sprzęcie przeglądarka i tak
  * chodzi w trybie kiosku, bez przycisku wstecz, więc ten przypadek nie występuje.
  */

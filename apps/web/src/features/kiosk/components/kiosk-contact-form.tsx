@@ -5,7 +5,7 @@ import { CONTACT_MODES, useContactRequest, type ContactMode } from '@/features/n
 import { CTA, CTA_OUTLINE, FIELD, FOCUS } from '../kiosk-ui'
 
 /**
- * Wersja kioskowa prośby o kontakt — panel inline, nie dialog. Base UI portaluje
+ * Wersja kioskowa prośby o kontakt - panel inline, nie dialog. Base UI portaluje
  * dialogi do `document.body`, czyli poza poddrzewo `.kiosk`, gdzie straciłyby cały
  * motyw; dla dotykowego ekranu panel w treści jest i tak czytelniejszy.
  *
@@ -23,7 +23,7 @@ export function KioskContactForm({ query, gapId, onCancel }: { query: string; ga
 
   const config = CONTACT_MODES[mode]
 
-  // Formularz znika po zapisaniu razem z fokusowanym przyciskiem — przenieś fokus
+  // Formularz znika po zapisaniu razem z fokusowanym przyciskiem - przenieś fokus
   // na potwierdzenie, żeby czytnik ekranu nie został na usuniętym elemencie.
   useEffect(() => {
     if (sentTo) savedRef.current?.focus()

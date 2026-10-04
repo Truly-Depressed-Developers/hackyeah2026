@@ -20,7 +20,7 @@ const ideaContent = {
  * „Imię", which is personal data and stays here. An allowlist rather than a denylist: a step added
  * later is invisible publicly until someone decides it is safe.
  *
- * The texts mirror QUESTIONS in apps/web/src/features/idea/idea-form.ts — zod input schemas live
+ * The texts mirror QUESTIONS in apps/web/src/features/idea/idea-form.ts - zod input schemas live
  * server-side and are not importable by the client, so this duplication is the pattern in this repo
  * (same as HandlingStatus in panel/list.ts).
  */
@@ -87,7 +87,7 @@ export const ideasRouter = router({
       return row!
     }),
 
-  /** Pomysły a Pracownik ROPS opened for testing. Never selects `contact` — see PUBLIC_QUESTIONS. */
+  /** Pomysły a Pracownik ROPS opened for testing. Never selects `contact` - see PUBLIC_QUESTIONS. */
   openForTesting: publicProcedure.query(async () => {
     const rows = await db
       .select({ id: idea.id, title: idea.title, answers: idea.answers, createdAt: idea.createdAt })
@@ -124,7 +124,7 @@ export const ideasRouter = router({
         .onConflictDoNothing()
         .returning({ id: testSignup.id })
 
-      // Nothing inserted means this contact already had a Zapis — say so rather than fake a new one.
+      // Nothing inserted means this contact already had a Zapis - say so rather than fake a new one.
       return { alreadySignedUp: !row }
     }),
 })

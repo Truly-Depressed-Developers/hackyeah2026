@@ -12,7 +12,7 @@ export function ResultCard({ result }: { result: Result }) {
   const phone = result.links?.phone
 
   // Innovations open their detail page; everything else falls back to its own
-  // single Akcja — a phone number, or the record at its source.
+  // single Akcja - a phone number, or the record at its source.
   const target = result.kind === 'innovation' ? { id: result.id } : phone ? { href: `tel:${phone.replace(/\s/g, '')}` } : result.source.url ? { href: result.source.url, newTab: true } : {}
 
   return (

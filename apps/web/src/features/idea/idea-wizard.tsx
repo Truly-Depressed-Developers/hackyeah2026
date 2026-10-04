@@ -412,7 +412,7 @@ function SummaryRow({ label, value, editLabel, onEdit }: { label: string; value:
     <div className="flex flex-wrap items-start gap-x-4 gap-y-1 border-t px-5 py-4 first:border-t-0 sm:flex-nowrap">
       <dt className="w-full text-sm leading-[1.375rem] font-semibold text-muted-foreground sm:w-[10.625rem] sm:shrink-0">{label}</dt>
       <dd className="flex min-w-0 flex-1 items-start justify-between gap-4 text-base leading-6">
-        <span className="min-w-0 break-words">{value || '—'}</span>
+        <span className="min-w-0 break-words">{value || '-'}</span>
         <button
           type="button"
           onClick={onEdit}

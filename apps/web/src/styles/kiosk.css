@@ -1,7 +1,7 @@
 /*
  * Motyw kiosku (tablet 834×1194, dotyk + głos).
  *
- * Wszystko siedzi w `.kiosk` — nigdy w `:root` i nigdy na <html>/<body>. `:root`
+ * Wszystko siedzi w `.kiosk` - nigdy w `:root` i nigdy na <html>/<body>. `:root`
  * dopasowuje się do <html>, `.kiosk` do diva powłoki, więc dziedziczenie custom
  * properties zawsze wybiera bliższą deklarację i kolejność źródeł nie ma znaczenia.
  * Położenie klasy na <html> zrobiłoby z tego remis specyficzności.
@@ -18,7 +18,7 @@
   --input: #cfd7e3;
   --ring: #0f1b2d;
 
-  /* Tokeny wyłącznie kioskowe — nie mają odpowiednika w wersji web. */
+  /* Tokeny wyłącznie kioskowe - nie mają odpowiednika w wersji web. */
   --hub-tekst-2: #3b4757;
   --hub-tlo: #f7f9fd;
   --hub-niebieski-ciemny: #1a4f8c;
@@ -36,7 +36,7 @@
 }
 
 /*
- * Rampa typograficzna jako klasy potomne, nie `@utility` — `@utility` rejestruje
+ * Rampa typograficzna jako klasy potomne, nie `@utility` - `@utility` rejestruje
  * utility dostępne globalnie, a selektor potomny daje twardą gwarancję, że stray
  * `class="hub-tekst"` w wersji web jest bezczynny.
  */
@@ -101,7 +101,7 @@
 
 /*
  * Poniżej zaprojektowanej szerokości absolutny header/main rozjechałby się i dał
- * poziomy scroll. Zamieniamy go na zwykłą kolumnę — punkt audytu „320 px bez
+ * poziomy scroll. Zamieniamy go na zwykłą kolumnę - punkt audytu „320 px bez
  * poziomego przewijania" z AGENTS.md.
  */
 @media (max-width: 833px) {
