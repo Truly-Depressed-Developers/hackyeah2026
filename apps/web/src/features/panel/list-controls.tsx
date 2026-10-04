@@ -1,45 +1,10 @@
 import type { FormEvent, ReactNode } from 'react'
 import { IconSearch } from '@tabler/icons-react'
 import { cn } from 'cn'
-import { PAGE_SIZES, type PageSize } from '@/components/list-pagination'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { isHandlingStatus, statusLabel, type HandlingStatus } from './handling'
-
-// URL state shared by the Panel administratora lists, so a view can be refreshed or shared with a colleague.
-
-export const DEFAULT_PAGE_SIZE: PageSize = 20
-
-export interface ListSearch {
-  page?: number
-  size?: PageSize
-  /** No value means the default view: Nowe. "all" shows every Stan. */
-  status?: HandlingStatus | 'all'
-  q?: string
-}
-
-export function parseListSearch(search: Record<string, unknown>): ListSearch {
-  const page = Number(search.page)
-  const size = Number(search.size)
-  const q = typeof search.q === 'string' ? search.q.trim() : ''
-  return {
-    page: Number.isInteger(page) && page > 1 ? page : undefined,
-    size: PAGE_SIZES.includes(size as PageSize) && size !== DEFAULT_PAGE_SIZE ? (size as PageSize) : undefined,
-    status: search.status === 'all' ? 'all' : isHandlingStatus(search.status) ? search.status : 'new',
-    q: q || undefined,
-  }
-}
-
-/** The values the list query needs, with URL defaults resolved. */
-export function listQuery(search: ListSearch) {
-  return {
-    page: search.page ?? 1,
-    pageSize: search.size ?? DEFAULT_PAGE_SIZE,
-    status: search.status === 'all' ? undefined : search.status,
-    q: search.q,
-  }
-}
 
 export function TextSearch({ label, value, onSearch }: { label: string; value?: string; onSearch: (q?: string) => void }) {
   function onSubmit(event: FormEvent<HTMLFormElement>) {
