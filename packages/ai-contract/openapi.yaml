@@ -3,7 +3,7 @@
 # Vocabulary: see CONTEXT.md (Wynik, Rodzaj wyniku, Poziom dopasowania, Uzasadnienie dopasowania).
 openapi: 3.1.0
 info:
-  title: HubMI AI service
+  title: Pomost AI service
   version: 0.1.0-draft
 paths:
   /search:

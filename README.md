@@ -1,4 +1,4 @@
-# HubMI
+# Pomost
 
 One place where residents of Małopolska describe a problem in their own words, by typing or by voice, on the web or at a kiosk, and find social innovations that can help. Every question without an answer becomes a signal for ROPS.
 
@@ -6,7 +6,7 @@ One place where residents of Małopolska describe a problem in their own words, 
 
 ## Motivation
 
-**HubMI** was created at <a href="https://hackyeah.pl/" target="_blank">HackYeah</a> 2026 Hackathon
+**Pomost** was created at <a href="https://hackyeah.pl/" target="_blank">HackYeah</a> 2026 Hackathon
 
 - Topic: HubMI - challenge by Regionalny Ośrodek Polityki Społecznej w Krakowie (ROPS)
 - Timeframe: 03-04.10.2026, 24 hours

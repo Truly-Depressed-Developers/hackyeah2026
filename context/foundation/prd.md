@@ -1,5 +1,5 @@
 ---
-project: HubMI
+project: Pomost
 version: 1
 status: draft
 created: 2026-10-03
@@ -15,7 +15,7 @@ timeline_budget:
   after_hours_only: false
 ---
 
-# HubMI — PRD
+# Pomost — PRD
 
 ## Vision & Problem Statement
 

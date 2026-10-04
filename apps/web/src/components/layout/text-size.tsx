@@ -10,7 +10,7 @@ const SIZES = [
 
 type SizeId = (typeof SIZES)[number]['id']
 
-const STORAGE_KEY = 'hubmi:text-size'
+const STORAGE_KEY = 'pomost:text-size'
 
 function readStored(): SizeId {
   try {

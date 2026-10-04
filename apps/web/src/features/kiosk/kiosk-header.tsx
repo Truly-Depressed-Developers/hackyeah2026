@@ -1,5 +1,6 @@
 import { IconX } from '@tabler/icons-react'
 import { cn } from 'cn'
+import { PomostLogo } from '@/components/brand/pomost-logo'
 import { FOCUS, PILL } from './kiosk-ui'
 import { SKALE } from './use-kiosk-session'
 
@@ -18,7 +19,7 @@ interface KioskHeaderProps {
 export function KioskHeader({ skala, canEnd, onSkala, onEnd }: KioskHeaderProps) {
   return (
     <header className="hub-pasek absolute inset-x-8 top-6 z-10 flex h-22 items-center justify-between gap-4">
-      <span className="text-[30px] font-bold tracking-[-0.02em]">HubMI</span>
+      <PomostLogo size={4.5} />
 
       <div className="flex items-center gap-4">
         <div role="group" aria-labelledby="kiosk-skala-label" className="flex items-center gap-2">

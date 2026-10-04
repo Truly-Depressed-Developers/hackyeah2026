@@ -15,7 +15,7 @@ describe('toGsm', () => {
 
 describe('resultSmsText', () => {
   it('keeps a short title whole', () => {
-    expect(resultSmsText('Obu – obuwie po domu', 'https://x.pl/i/1')).toBe('HubMI: Obu - obuwie po domu. Szczegoly: https://x.pl/i/1')
+    expect(resultSmsText('Obu – obuwie po domu', 'https://x.pl/i/1')).toBe('Pomost: Obu - obuwie po domu. Szczegoly: https://x.pl/i/1')
   })
 
   it('never exceeds one SMS, cutting the title first', () => {

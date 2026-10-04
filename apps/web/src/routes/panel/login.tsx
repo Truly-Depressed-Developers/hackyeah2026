@@ -1,4 +1,5 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
+import { PomostLogo } from '@/components/brand/pomost-logo'
 import { LoginForm } from '@/features/panel/login-form'
 import { useDocumentTitle } from '@/features/panel/use-document-title'
 import { usePanelLogin } from '@/features/panel/use-panel-auth'
@@ -25,7 +26,7 @@ function LoginPage() {
 
   return (
     <main className="flex flex-1 flex-col items-center justify-center gap-6 bg-panel-hero p-6">
-      <p className="text-sm font-medium text-secondary-foreground">HubMI · Małopolska</p>
+      <PomostLogo size={3.25} />
       <LoginForm onSubmit={login.mutate} isPending={login.isPending} error={login.error?.message} />
     </main>
   )

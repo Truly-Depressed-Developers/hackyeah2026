@@ -1,5 +1,5 @@
 ---
-project: HubMI
+project: Pomost
 version: 1
 status: draft
 created: 2026-10-03
@@ -12,7 +12,7 @@ milestone_seq: 1
 milestone_status: open
 ---
 
-# Roadmap: HubMI
+# Roadmap: Pomost
 
 > Derived from `context/foundation/prd.md` (v1) + `tech-stack.md` + auto-researched codebase baseline.
 > Edit-in-place; archive when superseded.
@@ -29,7 +29,7 @@ milestone_status: open
 
 ## Vision recap
 
-Mieszkaniec Małopolski z problemem społecznym nie ma jednego miejsca, gdzie znajdzie rozwiązanie — dziś szuka w Google albo dzwoni do różnych instytucji. HubMI łączy rozproszone źródła (innowacje, statystyki, raporty, ludzi) w jedną odpowiedź na potoczny opis problemu, dostępną także głosem w kiosku, a każde pytanie bez odpowiedzi staje się sygnałem dla ROPS.
+Mieszkaniec Małopolski z problemem społecznym nie ma jednego miejsca, gdzie znajdzie rozwiązanie — dziś szuka w Google albo dzwoni do różnych instytucji. Pomost łączy rozproszone źródła (innowacje, statystyki, raporty, ludzi) w jedną odpowiedź na potoczny opis problemu, dostępną także głosem w kiosku, a każde pytanie bez odpowiedzi staje się sygnałem dla ROPS.
 
 ## North star
 

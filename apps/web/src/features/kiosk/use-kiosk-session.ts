@@ -106,7 +106,7 @@ function reducer(state: KioskSession, action: KioskAction): KioskSession {
 
     /*
      * „Zakończ": pełny wipe. To jedyne miejsce, w które wejdzie później czyszczenie
-     * sesji (queryClient.clear() + usunięcie `hubmi:gaps`), gdy dojdzie ekran
+     * sesji (queryClient.clear() + usunięcie `pomost:gaps`), gdy dojdzie ekran
      * bezczynności — stan komponentów to za mało, bo cache i sessionStorage trzymają
      * tekst poprzedniego mieszkańca do zamknięcia karty.
      */

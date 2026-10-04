@@ -116,7 +116,7 @@ docker run --rm -p 10000:10000 -e PORT=10000 \
 
 ## Connecting the AI service
 
-HubMI has two backends: this Hono API (Postgres, tRPC) and a Python/FastAPI AI service. The web app
+Pomost has two backends: this Hono API (Postgres, tRPC) and a Python/FastAPI AI service. The web app
 calls the AI service through generated TanStack Query hooks (`$ai` in `apps/web/src/lib/ai/client.ts`)
 at `/ai/*`, which Hono forwards to `AI_URL`. Why: `docs/adr/0001-ai-calls-via-openapi-passthrough.md`.
 

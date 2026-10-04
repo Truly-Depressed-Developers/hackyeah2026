@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query'
 import { currentSearchId } from '@/lib/analytics'
 import { trpc } from '@/lib/trpc'
 
-const STORAGE_KEY = 'hubmi:gaps'
+const STORAGE_KEY = 'pomost:gaps'
 // Shared across StrictMode's double effect run, so one Zapytanie never records two Luki.
 const inFlight = new Map<string, Promise<string>>()
 

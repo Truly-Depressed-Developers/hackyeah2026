@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 export function useDocumentTitle(title: string) {
   useEffect(() => {
     const previous = document.title
-    document.title = `${title} · Panel HubMI`
+    document.title = `${title} · Panel Pomost`
     return () => {
       document.title = previous
     }

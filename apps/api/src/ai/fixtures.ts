@@ -136,7 +136,7 @@ export const related: Result[] = [
     category: 'Kto może pomóc w Małopolsce',
     why: 'Podpowie, z jakiego wsparcia gminy może skorzystać rodzina opiekująca się bliskim po udarze.',
     whyGenerated: true,
-    source: { label: 'Baza helperów HubMI' },
+    source: { label: 'Baza helperów Pomost' },
     details: {
       targetGroup: 'Opiekunowie rodzinni osób starszych i z niepełnosprawnościami w Małopolsce.',
     },

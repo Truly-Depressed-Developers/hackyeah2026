@@ -1,6 +1,6 @@
 # Analytics storage: Postgres vs InfluxDB (and friends)
 
-Question (HAC-18): where should HubMI keep analytics events (Wyszukiwania, used Akcje, Wizyty) so ROPS gets fast, good-looking statistics — and what do we say when the jury asks "why not a time-series database?"
+Question (HAC-18): where should Pomost keep analytics events (Wyszukiwania, used Akcje, Wizyty) so ROPS gets fast, good-looking statistics — and what do we say when the jury asks "why not a time-series database?"
 
 **Recommendation: Postgres (the database we already run: Docker locally, Neon in production), with an append-only event table, the right indexes, and daily rollups. Keep a documented path to TimescaleDB (also on Neon) and, much later, ClickHouse.** Decision recorded in `docs/adr/0002-analytics-events-in-postgres.md`.
 

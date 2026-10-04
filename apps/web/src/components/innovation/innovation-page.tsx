@@ -74,10 +74,10 @@ function InnovationView({ item }: { item: Innovation }) {
   useInnovationTracking(item.id)
 
   useEffect(() => {
-    document.title = `${item.title} – HubMI`
+    document.title = `${item.title} – Pomost`
     titleRef.current?.focus()
     return () => {
-      document.title = 'HubMI – znajdź rozwiązanie'
+      document.title = 'Pomost – pomoc w Małopolsce'
     }
   }, [item.title])
 

@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { PomostMark } from '@/components/brand/pomost-logo'
 import { Link, useLocation } from '@tanstack/react-router'
 import {
   IconBooks,
@@ -97,12 +98,12 @@ export function PanelSidebar({ user }: { user: { name: string; email: string } }
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" tooltip="HubMI — Panel administratora" render={<Link to="/panel" onClick={() => setOpenMobile(false)} />}>
-              <span aria-hidden="true" className="flex size-8 shrink-0 items-center justify-center rounded-[0.625rem] bg-brand-gradient text-sm font-bold text-white shadow-md shadow-primary/30">
-                H
+            <SidebarMenuButton size="lg" tooltip="Pomost — Panel administratora" render={<Link to="/panel" onClick={() => setOpenMobile(false)} />}>
+              <span aria-hidden="true" className="flex size-8 shrink-0 items-center justify-center rounded-[0.625rem] bg-white shadow-[0_0_0_1px_var(--border)]">
+                <PomostMark onWhite className="size-6" />
               </span>
               <span className="flex min-w-0 flex-col leading-tight">
-                <span className="text-[0.9375rem] font-[650] tracking-[-0.02em]">HubMI</span>
+                <span className="font-brand text-[0.9375rem] font-extrabold tracking-[-0.01em]">Pomost</span>
                 <span className="truncate text-xs text-muted-foreground">Panel administratora</span>
               </span>
             </SidebarMenuButton>

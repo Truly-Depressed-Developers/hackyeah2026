@@ -24,11 +24,11 @@ export function toGsm(text: string) {
 }
 
 /**
- * `HubMI: {title}. Szczegoly: {url}`, cut to one SMS. The title gives way first; if even the link does not fit,
+ * `Pomost: {title}. Szczegoly: {url}`, cut to one SMS. The title gives way first; if even the link does not fit,
  * the whole text is cut at the limit, because a second part is never acceptable.
  */
 export function resultSmsText(title: string, url: string) {
-  const prefix = 'HubMI: '
+  const prefix = 'Pomost: '
   const suffix = `. Szczegoly: ${toGsm(url)}`
   const room = SMS_MAX_CHARS - prefix.length - suffix.length
   const cleanTitle = toGsm(title).replace(/\.+$/, '')

@@ -1,7 +1,7 @@
 ---
 name: voice-input
 description: >
-  Wire HubMI's voice mode into a screen. Covers which hook to call, how the
+  Wire Pomost's voice mode into a screen. Covers which hook to call, how the
   transcript reaches the search, and the device traps that break dictation in a
   public kiosk. Trigger phrases: "dodaj tryb głosowy", "podłącz mikrofon",
   "voice input", "mieszkaniec mówi", "wyszukiwanie głosem", "S-04", "HAC-10",
@@ -12,7 +12,7 @@ description: >
   — see the last section for why that is a different API.
 ---
 
-# Voice input in HubMI
+# Voice input in Pomost
 
 Dictation is **done**. Two modules in `apps/web/src` hold it:
 

@@ -5,7 +5,7 @@ import { useLayoutEffect, useSyncExternalStore } from 'react'
 
 export type PanelTheme = 'light' | 'dark' | 'system'
 
-const KEY = 'hubmi.panel.theme'
+const KEY = 'pomost.panel.theme'
 const listeners = new Set<() => void>()
 const darkQuery = () => window.matchMedia('(prefers-color-scheme: dark)')
 

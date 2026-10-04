@@ -1,4 +1,4 @@
-# HubMI
+# Pomost
 
 Resident-facing search over the ROPS knowledge base: a resident describes a problem in their own words and gets matched results, each closed with an action.
 

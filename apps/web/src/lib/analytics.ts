@@ -4,9 +4,9 @@ import type { AnalyticsEvent } from 'api/analytics-events'
 // A Wizyta is a random id in sessionStorage; no cookies, no accounts, nothing that follows a person across Wizyty.
 // Events are queued and sent in batches; sending never blocks or breaks the UI.
 
-const VISIT_KEY = 'hubmi:visit'
-const SEARCH_KEY = 'hubmi:search'
-const KIOSK_KEY = 'hubmi:kiosk'
+const VISIT_KEY = 'pomost:visit'
+const SEARCH_KEY = 'pomost:search'
+const KIOSK_KEY = 'pomost:kiosk'
 const ENDPOINT = '/api/events'
 const FLUSH_MS = 5_000
 const HEARTBEAT_MS = 30_000

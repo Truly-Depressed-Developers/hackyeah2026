@@ -1,10 +1,10 @@
 ---
-project: HubMI
+project: Pomost
 created: 2026-10-03
 source: hackathon-template repo + team decisions (no tech-stack-selector run)
 ---
 
-# Tech stack — HubMI
+# Tech stack — Pomost
 
 Status legend: **present** = already in the template repo; **planned** = decided, not yet built; **open** = undecided.
 

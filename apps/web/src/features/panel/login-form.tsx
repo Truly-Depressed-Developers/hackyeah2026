@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { PomostMark } from '@/components/brand/pomost-logo'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -27,9 +28,9 @@ export function LoginForm({ onSubmit, isPending, error }: LoginFormProps) {
       <CardHeader className="gap-3">
         <span
           aria-hidden="true"
-          className="flex size-11 items-center justify-center rounded-xl bg-brand-gradient text-lg font-bold text-white shadow-md shadow-primary/30"
+          className="flex size-11 items-center justify-center rounded-xl bg-white shadow-md shadow-primary/30"
         >
-          H
+          <PomostMark onWhite className="size-8" />
         </span>
         <CardTitle>
           <h1 className="text-2xl font-[680] tracking-[-0.03em]">Panel administratora</h1>

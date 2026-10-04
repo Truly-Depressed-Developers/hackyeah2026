@@ -1,5 +1,5 @@
 ---
-project: HubMI
+project: Pomost
 context_type: greenfield
 created: 2026-10-03
 updated: 2026-10-03
@@ -25,11 +25,11 @@ checkpoint:
   quality_check_status: accepted
 ---
 
-# Shape notes — HubMI
+# Shape notes — Pomost
 
 ## Seed idea (verbatim input)
 
-HubMI (HackYeah 2026, wyzwanie ROPS Kraków). Kontekst: wymagania i kryteria jury w "HubMI – analiza modułów (HackYeah 2026).pdf" w katalogu repo. Hackathon 24h, harmonogram płynny (bez sztywnych godzin). Zespół 6 osób: 2 fullstack, 1 AI dev, 3 produkt (prezentacja/design/PRD).
+Pomost (HackYeah 2026, wyzwanie ROPS Kraków „HubMI”). Kontekst: wymagania i kryteria jury w "HubMI – analiza modułów (HackYeah 2026).pdf" w katalogu repo. Hackathon 24h, harmonogram płynny (bez sztywnych godzin). Zespół 6 osób: 2 fullstack, 1 AI dev, 3 produkt (prezentacja/design/PRD).
 
 Pomysł: aplikacja webowa w dwóch trybach — zwykła web i kiosk (tablet w kartonowym stelażu). Mieszkaniec opisuje problem/potrzebę tekstem lub głosem; wyszukiwarka AI zwraca zrozumiałe odpowiedzi do działania: sprawdzone rozwiązania/case studies (Biblioteka Innowacji — scrapujemy), kto może pomóc (eksperci/NGO — dane fikcyjne), fakty z bazy miasta (Obserwator CSV, raporty). Wynik czytany na głos w kiosku. Najwięcej kreatywności w aplikacji dla mieszkańców; panel ROPS/CRM realizuje wymagania z briefu w kolejności priorytetów, każdy moduł wąską działającą ścieżką (proponowana kolejność VI → V → III → VII → IV → II — do potwierdzenia).
 

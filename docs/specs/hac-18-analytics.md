@@ -25,7 +25,7 @@ The resident app sends anonymous **analytics events** (Wyszukiwanie, shown Wynik
 | D1 | **Storage: Postgres** (Docker locally, Neon in prod). No Influx/ClickHouse. See ADR-0002 + research doc for arguments. |
 | D2 | **Events are collected on the front end** (we know what the resident clicks) and sent to **our** API. Never to the AI service. Hono stays a passthrough for search (ADR-0001). |
 | D3 | **Record everything useful** (catalog in §5): searches, latency, shown results with tier/position, every Akcja, result expansion, innovation page views and dwell time, catalog use, voice use, no-result flow choices, idea wizard steps/abandonment, Wizyta duration. |
-| D4 | **Wizyta** = random UUID in `sessionStorage` (`hubmi:visit`), new on page load if missing, cleared on kiosk reset; sent with every batch. No accounts, no cross-visit tracking, no cookies. |
+| D4 | **Wizyta** = random UUID in `sessionStorage` (`pomost:visit`), new on page load if missing, cleared on kiosk reset; sent with every batch. No accounts, no cross-visit tracking, no cookies. |
 | D5 | **Potrzeba ↔ Wyszukiwanie**: add nullable `search_id` to `need`; S-03 front passes the current `searchId` into `needs.recordGap`, `needs.requestContact` and `ideas.submit` (`search.searchId`). |
 | D6 | **PII masking before storage**: e-mails, phone numbers, PESEL (11 digits), postal-address-like numbers are replaced (`[email]`, `[telefon]`, `[pesel]`) in every stored Zapytanie (also in `need.query`). |
 | D7 | **Rate limit** public writes per IP in memory (e.g. 30 requests/min for `/api/events`, 10/min for `needs.*`/`ideas.submit`), 429 on excess. |
