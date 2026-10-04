@@ -6,16 +6,6 @@ import { isPhone } from '@/lib/contact'
 import { CTA, CTA_MUTED, CTA_OUTLINE, FIELD, TILE } from '../kiosk-ui'
 
 /**
- * Druk i SMS to na razie sam front — rozwiązują się na timerze, bez backendu.
- *
- * W dev są widoczne domyślnie, żeby dało się nad nimi pracować. W buildzie
- * produkcyjnym trzeba je włączyć jawnie: powiedzenie realnemu mieszkańcowi
- * „Wysłano SMS", gdy nic nie wyszło, to utrata zaufania, a nie skrót demowy.
- * Kod QR działa naprawdę i jest dostępny zawsze.
- */
-const DEMO = import.meta.env.DEV || import.meta.env.VITE_KIOSK_DEMO === 'true'
-
-/**
  * Wdrożona aplikacja. To ona, a nie origin przeglądarki, jest domyślną bazą kodu QR:
  * kiosk chodzi pod adresem lokalnym albo w LAN-ie, a telefon mieszkańca takiego adresu
  * nie otworzy — `localhost` na telefonie to sam telefon.
@@ -58,14 +48,17 @@ export function Takeaway({ id, title }: { id: string; title: string }) {
         Jak chcesz odebrać szczegóły i adres?
       </p>
 
+      {/*
+        Wszystkie trzy sposoby odbioru są widoczne zawsze, też w buildzie produkcyjnym.
+        Druk i SMS to na razie sam front — rozwiązują się na timerze, bez backendu —
+        więc każdy z tych paneli niesie widoczną adnotację o trybie demonstracyjnym.
+        To ona, a nie ukrywanie kafelków, pilnuje, żeby kiosk nie obiecał mieszkańcowi
+        wiadomości, która nigdy nie przyjdzie. Kod QR działa naprawdę.
+      */}
       {state.kind === 'none' && (
         <div className="grid grid-cols-3 gap-4">
-          {DEMO && (
-            <>
-              <Option icon={IconPrinter} label="Wydrukuj" hint="Kartka z adresem i opisem" onClick={() => setState({ kind: 'print', done: false })} />
-              <Option icon={IconDeviceMobileMessage} label="SMS" hint="Wyślę na Twój telefon" onClick={() => setState({ kind: 'sms', phase: 'form', number: '' })} />
-            </>
-          )}
+          <Option icon={IconPrinter} label="Wydrukuj" hint="Kartka z adresem i opisem" onClick={() => setState({ kind: 'print', done: false })} />
+          <Option icon={IconDeviceMobileMessage} label="SMS" hint="Wyślę na Twój telefon" onClick={() => setState({ kind: 'sms', phase: 'form', number: '' })} />
           <Option icon={IconQrcode} label="Kod QR" hint="Zeskanujesz telefonem" onClick={() => setState({ kind: 'qr' })} />
         </div>
       )}
