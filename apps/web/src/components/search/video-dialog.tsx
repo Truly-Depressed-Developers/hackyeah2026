@@ -13,13 +13,13 @@ export function youtubeId(url: string) {
   }
 }
 
-type Props = { videoId: string; title: string; primary?: boolean; trigger?: ReactElement; children?: ReactNode }
+type Props = { videoId: string; title: string; primary?: boolean; trigger?: ReactElement; children?: ReactNode; onOpen?: () => void }
 
-export function VideoDialog({ videoId, title, primary = false, trigger, children }: Props) {
+export function VideoDialog({ videoId, title, primary = false, trigger, children, onOpen }: Props) {
   const titleRef = useRef<HTMLHeadingElement>(null)
 
   return (
-    <Dialog>
+    <Dialog onOpenChange={(open) => open && onOpen?.()}>
       <DialogTrigger render={trigger ?? <Button variant={primary ? 'default' : 'outline'} className="h-11 px-4 text-base" />}>
         {children ?? (
           <>

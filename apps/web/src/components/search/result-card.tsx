@@ -5,6 +5,7 @@ import { cn } from 'cn'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { CategoryBadge } from '@/components/category-badge'
 import type { Result, ResultKind } from '@/lib/ai/client'
+import { trackAction, trackExpanded } from '@/lib/analytics'
 import { categoryFor } from '@/lib/categories'
 import { VideoDialog, youtubeId } from './video-dialog'
 
@@ -65,33 +66,45 @@ export function ResultCard({ result }: { result: Result }) {
 
       <div className="flex flex-wrap items-center gap-2">
         {phone && (
-          <a href={`tel:${phone.replace(/\s/g, '')}`} className={cn(buttonVariants(), 'h-11 px-4 text-base')}>
+          <a href={`tel:${phone.replace(/\s/g, '')}`} onClick={() => trackAction(result.id, 'phone')} className={cn(buttonVariants(), 'h-11 px-4 text-base')}>
             <IconPhone aria-hidden="true" />
             Zadzwoń: {phone}
           </a>
         )}
         {opensPage && (
-          <Link to="/innowacja/$id" params={{ id: result.id }} className={cn(buttonVariants(), 'h-11 px-4 text-base')}>
+          <Link
+            to="/innowacja/$id"
+            params={{ id: result.id }}
+            onClick={() => trackAction(result.id, 'innovation_page')}
+            className={cn(buttonVariants(), 'h-11 px-4 text-base')}
+          >
             Zobacz innowację
             <IconArrowRight aria-hidden="true" />
           </Link>
         )}
-        {videoId && <VideoDialog videoId={videoId} title={result.title} primary={primary === 'video'} />}
+        {videoId && <VideoDialog videoId={videoId} title={result.title} primary={primary === 'video'} onOpen={() => trackAction(result.id, 'video')} />}
         {!opensPage && details.length > 0 && (
           <Button
             variant={primary === 'details' ? 'default' : 'outline'}
             className="h-11 px-4 text-base"
             aria-expanded={expanded}
             aria-controls={detailsId}
-            onClick={() => setExpanded((open) => !open)}
+            onClick={() => {
+              if (!expanded) trackExpanded(result.id)
+              setExpanded((open) => !open)
+            }}
           >
             <IconChevronDown aria-hidden="true" className={cn('transition-transform', expanded && 'rotate-180')} />
             {expanded ? 'Zwiń szczegóły' : 'Szczegóły'}
           </Button>
         )}
-        {!opensPage && result.source.url && <ExternalLinkButton href={result.source.url}>Zobacz w: {result.source.label}</ExternalLinkButton>}
+        {!opensPage && result.source.url && (
+          <ExternalLinkButton href={result.source.url} onClick={() => trackAction(result.id, 'source')}>
+            Zobacz w: {result.source.label}
+          </ExternalLinkButton>
+        )}
         {!opensPage && result.links?.pdf && (
-          <ExternalLinkButton href={result.links.pdf} icon={<IconFileText aria-hidden="true" />}>
+          <ExternalLinkButton href={result.links.pdf} icon={<IconFileText aria-hidden="true" />} onClick={() => trackAction(result.id, 'pdf')}>
             Opis (PDF)
           </ExternalLinkButton>
         )}
@@ -100,10 +113,11 @@ export function ResultCard({ result }: { result: Result }) {
   )
 }
 
-function ExternalLinkButton({ href, icon, children }: { href: string; icon?: ReactNode; children: ReactNode }) {
+function ExternalLinkButton({ href, icon, children, onClick }: { href: string; icon?: ReactNode; children: ReactNode; onClick?: () => void }) {
   return (
     <a
       href={href}
+      onClick={onClick}
       target="_blank"
       rel="noopener noreferrer"
       className={cn(buttonVariants({ variant: 'outline' }), 'h-auto min-h-11 max-w-full shrink px-4 py-2 text-base whitespace-normal')}

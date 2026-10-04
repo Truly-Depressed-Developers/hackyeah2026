@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
+import { currentSearchId } from '@/lib/analytics'
 import { trpc } from '@/lib/trpc'
 
 const STORAGE_KEY = 'hubmi:gaps'
@@ -40,7 +41,7 @@ export function useGap(query: string) {
     let active = true
     const pending =
       inFlight.get(query) ??
-      record.mutateAsync({ query }).then(({ id }) => {
+      record.mutateAsync({ query, searchId: currentSearchId() }).then(({ id }) => {
         rememberGap(query, id)
         return id
       })

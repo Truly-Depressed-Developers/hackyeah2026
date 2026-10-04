@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { cn } from 'cn'
+import { track } from '@/lib/analytics'
 
 const SIZES = [
   { id: 'small', label: 'Mniejszy tekst', rootSize: '87.5%', glyph: 'text-[0.8125rem]' },
@@ -32,6 +33,7 @@ export function TextSizeSwitch() {
   const [current, setCurrent] = useState<SizeId>(readStored)
 
   function choose(id: SizeId) {
+    if (id !== current) track({ type: 'text_size_changed', size: id })
     setCurrent(id)
     apply(id)
     try {

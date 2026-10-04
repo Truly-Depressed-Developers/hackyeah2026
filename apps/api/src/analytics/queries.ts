@@ -178,12 +178,12 @@ export async function topInnovations(range: Range) {
   return {
     best: withCtr
       .filter((item) => item.actions > 0)
-      .sort((a, b) => b.usedIn - a.usedIn || b.ctr - a.ctr)
+      .toSorted((a, b) => b.usedIn - a.usedIn || b.ctr - a.ctr)
       .slice(0, LIMIT),
     // Shown often, never used: content worth improving.
     unused: withCtr
       .filter((item) => item.actions === 0 && item.shown >= 3)
-      .sort((a, b) => b.shown - a.shown)
+      .toSorted((a, b) => b.shown - a.shown)
       .slice(0, LIMIT),
   }
 }
@@ -223,7 +223,7 @@ export async function categories(range: Range) {
   const actions = new Map(used.map((row) => [row.category, row.actions]))
   return shown
     .map((row) => ({ category: row.category, searches: row.searches, actions: actions.get(row.category) ?? 0 }))
-    .sort((a, b) => b.searches - a.searches)
+    .toSorted((a, b) => b.searches - a.searches)
 }
 
 export async function voiceAndAccessibility(range: Range) {

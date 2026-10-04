@@ -10,6 +10,8 @@ import { VoiceButton } from '@/components/search/voice-button'
 import { VoiceDialog } from '@/components/search/voice-dialog'
 import { unavailableHint } from '@/components/search/voice-search'
 import { storedGapId } from '@/features/no-result/use-gap'
+import { currentSearchId, currentSearchQuery } from '@/lib/analytics'
+import { useIdeaTracking } from '@/lib/use-analytics'
 import { CATEGORIES, type Category } from '@/lib/categories'
 import { probeVoiceSupport } from '@/lib/speech-recognition'
 import { trpc } from '@/lib/trpc'
@@ -43,6 +45,9 @@ export function IdeaWizard({ step, query }: Props) {
     reValidateMode: 'onChange',
   })
   const values = useWatch({ control: form.control })
+  // Only link the Pomysł to the Wyszukiwanie it came from, not to an older one still in the session.
+  const searchId = query && currentSearchQuery() === query ? currentSearchId() : undefined
+  useIdeaTracking(step, TOTAL_STEPS, step > TOTAL_STEPS, searchId)
   const { errors } = form.formState
 
   if (!entered && step === 1) setEntered(true)
@@ -68,7 +73,7 @@ export function IdeaWizard({ step, query }: Props) {
       answers: toAnswers(data),
       contact: data.contact,
       consentAt: consentGivenNow(),
-      search: query ? { query, shownResults: [], gapId: storedGapId(query) } : undefined,
+      search: query ? { query, shownResults: [], gapId: storedGapId(query), searchId } : undefined,
     })
     setSentTo(data.contact)
     navigate({ search: { q: query, krok: TOTAL_STEPS + 1 }, replace: true })

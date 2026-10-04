@@ -5,6 +5,9 @@
   "exports": {
     "./router": {
       "types": "./src/router.ts"
+    },
+    "./analytics-events": {
+      "types": "./src/analytics/events.ts"
     }
   },
   "scripts": {

@@ -72,7 +72,7 @@ const toShown = (r: (typeof innovations)[number], tier: 'solution' | 'related', 
 })
 
 function resultsFor(profile: Profile): SearchShownResult[] {
-  const shuffled = [...innovations].sort(() => random() - 0.5)
+  const shuffled = innovations.toSorted(() => random() - 0.5)
   const solutionCount = profile === 'match' ? between(1, 3) : 0
   const relatedCount = between(1, 3)
   return shuffled.slice(0, solutionCount + relatedCount).map((r, i) => toShown(r, i < solutionCount ? 'solution' : 'related', i + 1))

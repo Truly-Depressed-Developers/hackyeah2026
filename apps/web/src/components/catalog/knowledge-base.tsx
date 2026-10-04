@@ -7,6 +7,7 @@ import { CategoryBadge, CategoryIcon } from '@/components/category-badge'
 import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 import { $ai, type CatalogItem } from '@/lib/ai/client'
+import { markFromCatalog, track } from '@/lib/analytics'
 import { ALL_CATEGORIES, CATEGORIES, categoryFor } from '@/lib/categories'
 
 const FIRST_PAGE = 12
@@ -23,6 +24,7 @@ export function KnowledgeBase() {
   const shown = items.slice(0, visible)
 
   function pick(slug: string) {
+    track({ type: 'catalog_filtered', category: slug })
     setFilter(slug)
     setVisible(FIRST_PAGE)
   }
@@ -112,6 +114,7 @@ function CatalogTile({ item }: { item: CatalogItem }) {
       <Link
         to="/innowacja/$id"
         params={{ id: item.id }}
+        onClick={markFromCatalog}
         className="flex h-full min-h-[12.25rem] flex-col gap-2 rounded-[1.125rem] border border-tile-border bg-tile px-5 py-[1.125rem] text-card-foreground shadow-[0_1px_2px_0_rgb(15_27_45/0.05),0_4px_12px_-6px_rgb(15_27_45/0.08)] transition-[box-shadow,border-color] hover:border-[#C9D3DF] hover:shadow-[0_10px_24px_-12px_rgb(15_27_45/0.18)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring"
       >
         {category && <CategoryBadge category={category} />}
