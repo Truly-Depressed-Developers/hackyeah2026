@@ -27,16 +27,20 @@ export const panelInnovationsRouter = router({
     .input(z.object({ page: pageInput.page, pageSize: pageInput.pageSize, q: pageInput.q, categoryId: z.number().int().optional() }))
     .query(async ({ input }) => {
       const q = input.q && normalize(input.q)
-      const items = (await listDocuments())
+      const docs = await listDocuments()
+      // Imported documents may carry only the category name; their slug (for the category icon) comes from the others.
+      const slugs = new Map(categoriesOf(docs).map((c) => [c.name, c.slug]))
+      const items = docs
         .map(fromStored)
         .filter((item) => (input.categoryId ? item.categoryId === input.categoryId : true))
         .filter((item) => (q ? normalize(item.title).includes(q) : true))
         .toSorted((a, b) => a.title.localeCompare(b.title, 'pl'))
       const start = (input.page - 1) * input.pageSize
-      const page = items.slice(start, start + input.pageSize).map(({ id, title, categoryName, featured, addedInPanel, youtubeVideo, detailsPdfs, fileZip }) => ({
+      const page = items.slice(start, start + input.pageSize).map(({ id, title, categoryName, categorySlug, featured, addedInPanel, youtubeVideo, detailsPdfs, fileZip }) => ({
         id,
         title,
         categoryName,
+        categorySlug: categorySlug ?? slugs.get(categoryName) ?? null,
         featured,
         addedInPanel,
         links: { video: Boolean(youtubeVideo), pdf: detailsPdfs.length > 0, zip: Boolean(fileZip) },

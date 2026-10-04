@@ -5,6 +5,8 @@ import { buttonVariants } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { InnovationForm, emptyInnovation } from '@/features/innovations/innovation-form'
 import { notifyError, notifySuccess } from '@/features/panel/notify'
+import { PageHeader } from '@/features/panel/page-header'
+import { PANEL_SECTIONS } from '@/features/panel/panel-sidebar'
 import { trpc } from '@/lib/trpc'
 
 export const Route = createFileRoute('/panel/_authed/innovations/new')({
@@ -28,11 +30,16 @@ function NewInnovationPage() {
 
   return (
     <>
-      <Link to="/panel/innovations" className={buttonVariants({ variant: 'ghost', className: 'self-start' })}>
+      <Link to="/panel/innovations" className={buttonVariants({ variant: 'ghost', size: 'sm', className: '-mb-2 self-start text-muted-foreground' })}>
         <IconArrowLeft aria-hidden="true" data-icon="inline-start" />
         Wszystkie innowacje
       </Link>
-      <h1 className="text-2xl font-[650] tracking-[-0.02em]">Nowa innowacja</h1>
+      <PageHeader
+        section={PANEL_SECTIONS.innovations}
+        documentTitle="Nowa innowacja"
+        title="Nowa innowacja"
+        description="Opisz rozwiązanie tak, jak zobaczy je mieszkaniec. Po zapisaniu wyszukiwarka od razu zacznie je podpowiadać."
+      />
       {categories.data ? (
         <InnovationForm
           initial={emptyInnovation}

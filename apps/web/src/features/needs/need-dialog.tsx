@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
-import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { formatDate } from '@/features/panel/handling'
 import { StatusField } from '@/features/panel/status-field'
+import { KindTag, Tag } from '@/features/panel/tags'
 import { trpc } from '@/lib/trpc'
 import { NeedStatus } from './columns'
 import { kindLabel, tierLabel, type NeedDetail } from './labels'
@@ -41,7 +41,8 @@ function NeedDetails({ need }: { need: NeedDetail }) {
   return (
     <>
       <DialogHeader>
-        <DialogTitle>{kindLabel[need.kind]}</DialogTitle>
+        <KindTag kind={need.kind} />
+        <DialogTitle className="text-xl font-[650] tracking-[-0.02em]">{kindLabel[need.kind]}</DialogTitle>
         <DialogDescription>Zapisano {formatDate(need.createdAt)}</DialogDescription>
       </DialogHeader>
 
@@ -69,7 +70,7 @@ function NeedDetails({ need }: { need: NeedDetail }) {
         <h3 id="query-heading" className="font-medium">
           Zapytanie mieszkańca
         </h3>
-        <p className="break-words">{need.query}</p>
+        <p className="rounded-xl border-l-4 border-primary/50 bg-muted/50 px-4 py-3 break-words">„{need.query}”</p>
       </section>
 
       <section aria-labelledby="results-heading" className="flex flex-col gap-1">
@@ -83,7 +84,7 @@ function NeedDetails({ need }: { need: NeedDetail }) {
             {need.shownResults.map((result) => (
               <li key={result.id} className="flex flex-wrap items-center gap-2">
                 <span>{result.title}</span>
-                <Badge variant="outline">{tierLabel[result.tier]}</Badge>
+                <Tag tone={result.tier === 'solution' ? 'green' : 'blue'}>{tierLabel[result.tier]}</Tag>
               </li>
             ))}
           </ul>

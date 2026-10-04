@@ -23,10 +23,16 @@ export function LoginForm({ onSubmit, isPending, error }: LoginFormProps) {
   }
 
   return (
-    <Card className="w-full max-w-sm">
-      <CardHeader>
+    <Card className="w-full max-w-sm gap-6 rounded-3xl p-2 shadow-xl shadow-primary/10">
+      <CardHeader className="gap-3">
+        <span
+          aria-hidden="true"
+          className="flex size-11 items-center justify-center rounded-xl bg-brand-gradient text-lg font-bold text-white shadow-md shadow-primary/30"
+        >
+          H
+        </span>
         <CardTitle>
-          <h1>Panel administratora</h1>
+          <h1 className="text-2xl font-[680] tracking-[-0.03em]">Panel administratora</h1>
         </CardTitle>
         <CardDescription>Zaloguj się kontem pracownika ROPS.</CardDescription>
       </CardHeader>

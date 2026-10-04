@@ -11,7 +11,10 @@ import { NeedDialog } from '@/features/needs/need-dialog'
 import { NeedsList } from '@/features/needs/needs-list'
 import { useSetNeedStatus } from '@/features/needs/use-set-status'
 import type { HandlingStatus } from '@/features/panel/handling'
-import { DEFAULT_PAGE_SIZE, StatusFilter, TextSearch, listQuery, parseListSearch, type ListSearch } from '@/features/panel/list-controls'
+import { FilterBar, StatusFilter, TextSearch } from '@/features/panel/list-controls'
+import { DEFAULT_PAGE_SIZE, listQuery, parseListSearch, type ListSearch } from '@/features/panel/list-search'
+import { PageHeader } from '@/features/panel/page-header'
+import { PANEL_SECTIONS } from '@/features/panel/panel-sidebar'
 import { trpc } from '@/lib/trpc'
 
 interface NeedsSearch extends ListSearch {
@@ -58,12 +61,13 @@ function NeedsPage() {
 
   return (
     <>
-      <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-[650] tracking-[-0.02em]">Potrzeby mieszkańców</h1>
-        <p className="text-muted-foreground">Wyszukiwania, w których mieszkaniec nie znalazł pomocy: Luki, Prośby o kontakt i te, z których powstał Pomysł.</p>
-      </div>
+      <PageHeader
+        section={PANEL_SECTIONS.needs}
+        title="Potrzeby mieszkańców"
+        description="Wyszukiwania, w których mieszkaniec nie znalazł pomocy: Luki, Prośby o kontakt i te, z których powstał Pomysł."
+      />
 
-      <section aria-label="Filtry" className="flex flex-col gap-4 rounded-xl border bg-muted/40 p-4 sm:flex-row sm:flex-wrap sm:items-end">
+      <FilterBar>
         <TextSearch label="Szukaj w zapytaniach" value={search.q} onSearch={(q) => update({ q })} />
         <Field className="sm:w-48">
           <FieldLabel htmlFor="filter-kind">Rodzaj</FieldLabel>
@@ -82,7 +86,7 @@ function NeedsPage() {
           </NativeSelect>
         </Field>
         <StatusFilter value={search.status} onChange={(status) => update({ status })} />
-      </section>
+      </FilterBar>
 
       <section aria-labelledby="list-heading" className="flex flex-col gap-4">
         <h2 id="list-heading" ref={headingRef} tabIndex={-1} className="sr-only outline-none">

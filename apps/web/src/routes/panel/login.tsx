@@ -1,5 +1,6 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { LoginForm } from '@/features/panel/login-form'
+import { useDocumentTitle } from '@/features/panel/use-document-title'
 import { usePanelLogin } from '@/features/panel/use-panel-auth'
 import { sessionQueryOptions } from '@/lib/auth'
 
@@ -20,9 +21,11 @@ export const Route = createFileRoute('/panel/login')({
 function LoginPage() {
   const { redirect: redirectTo } = Route.useSearch()
   const login = usePanelLogin(redirectTo)
+  useDocumentTitle('Logowanie')
 
   return (
-    <main className="flex flex-1 items-center justify-center p-6">
+    <main className="flex flex-1 flex-col items-center justify-center gap-6 bg-panel-hero p-6">
+      <p className="text-sm font-medium text-secondary-foreground">HubMI · Małopolska</p>
       <LoginForm onSubmit={login.mutate} isPending={login.isPending} error={login.error?.message} />
     </main>
   )
