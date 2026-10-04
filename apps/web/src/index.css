@@ -21,6 +21,7 @@
     --color-chart-3: var(--chart-3);
     --color-chart-2: var(--chart-2);
     --color-chart-1: var(--chart-1);
+    --color-chart-muted: var(--chart-muted);
     --color-ring: var(--ring);
     --color-input: var(--input);
     --color-border: var(--border);
@@ -82,11 +83,13 @@
     --hero: #EEF3F9;
     --tile: #FFFFFF;
     --tile-border: #E3E8EF;
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
+    /* Chart palette built on the brand blue; each hue keeps at least 3:1 against white. */
+    --chart-1: #2263AD;
+    --chart-2: #0F8F7E;
+    --chart-3: #C27410;
+    --chart-4: #D1435F;
+    --chart-5: #7454C4;
+    --chart-muted: #7A8699;
     --radius: 0.625rem;
     --sidebar: #F6F8FB;
     --sidebar-foreground: #0F1B2D;

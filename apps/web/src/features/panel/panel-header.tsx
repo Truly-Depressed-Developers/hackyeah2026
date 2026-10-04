@@ -19,6 +19,7 @@ const sections = [
   { to: '/panel/needs', label: 'Potrzeby', exact: false },
   { to: '/panel/ideas', label: 'Pomysły', exact: false },
   { to: '/panel/innovations', label: 'Innowacje', exact: false },
+  { to: '/panel/analytics', label: 'Statystyki', exact: false },
 ] as const
 
 const navLink = buttonVariants({

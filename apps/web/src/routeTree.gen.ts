@@ -16,6 +16,7 @@ import { Route as InnowacjaIdRouteImport } from './routes/innowacja.$id'
 import { Route as PanelAuthedRouteImport } from './routes/panel/_authed'
 import { Route as PanelLoginRouteImport } from './routes/panel/login'
 import { Route as PanelAuthedIndexRouteImport } from './routes/panel/_authed/index'
+import { Route as PanelAuthedAnalyticsRouteImport } from './routes/panel/_authed/analytics'
 import { Route as PanelAuthedNeedsRouteImport } from './routes/panel/_authed/needs'
 import { Route as PanelAuthedIdeasIndexRouteImport } from './routes/panel/_authed/ideas/index'
 import { Route as PanelAuthedIdeasIdeaIdRouteImport } from './routes/panel/_authed/ideas/$ideaId'
@@ -55,6 +56,11 @@ const PanelLoginRoute = PanelLoginRouteImport.update({
 const PanelAuthedIndexRoute = PanelAuthedIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => PanelAuthedRoute,
+} as any)
+const PanelAuthedAnalyticsRoute = PanelAuthedAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
   getParentRoute: () => PanelAuthedRoute,
 } as any)
 const PanelAuthedNeedsRoute = PanelAuthedNeedsRouteImport.update({
@@ -97,6 +103,7 @@ export interface FileRoutesByFullPath {
   '/pomysl': typeof PomyslRoute
   '/innowacja/$id': typeof InnowacjaIdRoute
   '/panel/login': typeof PanelLoginRoute
+  '/panel/analytics': typeof PanelAuthedAnalyticsRoute
   '/panel/needs': typeof PanelAuthedNeedsRoute
   '/panel/': typeof PanelAuthedIndexRoute
   '/panel/ideas/$ideaId': typeof PanelAuthedIdeasIdeaIdRoute
@@ -111,6 +118,7 @@ export interface FileRoutesByTo {
   '/pomysl': typeof PomyslRoute
   '/innowacja/$id': typeof InnowacjaIdRoute
   '/panel/login': typeof PanelLoginRoute
+  '/panel/analytics': typeof PanelAuthedAnalyticsRoute
   '/panel/needs': typeof PanelAuthedNeedsRoute
   '/panel/ideas/$ideaId': typeof PanelAuthedIdeasIdeaIdRoute
   '/panel/innovations/$innovationId': typeof PanelAuthedInnovationsInnovationIdRoute
@@ -126,6 +134,7 @@ export interface FileRoutesById {
   '/innowacja/$id': typeof InnowacjaIdRoute
   '/panel/_authed': typeof PanelAuthedRouteWithChildren
   '/panel/login': typeof PanelLoginRoute
+  '/panel/_authed/analytics': typeof PanelAuthedAnalyticsRoute
   '/panel/_authed/needs': typeof PanelAuthedNeedsRoute
   '/panel/_authed/': typeof PanelAuthedIndexRoute
   '/panel/_authed/ideas/$ideaId': typeof PanelAuthedIdeasIdeaIdRoute
@@ -142,6 +151,7 @@ export interface FileRouteTypes {
     | '/pomysl'
     | '/innowacja/$id'
     | '/panel/login'
+    | '/panel/analytics'
     | '/panel/needs'
     | '/panel/'
     | '/panel/ideas/$ideaId'
@@ -156,6 +166,7 @@ export interface FileRouteTypes {
     | '/pomysl'
     | '/innowacja/$id'
     | '/panel/login'
+    | '/panel/analytics'
     | '/panel/needs'
     | '/panel/ideas/$ideaId'
     | '/panel/innovations/$innovationId'
@@ -170,6 +181,7 @@ export interface FileRouteTypes {
     | '/innowacja/$id'
     | '/panel/_authed'
     | '/panel/login'
+    | '/panel/_authed/analytics'
     | '/panel/_authed/needs'
     | '/panel/_authed/'
     | '/panel/_authed/ideas/$ideaId'
@@ -237,6 +249,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PanelAuthedIndexRouteImport
       parentRoute: typeof PanelAuthedRoute
     }
+    '/panel/_authed/analytics': {
+      id: '/panel/_authed/analytics'
+      path: '/analytics'
+      fullPath: '/panel/analytics'
+      preLoaderRoute: typeof PanelAuthedAnalyticsRouteImport
+      parentRoute: typeof PanelAuthedRoute
+    }
     '/panel/_authed/needs': {
       id: '/panel/_authed/needs'
       path: '/needs'
@@ -283,6 +302,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface PanelAuthedRouteChildren {
+  PanelAuthedAnalyticsRoute: typeof PanelAuthedAnalyticsRoute
   PanelAuthedNeedsRoute: typeof PanelAuthedNeedsRoute
   PanelAuthedIndexRoute: typeof PanelAuthedIndexRoute
   PanelAuthedIdeasIdeaIdRoute: typeof PanelAuthedIdeasIdeaIdRoute
@@ -293,6 +313,7 @@ interface PanelAuthedRouteChildren {
 }
 
 const PanelAuthedRouteChildren: PanelAuthedRouteChildren = {
+  PanelAuthedAnalyticsRoute: PanelAuthedAnalyticsRoute,
   PanelAuthedNeedsRoute: PanelAuthedNeedsRoute,
   PanelAuthedIndexRoute: PanelAuthedIndexRoute,
   PanelAuthedIdeasIdeaIdRoute: PanelAuthedIdeasIdeaIdRoute,

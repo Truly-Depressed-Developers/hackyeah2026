@@ -42,8 +42,8 @@ describe('parseBatch', () => {
 
   it('caps a batch at 50 events', () => {
     const heartbeat = { type: 'visit_heartbeat', at }
-    expect(parseBatch({ visitId, events: Array(50).fill(heartbeat) }).success).toBe(true)
-    expect(parseBatch({ visitId, events: Array(51).fill(heartbeat) }).success).toBe(false)
+    expect(parseBatch({ visitId, events: Array.from({ length: 50 }, () => heartbeat) }).success).toBe(true)
+    expect(parseBatch({ visitId, events: Array.from({ length: 51 }, () => heartbeat) }).success).toBe(false)
   })
 
   it('rejects a batch whose Wizyta id is not a UUID', () => {

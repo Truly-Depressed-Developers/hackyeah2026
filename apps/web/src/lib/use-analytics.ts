@@ -34,8 +34,6 @@ export function useSearchTracking(q: string | undefined, search: SearchState) {
     resultsShown(active.id, latencyMs, { noMatch, results: [...solutions.map(toShown('solution')), ...related.map(toShown('related'))] })
   }, [q, settled, search.isSuccess, search.data])
 
-  const active = current.current
-  return active && active.q === q ? active.id : undefined
 }
 
 /** innovation_viewed on mount, innovation_left with the reading time on unmount or page hide. */
@@ -54,7 +52,9 @@ export function useInnovationTracking(innovationId: string) {
 /** idea_step for each step shown, idea_abandoned if the wizard is left before sending. */
 export function useIdeaTracking(step: number, stepCount: number, done: boolean, searchId: string | undefined) {
   const last = useRef({ step, done })
-  last.current = { step, done }
+  useEffect(() => {
+    last.current = { step, done }
+  }, [step, done])
   const mounted = useRef(false)
 
   useEffect(() => {

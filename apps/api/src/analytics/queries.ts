@@ -68,6 +68,15 @@ function kpisOf(data: Daily[]) {
   }
 }
 
+const kpi = (value: number | null, previousValue: number | null, series: number[]) => ({
+  value,
+  previous: previousValue,
+  delta: value === null || previousValue === null ? null : deltaPct(value, previousValue),
+  series,
+})
+
+const pctOf = (outcome: SearchOutcome) => (day: Daily[]) => share(sum(day, 'searches', outcome), sum(day, 'searches'))
+
 export async function overview(range: Range) {
   const [current, previous, latency, previousLatency] = await Promise.all([
     daily(range.from, range.to),
@@ -77,13 +86,6 @@ export async function overview(range: Range) {
   ])
   const now = kpisOf(current)
   const before = kpisOf(previous)
-  const kpi = (value: number | null, previousValue: number | null, series: number[]) => ({
-    value,
-    previous: previousValue,
-    delta: value === null || previousValue === null ? null : deltaPct(value, previousValue),
-    series,
-  })
-  const pctOf = (outcome: SearchOutcome) => (day: Daily[]) => share(sum(day, 'searches', outcome), sum(day, 'searches'))
   return {
     searches: kpi(now.searches, before.searches, perDay(range, current, (d) => sum(d, 'searches'))),
     visits: kpi(now.visits, before.visits, perDay(range, current, (d) => sum(d, 'visits'))),
@@ -128,7 +130,7 @@ export async function topQueries(range: Range) {
   const middle = sql`${dayStart(range.from)} + (${dayStart(addDays(range.to, 1))} - ${dayStart(range.from)}) / 2`
   const list = await rows<{ key: string; query: string; n: number; helpful: number; recent: number; earlier: number }>(sql`
     select query_normalized as key,
-           mode() within group (order by query) as query,
+           mode() within group (order by trim(query)) as query,
            count(*)::int as n,
            count(*) filter (where acted and not needed and not coalesce(no_match, false))::int as helpful,
            count(*) filter (where occurred_at >= ${middle})::int as recent,
@@ -147,7 +149,7 @@ export async function topQueries(range: Range) {
 export async function topGaps(range: Range) {
   const list = await rows<{ key: string; query: string; n: number; noMatch: number; needs: number }>(sql`
     select query_normalized as key,
-           mode() within group (order by query) as query,
+           mode() within group (order by trim(query)) as query,
            count(*)::int as n,
            count(*) filter (where coalesce(no_match, false))::int as "noMatch",
            count(*) filter (where needed)::int as needs
