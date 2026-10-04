@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
+import { registerSW } from 'virtual:pwa-register'
 import { queryClient } from '@/lib/trpc'
 import { applyStoredTextSize } from '@/components/layout/text-size'
 import { startAnalytics } from '@/lib/analytics'
@@ -23,6 +24,9 @@ declare module '@tanstack/react-router' {
 
 applyStoredTextSize()
 startAnalytics()
+// With registerType 'autoUpdate' this reloads the page once a new deploy's service worker takes over;
+// without it the first visit after a deploy keeps running the previous build until a manual refresh.
+registerSW({ immediate: true })
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
