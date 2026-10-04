@@ -1,5 +1,7 @@
+import { useId, useState } from 'react'
 import {
   IconArrowLeft,
+  IconChevronDown,
   IconMovie,
   IconPlayerPause,
   IconPlayerPlay,
@@ -112,13 +114,6 @@ function DetailView({ item, result, backLabel, onBack }: { item: Innovation; res
 
       {speech.speaking && <ReadAloudControls speech={speech} />}
 
-      {sections.map(({ title, text }) => (
-        <section key={title} className="flex flex-col gap-2">
-          <h2 className="hub-tekst-s font-bold">{title}</h2>
-          <p className="hub-tekst-s text-[var(--hub-tekst-2)]">{text}</p>
-        </section>
-      ))}
-
       {/* Brak `why` = weszliśmy z katalogu, gdzie nie było zapytania do uzasadnienia. */}
       {result.why && (
         <div className="hub-tekst-xs flex flex-col gap-2 rounded-2xl bg-muted/60 px-5 py-4 text-[var(--hub-tekst-2)]">
@@ -133,6 +128,15 @@ function DetailView({ item, result, backLabel, onBack }: { item: Innovation; res
         </div>
       )}
 
+      {/*
+        Odbiór tuż pod tytułem, przed długim opisem: po to mieszkaniec tu przyszedł —
+        żeby zabrać adres na telefon. Opisy innowacji potrafią mieć kilka akapitów
+        i spychały kod QR poza ekran, więc teraz to one czekają na rozwinięcie.
+      */}
+      <Takeaway id={item.id} title={item.title} />
+
+      <Description sections={sections} />
+
       <p className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[calc(18px*var(--hub-skala))] text-muted-foreground">
         {item.links?.video && (
           <span className="inline-flex items-center gap-2">
@@ -142,8 +146,54 @@ function DetailView({ item, result, backLabel, onBack }: { item: Innovation; res
         )}
         <span>Źródło: {item.source.label}</span>
       </p>
+    </div>
+  )
+}
 
-      <Takeaway id={item.id} title={item.title} />
+/** Poniżej tego pierwszy akapit mieści się na ekranie i zwijanie go nic nie daje. */
+const CLAMP_THRESHOLD = 280
+
+/**
+ * Opis innowacji ucięty do kilku linijek, z przyciskiem rozwijającym resztę — dzięki
+ * temu akcje („Jak chcesz odebrać…") zostają w zasięgu wzroku bez przewijania.
+ *
+ * Przycisk pojawia się tylko wtedy, gdy faktycznie jest co odsłonić: przy jednej
+ * krótkiej sekcji byłby kontrolką, która nic nie robi.
+ */
+function Description({ sections }: { sections: { title: string; text: string }[] }) {
+  const [expanded, setExpanded] = useState(false)
+  const detailsId = useId()
+
+  if (sections.length === 0) return null
+
+  const worthCollapsing = sections.length > 1 || sections[0]!.text.length > CLAMP_THRESHOLD
+  const collapsed = worthCollapsing && !expanded
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div id={detailsId} className="flex flex-col gap-6">
+        {sections.map(({ title, text }, i) => (
+          // Pierwszą sekcję przycinamy, kolejne chowamy — `hidden` zamiast odmontowania,
+          // żeby `aria-controls` zawsze wskazywało istniejący element.
+          <section key={title} hidden={collapsed && i > 0} className="flex flex-col gap-2">
+            <h2 className="hub-tekst-s font-bold">{title}</h2>
+            <p className={cn('hub-tekst-s text-[var(--hub-tekst-2)]', collapsed && i === 0 && 'line-clamp-4')}>{text}</p>
+          </section>
+        ))}
+      </div>
+
+      {worthCollapsing && (
+        <button
+          type="button"
+          aria-expanded={expanded}
+          aria-controls={detailsId}
+          onClick={() => setExpanded((open) => !open)}
+          className={cn(CTA_MUTED, 'self-start')}
+        >
+          <IconChevronDown aria-hidden="true" className={cn('size-6 transition-transform', expanded && 'rotate-180')} />
+          {expanded ? 'Zwiń szczegóły' : 'Zobacz szczegóły'}
+        </button>
+      )}
     </div>
   )
 }
