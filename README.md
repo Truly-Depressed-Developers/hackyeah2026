@@ -2,7 +2,7 @@
 
 One place where residents of Małopolska describe a problem in their own words, by typing or by voice, on the web or at a kiosk, and find social innovations that can help. Every question without an answer becomes a signal for ROPS.
 
-[Live demo](https://hackyeah2026.onrender.com) · [Kiosk mode](https://hackyeah2026.onrender.com/kiosk)
+[Presentation](https://hackyeah2026.hacktribe.co/hubmi-2/) · [Live demo](https://hackyeah2026.onrender.com) · [Kiosk mode](https://hackyeah2026.onrender.com/kiosk)
 
 ## Motivation
 
