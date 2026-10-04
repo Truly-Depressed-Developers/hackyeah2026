@@ -73,3 +73,5 @@ Scripts, project layout, deployment and the AI service contract are described in
 - [@CALLmeDOMIN](https://github.com/CALLmeDOMIN)
 - [@bartek-sosin](https://github.com/bartek-sosin)
 - [@MSiorr](https://github.com/MSiorr)
+- [@tobi303x](https://github.com/tobi303x)
+- [@BPajda](https://github.com/BPajda)
