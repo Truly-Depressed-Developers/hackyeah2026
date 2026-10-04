@@ -45,7 +45,7 @@ export function SearchResults({ data }: { data: SearchResponse }) {
         <Tier
           id="related"
           title="Rozwiązania pokrewne"
-          description="Pasują częściowo — mogą się przydać."
+          description="Pasują częściowo - mogą się przydać."
           results={data.related}
           muted
         />

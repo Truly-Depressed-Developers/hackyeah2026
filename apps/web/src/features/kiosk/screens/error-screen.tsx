@@ -13,7 +13,7 @@ function copyFor(error: unknown) {
   return timedOut
     ? {
         title: 'Szukanie trwało zbyt długo',
-        description: 'Połączenie jest teraz wolne. Spróbuj jeszcze raz — zwykle pomaga.',
+        description: 'Połączenie jest teraz wolne. Spróbuj jeszcze raz - zwykle pomaga.',
       }
     : {
         title: 'Nie udało się wyszukać',

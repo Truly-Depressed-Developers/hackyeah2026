@@ -1,141 +1,82 @@
-# Hackathon template
+# HubMI
 
-pnpm + Turborepo monorepo:
+One place where residents of Małopolska describe a problem in their own words, by typing or by voice, on the web or at a kiosk, and find social innovations that can help. Every question without an answer becomes a signal for ROPS.
 
-- `apps/web`: Vite + React + TanStack Router (file-based) + TanStack Query + shadcn/ui (Tailwind v4)
-- `apps/api`: Hono on Node + tRPC + Drizzle ORM 1.0 RC (Postgres)
-- Postgres runs in Docker; both apps run natively via `pnpm dev`.
-- TypeScript 7 (native `tsgo` compiler) for type-checking, oxlint for linting.
+[Presentation](https://hackyeah2026.hacktribe.co/hubmi-2/) · [Live demo](https://hackyeah2026.onrender.com) · [Kiosk mode](https://hackyeah2026.onrender.com/kiosk)
 
-## Day one
+## Motivation
 
-Prerequisites:
+**HubMI** was created at <a href="https://hackyeah.pl/" target="_blank">HackYeah</a> 2026 Hackathon
 
-- **Node 24.21.0**: pinned in `.tool-versions` (asdf: `asdf install`) and `.nvmrc` (nvm: `nvm install && nvm use`).
-- **pnpm**: run `corepack enable` once (ships with Node 24). The exact version is pinned in
-  `package.json` (`packageManager`), so everyone runs the same pnpm.
-- **Docker** (Docker Desktop on macOS/Windows).
+- Topic: HubMI - challenge by Regionalny Ośrodek Polityki Społecznej w Krakowie (ROPS)
+- Timeframe: 03-04.10.2026, 24 hours
 
-```sh
+## Features
+
+- **Search in plain language** - describe a problem by text or voice and get matching innovations from the ROPS Library of Social Innovations (semantic search over the knowledge base)
+- **Knowledge base** - browse all innovations by category, each with its own page: what it is, who it helps, test results, video, materials and a QR code to take it to your phone
+- **Nothing found? Still a signal** - leave a contact or propose your own idea in a step-by-step form; every unanswered question is saved for ROPS
+- **Kiosk mode** - a touch-first version for a tablet in a public place
+- **Admin panel** - ROPS staff review needs, ideas and the knowledge base
+- **Accessible** - built for WCAG 2.1 AA: text size switch, keyboard and screen reader support, reduced motion
+
+## Installation
+
+Install dependencies
+
+```
+pnpm i
+```
+
+Create `.env` from the example and fill in the AI service (`AI_URL`, `AI_API_KEY`, `AI_COLLECTION`). With `AI_URL` empty, search runs on a built-in mock
+
+```
 cp .env.example .env
-pnpm install
+```
+
+Start the database, create the schema and the admin account
+
+```
 docker compose up -d
 pnpm db:push
 pnpm db:seed
+```
+
+Start the app
+
+```
 pnpm dev
 ```
 
-Open http://localhost:5173, describe a problem and click **Szukaj**. While `AI_URL` is empty the
-results come from the API's mock. The API runs on http://localhost:3000; Vite proxies `/trpc` and `/ai` to it.
-Stop with `Ctrl+C`, then `docker compose down` (add `-v` to also wipe the database).
+Website will be available at [localhost:5173](http://localhost:5173), the kiosk at [localhost:5173/kiosk](http://localhost:5173/kiosk) and the admin panel at [localhost:5173/panel](http://localhost:5173/panel).
 
-> Port 5432 or 3000 already taken? Change `DB_PORT` (and the port in `DATABASE_URL`) or `API_PORT` in `.env`.
-> `.env` is read by both apps, drizzle-kit and docker compose. An empty `AI_URL` mocks the AI service.
+Scripts, project layout, deployment and the AI service contract are described in the [development guide](docs/development.md).
 
-## Scripts (repo root)
+## Tech Stack
 
-| Script            | What it does                                                    |
-| ----------------- | --------------------------------------------------------------- |
-| `pnpm dev`        | `turbo dev`: web (Vite) + api (`tsx watch`)                      |
-| `pnpm build`      | Build both apps                                                 |
-| `pnpm typecheck`  | Type-check both apps                                            |
-| `pnpm lint`       | Lint the whole repo with oxlint (`pnpm lint:fix` to autofix)    |
-| `pnpm db:push`    | Push the Drizzle schema (`apps/api/src/db/schema.ts`) to the DB  |
-| `pnpm db:studio`  | Open Drizzle Studio                                             |
-| `pnpm db:seed`    | Create the predefined Panel administratora account (`ADMIN_EMAIL` / `ADMIN_PASSWORD`) |
-| `pnpm gen:ai`     | Generate AI-service types (`-- --remote` for `${AI_URL}/openapi.json`) |
+<img alt="REACTJS" src="https://img.shields.io/badge/React-61DAFB.svg?style=for-the-badge&logo=React&logoColor=black"/>
+<img alt="TYPESCRIPT" src="https://img.shields.io/badge/TypeScript-3178C6.svg?style=for-the-badge&logo=TypeScript&logoColor=white"/>
+<img alt="VITE" src="https://img.shields.io/badge/Vite-646CFF.svg?style=for-the-badge&logo=Vite&logoColor=white"/>
+<img alt="TANSTACK" src="https://img.shields.io/badge/TanStack-FF4154.svg?style=for-the-badge&logo=reactquery&logoColor=white"/>
+<img alt="TAILWIND" src="https://img.shields.io/badge/Tailwind%20CSS-06B6D4.svg?style=for-the-badge&logo=Tailwind-CSS&logoColor=white"/>
+<img alt="SHADCN" src="https://img.shields.io/badge/shadcn/ui-000000.svg?style=for-the-badge&logo=shadcn/ui&logoColor=white"/>
+<img alt="HONO" src="https://img.shields.io/badge/Hono-E36002.svg?style=for-the-badge&logo=hono&logoColor=white"/>
+<img alt="TRPC" src="https://img.shields.io/badge/tRPC-2596BE?style=for-the-badge&logo=trpc&logoColor=white"/>
+<img alt="POSTGRESQL" src="https://img.shields.io/badge/postgresql-4169e1?style=for-the-badge&logo=postgresql&logoColor=white"/>
+<img alt="DRIZZLE" src="https://img.shields.io/badge/Drizzle-C5F74F.svg?style=for-the-badge&logo=drizzle&logoColor=black"/>
+<img alt="PYTHON" src="https://img.shields.io/badge/Python-3776AB.svg?style=for-the-badge&logo=Python&logoColor=white"/>
+<img alt="CHROMADB" src="https://img.shields.io/badge/ChromaDB-FF6446.svg?style=for-the-badge&logoColor=white"/>
+<img alt="GEMINI" src="https://img.shields.io/badge/Gemini-8E75B2.svg?style=for-the-badge&logo=googlegemini&logoColor=white"/>
 
-## Layout
+## Authors
 
-```
-apps/api/src
-  env.ts            reads the root .env
-  db/schema.ts      Drizzle tables
-  router.ts         tRPC router; exports AppRouter
-  ai/               mock of the AI service (used while AI_URL is empty) + generated schema.d.ts
-  index.ts          Hono server, mounts tRPC at /trpc and forwards /ai/* to AI_URL
-apps/web/src
-  lib/trpc.ts       tRPC client + QueryClient
-  lib/ai/           AI-service client: generated schema.d.ts + TanStack Query hooks ($ai)
-  routes/           file-based routes (routeTree.gen.ts is generated; commit it)
-  components/ui/    shadcn components (add more: cd apps/web && pnpm dlx shadcn@latest add <name>)
-```
+- [@CALLmeDOMIN](https://github.com/CALLmeDOMIN)
+- [@bartek-sosin](https://github.com/bartek-sosin)
+- [@MSiorr](https://github.com/MSiorr)
+- [@tobi303x](https://github.com/tobi303x)
+- [@BPajda](https://github.com/BPajda)
+- [@xwikuss](https://www.behance.net/xwikuss) (design)
 
-End-to-end types: the web app imports `AppRouter` as a type from `api/router`. Change a procedure's
-return type in `apps/api` and `pnpm typecheck` fails in `apps/web`.
+## License
 
-## Deploy (Render + Neon, free)
-
-Production is a single service: the API also serves the built web app, so there is one URL and no CORS.
-`Dockerfile` builds both apps; `render.yaml` describes the Render service.
-
-1. **Database (Neon)**: create a free project at https://neon.com and copy its connection string.
-   Create the tables from your machine:
-   ```sh
-   DATABASE_URL='postgres://...neon.tech/neondb?sslmode=verify-full' pnpm db:push
-   ```
-   Use `sslmode=verify-full` instead of `require` (avoids a pg warning; same for Render).
-   Re-run this after every schema change (env vars take precedence over `.env`).
-2. **App (Render)**: in the Render dashboard choose **New → Blueprint**, connect GitHub and pick this repo.
-   An org owner has to approve the Render GitHub app for the organization.
-   When asked, set `DATABASE_URL` to the Neon string, `BETTER_AUTH_URL` to the service URL
-   (and `AI_URL` once the AI service is deployed). Then create the panel account from your machine:
-   `DATABASE_URL=... ADMIN_EMAIL=... ADMIN_PASSWORD=... pnpm db:seed`.
-3. Every push to `main` redeploys. Health check: `/health`.
-
-Free-tier caveats: the service sleeps after 15 min without traffic and takes about a minute to wake up,
-so open the URL a few minutes before a demo. Neon's free plan is 0.5 GB and never expires.
-
-To test the production image locally:
-```sh
-docker build -t hackyeah2026 .
-docker run --rm -p 10000:10000 -e PORT=10000 \
-  -e DATABASE_URL=postgres://app:app@host.docker.internal:5432/app hackyeah2026
-```
-
-## Notes
-
-- **npm registry**: `pnpm-workspace.yaml` pins the public npm registry, so a machine-wide custom
-  registry in `~/.npmrc` doesn't affect installs. pnpm's own version download still reads `~/.npmrc`;
-  if that fails, run `npm_config_registry=https://registry.npmjs.org/ pnpm install` once.
-- **TypeScript 7** has no classic JS compiler API, which `openapi-typescript` (`pnpm gen:ai`)
-  needs. `.pnpmfile.cjs` gives that one package a private TypeScript 6; everything else uses TS 7.
-- **Drizzle 1.0 is a release candidate** (what the Drizzle docs currently recommend). If it gives you
-  trouble, `pnpm --filter api add drizzle-orm@latest && pnpm --filter api add -D drizzle-kit@latest` goes back to 0.x;
-  the schema and queries here work on both.
-
-## Windows (WSL2)
-
-- Clone the repo **inside the WSL filesystem** (e.g. `~/code/...`), not under `/mnt/c/...`. Installs and file
-  watching are much faster there, and it avoids line-ending and permission issues.
-- Install Docker Desktop on Windows and enable **Settings → Resources → WSL integration** for your distro, so
-  `docker compose` works from the WSL shell.
-- Run Node/pnpm inside WSL (install Node with asdf or nvm inside WSL), not the Windows versions.
-- Open `http://localhost:5173` from the Windows browser as usual; WSL2 forwards localhost.
-- `.gitattributes` forces LF line endings, so the same files work on both OSes.
-
-## Connecting the AI service
-
-HubMI has two backends: this Hono API (Postgres, tRPC) and a Python/FastAPI AI service. The web app
-calls the AI service through generated TanStack Query hooks (`$ai` in `apps/web/src/lib/ai/client.ts`)
-at `/ai/*`, which Hono forwards to `AI_URL`. Why: `docs/adr/0001-ai-calls-via-openapi-passthrough.md`.
-
-- `packages/ai-contract/openapi.yaml` is the draft contract. `pnpm gen:ai` turns it into
-  `apps/web/src/lib/ai/schema.d.ts` and `apps/api/src/ai/schema.d.ts`.
-- While `AI_URL` is empty (locally and on Render), Hono answers `/ai/search` from `apps/api/src/ai/fixtures.ts`.
-
-To switch to the real service:
-
-1. Set `AI_URL`, `AI_API_KEY` and `AI_COLLECTION` in `.env` (or on Render). The key stays in Hono, which
-   calls the AI service's `POST /api/query` and maps matches to our contract (`apps/api/src/ai/search.ts`).
-   Only `POST /ai/search` is exposed to the browser; the AI service's admin endpoints are not.
-2. Run `pnpm gen:ai -- --remote`. This fetches `${AI_URL}/openapi.json` and overwrites `schema.d.ts`.
-3. Run `pnpm typecheck` and fix whatever the real contract changed.
-4. Restart `pnpm dev`. Clearing `AI_URL` switches back to the mock.
-
-## PWA (optional)
-
-`apps/web/pwa.config.ts` adds `vite-plugin-pwa` (autoUpdate + basic manifest). It is only active in
-production builds (`pnpm build && pnpm --filter web preview`). The icons in `apps/web/public/` are
-solid-color placeholders. To remove it: delete `pwa.config.ts` and `pwa()` in `vite.config.ts`, the PWA tags in `index.html`,
-the PNG icons in `public/`, and run `pnpm --filter web remove vite-plugin-pwa`.
+This project is licensed under [MIT](./LICENSE) license.

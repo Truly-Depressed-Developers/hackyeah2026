@@ -75,7 +75,7 @@ export const related: Result[] = [
     summary: 'Therapy Set to zestaw pomocy terapeutycznych przeznaczony dla osób starszych, w szczególności mieszkańców Domów Pomocy Społecznej. Zestaw składa się z siedmiu pomocy umożliwiających kompleksową terapię seniorów.',
     category: 'Innowacje dla seniorów',
     categorySlug: 'dla-seniorow',
-    why: 'Terapia zajęciowa dla osób leżących lub mało mobilnych — pomocna w opiece domowej, choć nie dotyczy samej organizacji opieki.',
+    why: 'Terapia zajęciowa dla osób leżących lub mało mobilnych - pomocna w opiece domowej, choć nie dotyczy samej organizacji opieki.',
     whyGenerated: true,
     source: { label: BIBLIOTEKA, url: 'https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow,therapy-set' },
     details: {
@@ -94,7 +94,7 @@ export const related: Result[] = [
     summary: 'Innowacją jest model obuwia domowego dla osób starszych. Obuwie to charakteryzuje się antypoślizgowością, optymalnym dopasowaniem do stopy, a także antybakteryjnością, dzięki czemu łatwo jest je utrzymać w czystości.',
     category: 'Innowacje dla seniorów',
     categorySlug: 'dla-seniorow',
-    why: 'Zmniejsza ryzyko upadków osoby starszej w domu — ważne przy opiece, ale to tylko jeden jej element.',
+    why: 'Zmniejsza ryzyko upadków osoby starszej w domu - ważne przy opiece, ale to tylko jeden jej element.',
     whyGenerated: true,
     source: { label: BIBLIOTEKA, url: 'https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow,obu-obuwie-po-domu' },
     details: {
@@ -114,7 +114,7 @@ export const related: Result[] = [
     summary: 'Ścieżka motosensoryczna ma za zadanie oswajać z przestrzenią miejską osoby, które z przyczyn obniżonej sprawności doświadczają lęków i przestają korzystać z przestrzeni publicznych miasta.',
     category: 'Innowacje dla seniorów',
     categorySlug: 'dla-seniorow',
-    why: 'Rehabilitacja ruchowa „przy okazji” codziennych czynności — przydatna po udarze, ale wymaga placówki.',
+    why: 'Rehabilitacja ruchowa „przy okazji” codziennych czynności - przydatna po udarze, ale wymaga placówki.',
     whyGenerated: true,
     source: { label: BIBLIOTEKA, url: 'https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow,sciezka-motosensoryczna' },
     details: {

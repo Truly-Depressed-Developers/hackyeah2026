@@ -94,7 +94,7 @@ function Print({ done, onDone, onBack }: { done: boolean; onDone: () => void; on
     <div className="flex flex-col items-center gap-4 rounded-[28px] border border-border bg-card p-8 text-center">
       <IconPrinter aria-hidden="true" className="size-14 text-[var(--hub-niebieski-ciemny)]" />
       <p role="status" className="text-[32px] font-bold">
-        {done ? 'Gotowe — kartka czeka' : 'Drukuję kartkę z adresem…'}
+        {done ? 'Gotowe - kartka czeka' : 'Drukuję kartkę z adresem…'}
       </p>
       <p className="hub-tekst-s text-[var(--hub-tekst-2)]">Odbierz ją z drukarki pod ekranem.</p>
       <DemoNote />
@@ -200,7 +200,7 @@ function Qr({ id, onBack }: { id: string; onBack: () => void }) {
       */}
       {UNREACHABLE_FROM_PHONE && (
         <p className="hub-tekst-xs rounded-2xl bg-[var(--hub-bursztyn-jasny)] px-4 py-2 text-[var(--hub-bursztyn)]">
-          Kod prowadzi na <code>{PUBLIC_URL}</code>, czyli adres lokalny kiosku — telefon go nie otworzy.
+          Kod prowadzi na <code>{PUBLIC_URL}</code>, czyli adres lokalny kiosku - telefon go nie otworzy.
           Ustaw <code>VITE_PUBLIC_URL</code> na publiczny adres aplikacji.
         </p>
       )}
@@ -215,7 +215,7 @@ function Qr({ id, onBack }: { id: string; onBack: () => void }) {
 function DemoNote() {
   return (
     <p className="hub-tekst-xs rounded-2xl bg-[var(--hub-bursztyn-jasny)] px-4 py-2 text-[var(--hub-bursztyn)]">
-      Tryb demonstracyjny — nic nie zostało naprawdę wysłane ani wydrukowane.
+      Tryb demonstracyjny - nic nie zostało naprawdę wysłane ani wydrukowane.
     </p>
   )
 }

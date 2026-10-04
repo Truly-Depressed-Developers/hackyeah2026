@@ -52,7 +52,7 @@ export function KioskCatalog({ onOpen }: { onOpen: (result: CarriedResult) => vo
         <h2 id="hub-katalog" className="text-[calc(26px*var(--hub-skala))] font-bold">
           Sprawdzone rozwiązania z Małopolski
         </h2>
-        <p className="hub-tekst-xs text-[var(--hub-tekst-2)]">Dotknij, żeby zobaczyć szczegóły — albo opisz swoją sprawę wyżej.</p>
+        <p className="hub-tekst-xs text-[var(--hub-tekst-2)]">Dotknij, żeby zobaczyć szczegóły - albo opisz swoją sprawę wyżej.</p>
       </div>
 
       <div

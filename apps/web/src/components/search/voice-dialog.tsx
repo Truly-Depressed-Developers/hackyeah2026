@@ -75,7 +75,7 @@ export function VoiceDialog({ open, onOpenChange, title, confirmLabel, idleHint,
 
   const hint = useMemo(() => {
     if (voice.error !== null) return null
-    if (voice.isListening) return 'Słuchamy — mów swobodnie. Zatrzymamy się, gdy skończysz.'
+    if (voice.isListening) return 'Słuchamy - mów swobodnie. Zatrzymamy się, gdy skończysz.'
     if (voice.draft.length > 0) return readyHint
     return idleHint
   }, [voice.draft.length, voice.error, voice.isListening, idleHint, readyHint])
